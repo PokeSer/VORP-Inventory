@@ -1,0 +1,6 @@
+E:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csprojAssemblyReference.cache
+E:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_cl.net.dll
+E:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\Build\vorp_inventory\vorpinventory_cl.net.pdb
+E:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.csproj.CopyComplete
+E:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.dll
+E:\VORP-Repos\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory-cl\obj\Debug\vorpinventory_cl.net.pdb
