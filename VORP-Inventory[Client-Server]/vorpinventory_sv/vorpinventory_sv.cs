@@ -26,6 +26,7 @@ namespace vorpinventory_sv
         private void getInventory([FromSource]Player source)
         {
             string steamId = "steam:"+source.Identifiers["steam"];
+            Debug.WriteLine(steamId);
             Exports["ghmattimysql"].execute("SELECT inventory,loadout FROM characters WHERE identifier = ?;",new [] {steamId} ,new Action<dynamic>((result) =>
             {
                 if (result.Count == 0)
@@ -34,7 +35,7 @@ namespace vorpinventory_sv
                 }
                 else
                 {
-                    source.TriggerEvent("vorpInventory:giveInventory",result[0]);
+                    source.TriggerEvent("vorpInventory:giveInventory",result[0].inventory,result[0].loadout);
                 }
             }));
         }
