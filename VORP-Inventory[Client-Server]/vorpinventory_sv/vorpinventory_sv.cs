@@ -11,14 +11,31 @@ namespace vorpinventory_sv
     {
         public vorpinventory_sv()
         {
+            EventHandlers["vorpinventory:getItemsTable"] += new Action<Player>(getItemsTable);
             EventHandlers["vorpinventory:getInventory"] += new Action<Player>(getInventory);
+        }
+
+        private void getItemsTable([FromSource] Player source)
+        {
+            if (ItemDatabase.items.Count != 0)
+            {
+                source.TriggerEvent("vorpInventory:giveItemsTable",ItemDatabase.items);
+            }
         }
 
         private void getInventory([FromSource]Player source)
         {
-            TriggerEvent("vorp:getCharacter", source, new Action<dynamic>((user) =>
+            string steamId = "steam:"+source.Identifiers["steam"];
+            Exports["ghmattimysql"].execute("SELECT inventory,loadout FROM characters WHERE identifier = ?;",new [] {steamId} ,new Action<dynamic>((result) =>
             {
-                
+                if (result.Count == 0)
+                {
+                    Debug.WriteLine($"{steamId} doesn`t have inventory yet.");
+                }
+                else
+                {
+                    source.TriggerEvent("vorpInventory:giveInventory",result[0]);
+                }
             }));
         }
     }
