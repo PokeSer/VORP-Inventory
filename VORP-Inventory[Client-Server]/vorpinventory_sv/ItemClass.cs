@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace vorpinventory_cl
+﻿namespace vorpinventory_sv
 {
     public class ItemClass
     {
@@ -37,16 +31,7 @@ namespace vorpinventory_cl
             return this.count;
         }
         
-        public void addCount(int count)
-        {
-            this.count += count;
-        }
-
-        public void subCount(int count)
-        {
-            this.count -= count;
-        }
-
+        
         public void setLimit(int limit)
         {
             this.limit = limit;
