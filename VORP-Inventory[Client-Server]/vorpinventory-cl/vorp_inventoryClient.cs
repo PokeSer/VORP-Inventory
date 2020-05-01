@@ -12,7 +12,7 @@ namespace vorpinventory_cl
     {    
         public static Dictionary<string,Dictionary<string,dynamic>> citems = new Dictionary<string, Dictionary<string, dynamic>>();
         private static bool firstspawn = false;
-        Dictionary<string,ItemClass> useritems = new Dictionary<string, ItemClass>();
+        public static Dictionary<string,ItemClass> useritems = new Dictionary<string, ItemClass>();
         public vorp_inventoryClient()
         {
             EventHandlers["playerSpawned"] += new Action<object>(IsPlayerSpawned);
@@ -33,6 +33,7 @@ namespace vorpinventory_cl
         }
         private void processItems(dynamic items)
         {
+            citems.Clear();
             foreach (dynamic item in items)
             {
                 citems.Add(item.item,new Dictionary<string, dynamic>
@@ -50,6 +51,7 @@ namespace vorpinventory_cl
             
             if (inventory != null)
             {
+                useritems.Clear();
                 dynamic deserializedInventory = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(inventory);
                 foreach (KeyValuePair<string,Dictionary<string,dynamic>> fitems in citems)
                 {
@@ -59,7 +61,7 @@ namespace vorpinventory_cl
                         int limit = int.Parse(fitems.Value["limit"].ToString());
                         string label = fitems.Value["label"].ToString();
                         bool can_remove = bool.Parse(fitems.Value["can_remove"].ToString());
-                        ItemClass item = new ItemClass(cuantity,limit,label,fitems.Key,"item_inventory",true,can_remove);
+                        ItemClass item = new ItemClass(cuantity,limit,label,fitems.Key,"item_standard",true,can_remove);
                         useritems.Add(fitems.Key,item);
                     }
                 }

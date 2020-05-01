@@ -98,18 +98,22 @@ namespace vorpinventory_cl
 
         private async Task LoadInv()
         {
-
-            Dictionary<string, dynamic> item = new Dictionary<string, dynamic>();
-            item.Add("count", 10);
-            item.Add("limit", 64);
-            item.Add("label", "Test");
-            item.Add("name", "water");
-            item.Add("type", "item_standard");
-            item.Add("usable", false);
-            item.Add("canRemove", true);
-
+            Dictionary<string, dynamic> item;
+            items.Clear();
+            gg.Clear();
+            foreach (KeyValuePair<string,ItemClass> userit in vorp_inventoryClient.useritems)
+            {
+                item = new Dictionary<string, dynamic>();
+                item.Add("count", userit.Value.getCount());
+                item.Add("limit", userit.Value.getLimit());
+                item.Add("label", userit.Value.getLabel());
+                item.Add("name", userit.Value.getName());
+                item.Add("type", userit.Value.getType());
+                item.Add("usable", userit.Value.getUsable());
+                item.Add("canRemove", userit.Value.getCanRemove());
+                gg.Add(item);
+            }
             items.Add("action", "setItems");
-            gg.Add(item);
             items.Add("itemList", gg);
 
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
@@ -119,7 +123,6 @@ namespace vorpinventory_cl
             API.SendNuiMessage(json);
 
             Newtonsoft.Json.Linq.JObject wp = Newtonsoft.Json.Linq.JObject.Parse(json);
-
         }
 
         private async Task OpenInv()

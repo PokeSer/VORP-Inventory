@@ -48,7 +48,5 @@ namespace vorpinventory_sv
                 }
             }));
         }
-        
-        
     }
 }
