@@ -97,11 +97,8 @@ namespace vorpinventory_cl
                     {
                         string itemname = data2["item"].ToString();
                         int amount = int.Parse(data2["count"].ToString());
-                        //int hash = int.Parse(data2["hash"].ToString());
                         int target = int.Parse(data["player"].ToString());
-                        Debug.WriteLine($"{itemname} {amount} {target}");
-                        Debug.WriteLine($"Le estoy dando un item a {data["player"]}");
-                        if (amount > 0 && vorp_inventoryClient.useritems[itemname].getCount() > amount)
+                        if (amount > 0 && vorp_inventoryClient.useritems[itemname].getCount() >= amount)
                         {
                             TriggerServerEvent("vorpinventory:serverGiveItem",itemname,amount,target,1);
                             vorp_inventoryClient.useritems[itemname].quitCount(amount);
@@ -126,14 +123,27 @@ namespace vorpinventory_cl
 
         private void NUIDropItem(ExpandoObject obj)
         {
-            if (Utils.expandoProcessing(obj)["type"] == "item_standard")
+            Dictionary<string, dynamic> aux = Utils.expandoProcessing(obj);
+            string itemname = aux["item"];
+            string type = aux["type"].ToString();
+            int cuantity = int.Parse(aux["number"].ToString());
+            Debug.WriteLine(type);
+            Debug.WriteLine(cuantity.ToString());
+            if (type == "item_standard")
             {
-                if (int.Parse(Utils.expandoProcessing(obj)["number"]) > 0)
+                if (cuantity > 0 && vorp_inventoryClient.useritems[itemname].getCount() >= cuantity)
                 {
-                    TriggerServerEvent("vorpinventory:drop", Utils.expandoProcessing(obj)["item"], int.Parse(
-                        Utils.expandoProcessing(obj)["number"]), 1);
+                    TriggerServerEvent("vorpinventory:serverDropItem", itemname, cuantity, 1);
+                    vorp_inventoryClient.useritems[itemname].quitCount(cuantity);
+                    if (vorp_inventoryClient.useritems[itemname].getCount() == 0)
+                    {
+                        vorp_inventoryClient.useritems.Remove(itemname);
+                    }
+                    Debug.Write(vorp_inventoryClient.useritems[itemname].getCount().ToString());
                 }
             }
+
+            LoadInv();
         }
 
         private void NUISound(ExpandoObject obj)
