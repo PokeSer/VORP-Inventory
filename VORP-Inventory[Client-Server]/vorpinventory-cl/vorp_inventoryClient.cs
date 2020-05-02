@@ -11,25 +11,24 @@ namespace vorpinventory_cl
     public class vorp_inventoryClient:BaseScript
     {    
         public static Dictionary<string,Dictionary<string,dynamic>> citems = new Dictionary<string, Dictionary<string, dynamic>>();
-        private static bool firstspawn = false;
         public static Dictionary<string,ItemClass> useritems = new Dictionary<string, ItemClass>();
         public vorp_inventoryClient()
         {
-            EventHandlers["playerSpawned"] += new Action<object>(IsPlayerSpawned);
             EventHandlers["vorpInventory:giveItemsTable"] += new Action<dynamic>(processItems);
             EventHandlers["vorpInventory:giveInventory"] += new Action<dynamic,dynamic>(getInventory);
+            EventHandlers["onClientResourceStart"] += new Action<string>(OnClientResourceStart);
         }
+        
 
-        private async void IsPlayerSpawned(object spawninfo)
+        private async void OnClientResourceStart(string eventName)
         {
-            if (!firstspawn)
-            {
-                await Delay(1000);
-                TriggerServerEvent("vorpinventory:getItemsTable");
-                await Delay(2000);
-                TriggerServerEvent("vorpinventory:getInventory");
-                firstspawn = true;
-            }
+            if (API.GetCurrentResourceName() != eventName) return;
+            API.SetNuiFocus(false, false);
+            API.SendNuiMessage("{\"action\": \"hide\"}");
+            Debug.WriteLine("Cargando el inventario");
+            TriggerServerEvent("vorpinventory:getItemsTable");
+            await Delay(300);
+            TriggerServerEvent("vorpinventory:getInventory");
         }
         private void processItems(dynamic items)
         {

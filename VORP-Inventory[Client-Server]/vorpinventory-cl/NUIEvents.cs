@@ -42,18 +42,60 @@ namespace vorpinventory_cl
 
         private void NUIGetNearPlayers(ExpandoObject obj)
         {
-            int PID = API.PlayerPedId();
-           
+            int playerPed = API.PlayerPedId();
+            List<int> players = Utils.getNearestPlayers();
+            bool foundPlayers = false;
+            List<Dictionary<string,object>> elements = new List<Dictionary<string, object>>();
+            Dictionary<string,object> nuireturn = new Dictionary<string, object>();
+            foreach (var player in players)
+            {
+                foundPlayers = true;
+                elements.Add(new Dictionary<string, object>
+                {
+                    ["label"] = API.GetPlayerName(player),
+                    ["player"] = API.GetPlayerServerId(player)
+                });
+            }
+
+            if (!foundPlayers)
+            {
+                Debug.WriteLine("No near players");
+            }
+            else
+            {
+                Dictionary<string,object> item = new Dictionary<string, object>();
+                foreach (var thing in obj)
+                {
+                    item.Add(thing.Key,thing.Value);
+                    Debug.WriteLine(item[thing.Key].ToString());
+                }
+                nuireturn.Add("action","nearPlayers");
+                nuireturn.Add("foundAny",foundPlayers);
+                nuireturn.Add("players",elements);
+                nuireturn.Add("item",item["item"]);
+                nuireturn.Add("hash","hash");
+                nuireturn.Add("count",item["count"]);
+                nuireturn.Add("type",item["type"]);
+                nuireturn.Add("what",item["what"]);
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(nuireturn);
+                Debug.WriteLine(json);
+                API.SendNuiMessage(json);
+            }
         }
 
         private void NUIGiveItem(ExpandoObject obj)
         {
-            foreach (var o in obj)
+            int playerPed = API.PlayerPedId();
+            List<int> players = Utils.getNearestPlayers();
+            Dictionary<string,object> data = new Dictionary<string, object>();
+            foreach (var d in obj)
             {
-                Debug.WriteLine(o.Value.ToString());
+                data.Add(d.Key,d.Value);
+                Debug.WriteLine(d.Key);
+                Debug.WriteLine(d.Value.ToString());
             }
         }
-
+        
         private void NUIUseItem(ExpandoObject obj)
         {
             foreach (var o in obj)

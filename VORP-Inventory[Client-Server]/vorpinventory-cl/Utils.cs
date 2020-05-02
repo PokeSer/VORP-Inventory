@@ -9,10 +9,9 @@ namespace vorpinventory_cl
     {
         public Utils()
         {
-            API.RegisterCommand("nearestPlayer",new Action(getNearestPlayers),false );
         }
 
-        public static void getNearestPlayers()
+        public static List<int> getNearestPlayers()
         {
             float closestDistance = 5.0F;
             int localPed = API.PlayerPedId();
@@ -39,12 +38,8 @@ namespace vorpinventory_cl
                     }
                 }
             }
-            
-            foreach (var VARIABLE in closestPlayers)
-            {
-                Debug.WriteLine(API.GetPlayerName(VARIABLE));
-                Debug.WriteLine(API.GetPlayerServerId(VARIABLE).ToString());
-            }
+
+            return closestPlayers;
         }
     }
 }
