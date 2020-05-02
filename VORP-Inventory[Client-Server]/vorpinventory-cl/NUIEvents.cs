@@ -87,12 +87,32 @@ namespace vorpinventory_cl
         {
             int playerPed = API.PlayerPedId();
             List<int> players = Utils.getNearestPlayers();
-            Dictionary<string,object> data = new Dictionary<string, object>();
-            foreach (var d in obj)
+            Dictionary<string, object> data = Utils.expandoProcessing(obj);
+            Dictionary<string, object> data2 = Utils.expandoProcessing(data["data"]);
+            foreach (var varia in players)
             {
-                data.Add(d.Key,d.Value);
-                Debug.WriteLine(d.Key);
-                Debug.WriteLine(d.Value.ToString());
+                if (varia != API.PlayerId())
+                {
+                    if (API.GetPlayerServerId(varia) == int.Parse(data["player"].ToString()))
+                    {
+                        string itemname = data2["item"].ToString();
+                        int amount = int.Parse(data2["count"].ToString());
+                        //int hash = int.Parse(data2["hash"].ToString());
+                        int target = int.Parse(data["player"].ToString());
+                        Debug.WriteLine($"{itemname} {amount} {target}");
+                        Debug.WriteLine($"Le estoy dando un item a {data["player"]}");
+                        if (amount > 0 && vorp_inventoryClient.useritems[itemname].getCount() > amount)
+                        {
+                            TriggerServerEvent("vorpinventory:serverGiveItem",itemname,amount,target,1);
+                            vorp_inventoryClient.useritems[itemname].quitCount(amount);
+                            if (vorp_inventoryClient.useritems[itemname].getCount() == 0)
+                            {
+                                vorp_inventoryClient.useritems.Remove(itemname);
+                            }
+                        }
+                        LoadInv();
+                    }
+                }
             }
         }
         
@@ -142,7 +162,7 @@ namespace vorpinventory_cl
 
         }
 
-        private async Task LoadInv()
+        public static async Task LoadInv()
         {
             Dictionary<string, dynamic> item;
             items.Clear();

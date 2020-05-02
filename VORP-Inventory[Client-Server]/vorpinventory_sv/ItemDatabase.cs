@@ -12,6 +12,7 @@ namespace vorpinventory_sv
         public static dynamic items;
         //Lista de itemclass con el nombre de su dueño para poder hacer todo el tema de añadir y quitar cuando se robe y demas
         public static Dictionary<string,Dictionary<string,ItemClass>> usersInventory = new Dictionary<string, Dictionary<string, ItemClass>>();
+        public static Dictionary<string,dynamic> dicItems = new Dictionary<string, dynamic>();
         public ItemDatabase()
         {
             Exports["ghmattimysql"].execute("SELECT * FROM items",new Action<dynamic>((result) =>
@@ -25,12 +26,14 @@ namespace vorpinventory_sv
                     items = result;
                     Exports["ghmattimysql"].execute("SELECT identifier,inventory,loadout FROM characters", new Action<dynamic>((uinvento) =>
                     {
+                        Dictionary<string,ItemClass> userinv = new Dictionary<string, ItemClass>();
                         foreach (var userInventory in uinvento)
                         {
-                            string user = userInventory.identifier;
-                            Dictionary<string,ItemClass> userinv = new Dictionary<string, ItemClass>();
+                            string user = userInventory.identifier.ToString();
+
                             if (userInventory.inventory != null)
                             {
+                                userinv.Clear();
                                 dynamic thing = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(userInventory.inventory);
                                 foreach (dynamic itemname in items)
                                 {
@@ -41,6 +44,10 @@ namespace vorpinventory_sv
                                         userinv.Add(itemname.item.ToString(),item);
                                     }
                                 }
+                                usersInventory.Add(user,userinv);
+                            }
+                            else
+                            {
                                 usersInventory.Add(user,userinv);
                             }
                         }

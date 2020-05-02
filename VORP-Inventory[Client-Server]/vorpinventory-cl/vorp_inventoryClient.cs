@@ -17,8 +17,23 @@ namespace vorpinventory_cl
             EventHandlers["vorpInventory:giveItemsTable"] += new Action<dynamic>(processItems);
             EventHandlers["vorpInventory:giveInventory"] += new Action<dynamic,dynamic>(getInventory);
             EventHandlers["onClientResourceStart"] += new Action<string>(OnClientResourceStart);
+            EventHandlers["vorpinventory:receiveItem"] += new Action<string,int>(receiveItem);
         }
-        
+
+        private void receiveItem(string name, int count)
+        {
+            if (useritems.ContainsKey(name))
+            {
+                useritems[name].addCount(count);
+            }
+            else
+            {
+                useritems.Add(name,new ItemClass(count,citems[name]["limit"],citems[name]["label"],name,
+                    "item_standard",true,citems[name]["can_remove"]));
+            }
+            
+            NUIEvents.LoadInv();
+        }
 
         private async void OnClientResourceStart(string eventName)
         {

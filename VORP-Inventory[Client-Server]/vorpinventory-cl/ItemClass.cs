@@ -36,6 +36,11 @@ namespace vorpinventory_cl
         {
             return this.count;
         }
+
+        public void quitCount(int count)
+        {
+            this.count -= count;
+        }
         
         public void addCount(int count)
         {

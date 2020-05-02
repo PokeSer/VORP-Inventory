@@ -12,7 +12,7 @@ namespace vorpinventory_cl
         {
         }
         
-        public static Dictionary<string,dynamic> expandoProcessing(ExpandoObject objet)
+        public static Dictionary<string,dynamic> expandoProcessing(dynamic objet)
         {
             Dictionary<string,dynamic> aux = new Dictionary<string, dynamic>();
             foreach (var o in objet)
