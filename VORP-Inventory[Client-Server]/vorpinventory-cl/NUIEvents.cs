@@ -98,17 +98,21 @@ namespace vorpinventory_cl
         
         private void NUIUseItem(ExpandoObject obj)
         {
-            foreach (var o in obj)
+            if (Utils.expandoProcessing(obj)["type"] == "item_standard")
             {
-                Debug.WriteLine(o.Value.ToString());
+                TriggerServerEvent("vorpinventory:useItem",Utils.expandoProcessing(obj)["item"]);
             }
         }
 
         private void NUIDropItem(ExpandoObject obj)
         {
-            foreach (var o in obj)
+            if (Utils.expandoProcessing(obj)["type"] == "item_standard")
             {
-                Debug.WriteLine(o.Value.ToString());
+                if (int.Parse(Utils.expandoProcessing(obj)["number"]) > 0)
+                {
+                    TriggerServerEvent("vorpinventory:drop", Utils.expandoProcessing(obj)["item"], int.Parse(
+                        Utils.expandoProcessing(obj)["number"]), 1);
+                }
             }
         }
 

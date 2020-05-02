@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
 
@@ -9,6 +10,16 @@ namespace vorpinventory_cl
     {
         public Utils()
         {
+        }
+        
+        public static Dictionary<string,dynamic> expandoProcessing(ExpandoObject objet)
+        {
+            Dictionary<string,dynamic> aux = new Dictionary<string, dynamic>();
+            foreach (var o in objet)
+            {
+                aux.Add(o.Key,o.Value);
+            }
+            return aux;
         }
 
         public static List<int> getNearestPlayers()
