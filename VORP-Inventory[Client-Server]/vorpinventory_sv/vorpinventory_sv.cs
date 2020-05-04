@@ -24,10 +24,9 @@ namespace vorpinventory_sv
             
         }
         public static Dictionary<int,Dictionary<string,dynamic>> Pickups = new Dictionary<int, Dictionary<string, dynamic>>();
-        
-        
-        
-        
+
+
+
         //Sub items for other scripts
         private void subItem(int player , string name, int cuantity)
         {
@@ -56,6 +55,12 @@ namespace vorpinventory_sv
                     ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
                 }
             }
+            else
+            {
+                // if(ItemDatabase.items[name)
+                // ItemDatabase.usersInventory[identifier].Add(name,new ItemClass(cuantity,ItemDatabase.items[name]["limit"]
+                //     ,ItemDatabase.items[name]["label"],name,ItemDatabase.items[name]["type"],ItemDatabase.items[name]["cam_remove"]));
+            }
         }
         
         private void onPickup([FromSource]Player player,int obj)
@@ -65,8 +70,11 @@ namespace vorpinventory_sv
             if (ItemDatabase.usersInventory.ContainsKey(identifier))
             {
                 addItem(source,Pickups[obj]["name"],Pickups[obj]["amount"]);
-                TriggerClientEvent("");
+                TriggerClientEvent("vorpInventory:sharePickupClient",Pickups[obj]["name"],Pickups[obj]["obj"],
+                    Pickups[obj]["amount"],Pickups[obj]["coords"],2,Pickups[obj]["hash"]);
+                TriggerClientEvent("vorpInventory:removePickupClient",Pickups[obj]["obj"]);
                 Pickups.Remove(obj);
+                player.TriggerEvent("vorpInventory:playerAnim",obj);
             }
         }
         
@@ -82,6 +90,8 @@ namespace vorpinventory_sv
                 ["inRange"] = false,
                 ["coords"] = position
             });
+            Debug.WriteLine($"Me ha llegado {name}");
+            Debug.WriteLine(Pickups[obj]["name"].ToString());
         }
         private void serverDropItem([FromSource] Player source, string itemname, int cuantity)
         {

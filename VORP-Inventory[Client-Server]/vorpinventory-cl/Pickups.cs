@@ -14,43 +14,32 @@ namespace vorpinventory_cl
             EventHandlers["vorpInventory:sharePickupClient"] += new Action<string,int,int,Vector3,int,int>(sharePickupClient);
             EventHandlers["vorpInventory:removePickupClient"] += new Action<int>(removePickupClient);
             EventHandlers["vorpInventory:playerAnim"] += new Action<int>(playerAnim);
+            SetupPickPrompt();
             Tick += principalFunctionPickups;
         }
 
-        public static int PickPrompt;
+        private int PickPrompt;
         public static Dictionary<int,Dictionary<string,dynamic>> pickups = new Dictionary<int, Dictionary<string, dynamic>>();
-        private static int wait = 0;
         private static bool active = false;
 
         private async Task principalFunctionPickups()
         {
-            await SetupPickPrompt();
-            await Delay(wait);
-
             int playerPed = API.PlayerPedId();
-            Vector3 coords = Function.Call<Vector3>((Hash) 0xA86D5F069399F44D, playerPed);
+            Vector3 coords = Function.Call<Vector3>((Hash) 0xA86D5F069399F44D, playerPed,true,true);
 
             if (pickups.Count == 0)
             {
-                await Delay(500);
+                //Debug.WriteLine("Entro");
+                return;
             }
 
             foreach (var pick in pickups)
             {
                 float distance = Function.Call<float>((Hash) 0x0BE7F4E3CDBAFB28, coords.X, coords.Y, coords.Z,
                     pick.Value["coords"].X,
-                    pick.Value["coords"].Y, pick.Value["coords"].Z, true);
-
-                if (distance >= 15.0F)
-                {
-                    wait = 2000;
-                }
-                else
-                {
-                    wait = 0;
-                }
-
-                if (distance <= 15.0F)
+                    pick.Value["coords"].Y, pick.Value["coords"].Z, false);
+                
+                if (distance <= 5.0F)
                 {
                     if (pick.Value["hash"] == 1)
                     {
@@ -59,7 +48,8 @@ namespace vorpinventory_cl
                         {
                             name = vorp_inventoryClient.citems[name]["label"];
                         }
-                        Utils.DrawText3D(pick.Value["coords"],name+" "+$"{pick.Value["amount"].ToString()}");
+                        //Debug.WriteLine(name);
+                        Utils.DrawText3D(pick.Value["coords"],name);
                     }
                 }
 
@@ -68,19 +58,22 @@ namespace vorpinventory_cl
                     Function.Call((Hash)0x69F4BE8C8CC4796C,playerPed,pick.Value["obj"],3000,2048,3);
                     if (active == false)
                     {
+                        //Debug.WriteLine("Entro");
                         Function.Call((Hash)0x8A0FB4D03A630D21,PickPrompt,true);
                         Function.Call((Hash)0x71215ACCFDE075EE,PickPrompt,true);
                     }
-
+                    
                     if (Function.Call<bool>((Hash) 0xE0F65F0640EF0617, PickPrompt))
                     {
+                        Debug.WriteLine("He terminado");
                         TriggerServerEvent("vorpInventory:onPickup",pick.Value["obj"]);
                         pick.Value["inRange"] = true;
+                        active = true;
                     }
                 }
                 else
                 {
-                    if (active == true)
+                    if (active)
                     {
                         Function.Call((Hash)0x8A0FB4D03A630D21,PickPrompt,false);
                         Function.Call((Hash)0x71215ACCFDE075EE,PickPrompt,false);
@@ -138,6 +131,8 @@ namespace vorpinventory_cl
                     ["inRange"] = false,
                     ["coords"] = position
                 });
+                Debug.WriteLine($"name: {pickups[obj]["name"].ToString()} cuantity: {pickups[obj]["amount"].ToString()}");
+                
             }
             else
             {
@@ -169,16 +164,17 @@ namespace vorpinventory_cl
             Function.Call((Hash)0x67C540AA08E4A6F5,"show_info", "Study_Sounds", true, 0);
         }
 
-        public static Task SetupPickPrompt()
+        public void SetupPickPrompt()
         {
+            Debug.WriteLine("Prompt creado");
             PickPrompt = Function.Call<int>((Hash) 0x04F97DE45A519419);
+            long str = Function.Call<long>(Hash._CREATE_VAR_STRING, 10, "LITERAL_STRING", "Coger");
+            Function.Call((Hash) 0x5DD02A8318420DD7, PickPrompt, str);
             Function.Call((Hash)0xB5352B7494A08258,PickPrompt,0xF84FA74F);
-            string var = Function.Call<string>((Hash) 0xFA925AC00EB830B9, 10, "LITERAL_STRING", "Coger");
-            Function.Call((Hash) 0x5DD02A8318420DD7, PickPrompt, var);
             Function.Call((Hash) 0x8A0FB4D03A630D21,PickPrompt,false);
-            Function.Call((Hash)0x71215ACCFDE075EE,false);
-            Function.Call((Hash)0x94073D5CA3F16B7B,true);
-            Function.Call((Hash)0xF7AA2696A22AD8B9);
+            Function.Call((Hash)0x71215ACCFDE075EE,PickPrompt,false);
+            Function.Call((Hash)0x94073D5CA3F16B7B,PickPrompt,true);
+            Function.Call((Hash)0xF7AA2696A22AD8B9,PickPrompt);
         }
     }
 }

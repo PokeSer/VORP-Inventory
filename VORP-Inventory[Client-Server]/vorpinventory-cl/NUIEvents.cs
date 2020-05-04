@@ -135,14 +135,14 @@ namespace vorpinventory_cl
                 {
                     TriggerServerEvent("vorpinventory:serverDropItem", itemname, cuantity, 1);
                     vorp_inventoryClient.useritems[itemname].quitCount(cuantity);
+                    Debug.Write(vorp_inventoryClient.useritems[itemname].getCount().ToString());
                     if (vorp_inventoryClient.useritems[itemname].getCount() == 0)
                     {
                         vorp_inventoryClient.useritems.Remove(itemname);
                     }
-                    Debug.Write(vorp_inventoryClient.useritems[itemname].getCount().ToString());
+                    
                 }
             }
-
             LoadInv();
         }
 
