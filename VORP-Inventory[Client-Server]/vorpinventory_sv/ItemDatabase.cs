@@ -11,7 +11,7 @@ namespace vorpinventory_sv
         //Lista de items con sus labels para que el cliente conozca el label de cada item
         public static dynamic items;
         //Lista de itemclass con el nombre de su dueño para poder hacer todo el tema de añadir y quitar cuando se robe y demas
-        public static Dictionary<string,Dictionary<string,ItemClass>> usersInventory = new Dictionary<string, Dictionary<string, ItemClass>>();
+        public static Dictionary<string,Dictionary<string,ItemClass>> usersInventory = new Dictionary<string, Dictionary<string,ItemClass>>();
         public static Dictionary<string,Items> svItems = new Dictionary<string, Items>();
         public ItemDatabase()
         {
@@ -30,14 +30,12 @@ namespace vorpinventory_sv
                     }
                     Exports["ghmattimysql"].execute("SELECT identifier,inventory,loadout FROM characters", new Action<dynamic>((uinvento) =>
                     {
-                        Dictionary<string,ItemClass> userinv = new Dictionary<string, ItemClass>();
                         foreach (var userInventory in uinvento)
                         {
                             string user = userInventory.identifier.ToString();
-
+                            Dictionary<string,ItemClass> userinv = new Dictionary<string, ItemClass>();
                             if (userInventory.inventory != null)
                             {
-                                userinv.Clear();
                                 dynamic thing = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(userInventory.inventory);
                                 foreach (dynamic itemname in items)
                                 {

@@ -21,10 +21,30 @@ namespace vorpinventory_sv
             EventHandlers["vorpInventory:onPickup"] += new Action<Player,int>(onPickup);
             EventHandlers["vorpInventory:addItem"] += new Action<int,string,int>(addItem);
             EventHandlers["vorpInventory:quitItem"] += new Action<int,string,int>(subItem);
-            
+            Tick += saveInventoryItems;
         }
         public static Dictionary<int,Dictionary<string,dynamic>> Pickups = new Dictionary<int, Dictionary<string, dynamic>>();
 
+        [Tick]
+        private async Task saveInventoryItems()
+        {
+            await Delay(90000);
+            foreach (var uinventory in ItemDatabase.usersInventory)
+            {
+                await Delay(30);
+                Dictionary<string,int> items = new Dictionary<string, int>();
+                 foreach (var item in uinventory.Value)
+                {
+                    items.Add(item.Key,item.Value.getCount());
+                }
+                 
+                if (items.Count > 0) 
+                {
+                     string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
+                     Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE identifier=?", new[] {uinventory.Key});
+                }
+            }
+        }
 
 
         //Sub items for other scripts
