@@ -50,7 +50,7 @@
   <ItemGroup>
     <Compile Include="ItemClass.cs" />
     <Compile Include="ItemDatabase.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="Items.cs" />
     <Compile Include="vorpinventory_sv.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

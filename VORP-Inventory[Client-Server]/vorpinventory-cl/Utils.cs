@@ -12,6 +12,20 @@ namespace vorpinventory_cl
         public Utils()
         {
         }
+        
+        public static void addItems(string name, int cuantity)
+        {
+            if (vorp_inventoryClient.useritems.ContainsKey(name))
+            {
+                vorp_inventoryClient.useritems[name].addCount(cuantity);
+            }
+            else
+            {
+                vorp_inventoryClient.useritems.Add(name,new ItemClass(cuantity,vorp_inventoryClient.citems[name]["limit"],
+                    vorp_inventoryClient.citems[name]["label"],name,
+                    "item_standard",true,vorp_inventoryClient.citems[name]["can_remove"]));
+            }
+        }
 
         public static async Task DrawText3D(Vector3 position,string text)
         {

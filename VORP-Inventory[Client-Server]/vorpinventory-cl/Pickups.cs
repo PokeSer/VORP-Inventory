@@ -21,7 +21,7 @@ namespace vorpinventory_cl
         private int PickPrompt;
         public static Dictionary<int,Dictionary<string,dynamic>> pickups = new Dictionary<int, Dictionary<string, dynamic>>();
         private static bool active = false;
-
+        
         private async Task principalFunctionPickups()
         {
             int playerPed = API.PlayerPedId();
@@ -113,9 +113,8 @@ namespace vorpinventory_cl
 
                 await Delay(100);
             }
-            Function.Call((Hash)0x4CD38C78BD19A497,obj);
             Function.Call((Hash)0x7D9EFB7AD6B19754,obj,false);
-            
+            API.DeleteObject(ref obj);
         }
 
         private void sharePickupClient(string name, int obj, int amount, Vector3 position, int value, int hash)

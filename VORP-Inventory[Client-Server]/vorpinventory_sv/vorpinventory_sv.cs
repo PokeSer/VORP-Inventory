@@ -39,6 +39,11 @@ namespace vorpinventory_sv
                 {
                     ItemDatabase.usersInventory[identifier][name].quitCount(cuantity);
                 }
+
+                if (ItemDatabase.usersInventory[identifier][name].getCount() == 0)
+                {
+                    ItemDatabase.usersInventory[identifier].Remove(name);
+                }
             }
         }
 
@@ -57,9 +62,11 @@ namespace vorpinventory_sv
             }
             else
             {
-                // if(ItemDatabase.items[name)
-                // ItemDatabase.usersInventory[identifier].Add(name,new ItemClass(cuantity,ItemDatabase.items[name]["limit"]
-                //     ,ItemDatabase.items[name]["label"],name,ItemDatabase.items[name]["type"],ItemDatabase.items[name]["cam_remove"]));
+                if (!ItemDatabase.svItems.ContainsKey(name))
+                {
+                    ItemDatabase.usersInventory[identifier].Add(name,new ItemClass(cuantity,ItemDatabase.svItems[name].getLimit(),
+                        ItemDatabase.svItems[name].getLabel(),name,"item_inventory",true,ItemDatabase.svItems[name].getCanRemove()));
+                }
             }
         }
         
@@ -67,15 +74,22 @@ namespace vorpinventory_sv
         {
             string identifier = "steam:" + player.Identifiers["steam"];
             int source = int.Parse(player.Handle);
-            if (ItemDatabase.usersInventory.ContainsKey(identifier))
+            if (Pickups.ContainsKey(obj))
             {
-                addItem(source,Pickups[obj]["name"],Pickups[obj]["amount"]);
-                TriggerClientEvent("vorpInventory:sharePickupClient",Pickups[obj]["name"],Pickups[obj]["obj"],
-                    Pickups[obj]["amount"],Pickups[obj]["coords"],2,Pickups[obj]["hash"]);
-                TriggerClientEvent("vorpInventory:removePickupClient",Pickups[obj]["obj"]);
-                Pickups.Remove(obj);
-                player.TriggerEvent("vorpInventory:playerAnim",obj);
+                if (ItemDatabase.usersInventory.ContainsKey(identifier))
+                {
+                    addItem(source,Pickups[obj]["name"],Pickups[obj]["amount"]);
+                    Debug.WriteLine($"añado {Pickups[obj]["amount"]}");
+                    TriggerClientEvent("vorpInventory:sharePickupClient",Pickups[obj]["name"],Pickups[obj]["obj"],
+                        Pickups[obj]["amount"],Pickups[obj]["coords"],2,Pickups[obj]["hash"]);
+                    TriggerClientEvent("vorpInventory:removePickupClient",Pickups[obj]["obj"]);
+                    player.TriggerEvent("vorpinventory:receiveItem",Pickups[obj]["name"],Pickups[obj]["amount"]);
+                    Pickups.Remove(obj);
+                    player.TriggerEvent("vorpInventory:playerAnim",obj);
+                    
+                }
             }
+            
         }
         
         private void sharePickupServer(string name, int obj, int amount, Vector3 position, int hash)
@@ -90,22 +104,10 @@ namespace vorpinventory_sv
                 ["inRange"] = false,
                 ["coords"] = position
             });
-            Debug.WriteLine($"Me ha llegado {name}");
-            Debug.WriteLine(Pickups[obj]["name"].ToString());
         }
         private void serverDropItem([FromSource] Player source, string itemname, int cuantity)
         {
-            string identifier = "steam:" + source.Identifiers["steam"];
-            if (ItemDatabase.usersInventory[identifier][itemname].getCount() >= cuantity)
-            {
-                ItemDatabase.usersInventory[identifier][itemname].quitCount(cuantity);
-                Debug.WriteLine(ItemDatabase.usersInventory[identifier][itemname].getCount().ToString());
-            }
-
-            if (ItemDatabase.usersInventory[identifier][itemname].getCount() == 0)
-            {
-                ItemDatabase.usersInventory[identifier].Remove(itemname);
-            }
+            subItem(int.Parse(source.Handle),itemname,cuantity);
             source.TriggerEvent("vorpInventory:createPickup",itemname,cuantity,1);
         }
 
@@ -113,30 +115,13 @@ namespace vorpinventory_sv
         {
             PlayerList pl = new PlayerList();
             Player p = pl[target];
-            string targetIdentifier = "steam:"+p.Identifiers["steam"];
             string identifier = "steam:" + source.Identifiers["steam"];
+
             if (ItemDatabase.usersInventory[identifier][itemname].getCount() >= amount)
             {
-                if (ItemDatabase.usersInventory[targetIdentifier].ContainsKey(itemname))
-                {
-                    ItemDatabase.usersInventory[targetIdentifier][itemname].addCount(amount);
-                    ItemDatabase.usersInventory[identifier][itemname].quitCount(amount);
-                    Debug.WriteLine($"{ItemDatabase.usersInventory[targetIdentifier][itemname].getCount()}");
-                }
-                else
-                {
-                    int limit = Utils.getItemCharacteristics(itemname)["limit"];
-                    string label = Utils.getItemCharacteristics(itemname)["label"];
-                    bool can_remove = Utils.getItemCharacteristics(itemname)["can_remove"];
-                    ItemDatabase.usersInventory[targetIdentifier].Add(itemname,new ItemClass(amount,limit,label,
-                        itemname,"item_inventory", true,can_remove));
-                    ItemDatabase.usersInventory[identifier][itemname].quitCount(amount);
-                }
+                addItem(int.Parse(p.Handle),itemname,amount);
+                subItem(int.Parse(source.Handle),itemname,amount);
                 p.TriggerEvent("vorpinventory:receiveItem",itemname,amount);
-                if (ItemDatabase.usersInventory[identifier][itemname].getCount() == 0)
-                {
-                    ItemDatabase.usersInventory[identifier].Remove(itemname);
-                }
             }
         }
 
