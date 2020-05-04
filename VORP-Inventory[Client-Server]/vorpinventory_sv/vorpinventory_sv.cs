@@ -17,8 +17,72 @@ namespace vorpinventory_sv
             EventHandlers["vorpinventory:getInventory"] += new Action<Player>(getInventory);
             EventHandlers["vorpinventory:serverGiveItem"] += new Action<Player,string,int,int>(serverGiveItem);
             EventHandlers["vorpinventory:serverDropItem"] += new Action<Player,string,int>(serverDropItem);
+            EventHandlers["vorpInventory:sharePickupServer"] += new Action<string,int,int,Vector3,int>(sharePickupServer);
+            EventHandlers["vorpInventory:onPickup"] += new Action<Player,int>(onPickup);
+            EventHandlers["vorpInventory:addItem"] += new Action<int,string,int>(addItem);
+            EventHandlers["vorpInventory:quitItem"] += new Action<int,string,int>(subItem);
+            
+        }
+        public static Dictionary<int,Dictionary<string,dynamic>> Pickups = new Dictionary<int, Dictionary<string, dynamic>>();
+        
+        
+        
+        
+        //Sub items for other scripts
+        private void subItem(int player , string name, int cuantity)
+        {
+            PlayerList pl = new PlayerList();
+            Player p = pl[player];
+            string identifier = "steam:" + p.Identifiers["steam"];
+            if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
+            {
+                if (cuantity <= ItemDatabase.usersInventory[identifier][name].getCount())
+                {
+                    ItemDatabase.usersInventory[identifier][name].quitCount(cuantity);
+                }
+            }
         }
 
+        //For other scripts add items
+        private void addItem(int player, string name, int cuantity)
+        {
+            PlayerList pl = new PlayerList();
+            Player p = pl[player];
+            string identifier = "steam:" + p.Identifiers["steam"];
+            if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
+            {
+                if (cuantity > 0)
+                {
+                    ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
+                }
+            }
+        }
+        
+        private void onPickup([FromSource]Player player,int obj)
+        {
+            string identifier = "steam:" + player.Identifiers["steam"];
+            int source = int.Parse(player.Handle);
+            if (ItemDatabase.usersInventory.ContainsKey(identifier))
+            {
+                addItem(source,Pickups[obj]["name"],Pickups[obj]["amount"]);
+                TriggerClientEvent("");
+                Pickups.Remove(obj);
+            }
+        }
+        
+        private void sharePickupServer(string name, int obj, int amount, Vector3 position, int hash)
+        {
+            TriggerClientEvent("vorpInventory:sharePickupClient",name,obj,amount,position,1,hash);
+            Pickups.Add(obj,new Dictionary<string, dynamic>
+            {
+                ["name"] = name,
+                ["obj"] = obj,
+                ["amount"] = amount,
+                ["hash"] = hash,
+                ["inRange"] = false,
+                ["coords"] = position
+            });
+        }
         private void serverDropItem([FromSource] Player source, string itemname, int cuantity)
         {
             string identifier = "steam:" + source.Identifiers["steam"];
