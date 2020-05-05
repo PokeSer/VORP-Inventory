@@ -75,7 +75,9 @@ namespace vorpinventory_cl
                         int limit = int.Parse(fitems.Value["limit"].ToString());
                         string label = fitems.Value["label"].ToString();
                         bool can_remove = bool.Parse(fitems.Value["can_remove"].ToString());
-                        ItemClass item = new ItemClass(cuantity,limit,label,fitems.Key,"item_standard",true,can_remove);
+                        string type = fitems.Value["type"].ToString();
+                        bool usable = bool.Parse(fitems.Value["usable"].ToString());
+                        ItemClass item = new ItemClass(cuantity,limit,label,fitems.Key,type,usable,can_remove);
                         useritems.Add(fitems.Key,item);
                     }
                 }
