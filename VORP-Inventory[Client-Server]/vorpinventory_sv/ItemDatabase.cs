@@ -69,47 +69,31 @@ namespace vorpinventory_sv
                             {
                                 usersInventory.Add(user,userinv);
                             }
-
+                            List<WeaponClass> uweapons = new List<WeaponClass>();
                             if (userInventory.loadout != null)
                             {
-                                List<WeaponClass> uweapons = new List<WeaponClass>();
-                                string name = "";
-                                Dictionary<string, int> ammos;
-                                //WeaponClass weapon;
                                 JArray weapons = JArray.Parse(userInventory.loadout);
-                                //Debug.WriteLine(weapons.Count.ToString());
-                                foreach (JObject weapon in weapons)
+                                string weaponName = "";
+                                foreach (JObject x in weapons.Children())
                                 {
-                                    foreach (JProperty x in weapon.Children<JObject>().Properties())
+                                    weaponName = x.First.First.ToString();
+                                    Dictionary<string,int> ammos = new Dictionary<string, int>();
+                                    foreach (JProperty ammo in x.Properties())
                                     {
-                                        Debug.WriteLine(x.Value.ToString());
+                                        foreach (JProperty type in ammo.First)
+                                        {
+                                            ammos.Add(type.Name,int.Parse(type.Value.ToString()));
+                                        }
                                     }
+                                    WeaponClass weapon = new WeaponClass(weaponName,ammos);
+                                    uweapons.Add(weapon);
                                 }
+                                usersWeapons.Add(user,uweapons);
                             }
-
-                            //     foreach (JObject content in weapons.Children<JObject>())
-                            //     {
-                            //         foreach (JProperty prop in content.Properties())
-                            //         {
-                            //             if (prop.Name == "name")
-                            //             {
-                            //                 //Debug.WriteLine(prop.Value.ToString());
-                            //                 name = prop.Value.ToString();
-                            //             }
-                            //             ammos = new Dictionary<string, int>();
-                            //             foreach (JProperty ammo in prop.Children<JObject>().Properties())
-                            //             {
-                            //                 ammos.Add(ammo.Name,int.Parse(ammo.Value.ToString()));
-                            //                 //Debug.WriteLine(ammo.Name);
-                            //                 //Debug.WriteLine(ammo.Value.ToString());
-                            //             }
-                            //             //Debug.WriteLine(name);
-                            //             weapon = new WeaponClass(name,ammos);
-                            //             uweapons.Add(weapon);
-                            //         }
-                            //     }
-                            //     Debug.WriteLine(uweapons.Count.ToString());
-                            // }
+                            else
+                            {
+                                usersWeapons.Add(user,uweapons);
+                            }
                         }
                     }));
                 }
