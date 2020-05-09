@@ -186,6 +186,7 @@ namespace vorpinventory_sv
                 }
                 else
                 {
+                    Debug.WriteLine(result[0].inventory);
                     source.TriggerEvent("vorpInventory:giveInventory",result[0].inventory,result[0].loadout);
                 }
             }));
