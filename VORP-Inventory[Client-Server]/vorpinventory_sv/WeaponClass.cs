@@ -6,10 +6,12 @@ namespace vorpinventory_sv
     {
         private string name;
         private Dictionary<string, int> ammo;
-        public WeaponClass(string name, Dictionary<string,int>ammo)
+        private List<string> components;
+        public WeaponClass(string name, Dictionary<string,int>ammo,List<string>components)
         {
             this.name = name;
             this.ammo = ammo;
+            this.components = components;
         }
 
         public string getName()
@@ -20,6 +22,24 @@ namespace vorpinventory_sv
         public Dictionary<string, int> getAllAmmo()
         {
             return this.ammo;
+        }
+
+        public List<string> getAllComponents()
+        {
+            return this.components;
+        }
+
+        public void setComponent(string component)
+        {
+            this.components.Add(component);
+        }
+
+        public void quitComponent(string component)
+        {
+            if (this.components.Contains(component))
+            {
+                this.components.Remove(component);
+            }
         }
 
         public int getAmmo(string type)

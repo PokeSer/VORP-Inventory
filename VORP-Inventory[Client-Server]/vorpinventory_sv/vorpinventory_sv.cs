@@ -44,6 +44,27 @@ namespace vorpinventory_sv
                      Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE identifier=?", new[] {uinventory.Key});
                 }
             }
+            foreach (var uweapons in ItemDatabase.usersWeapons)
+            {
+                await Delay(30);
+                List<Dictionary<string,dynamic>> userweapons = new List<Dictionary<string, dynamic>>();
+                foreach (WeaponClass weapon in uweapons.Value)
+                {
+                    Dictionary<string,dynamic> userweapon = new Dictionary<string, dynamic>
+                    {
+                         ["name"] = weapon.getName(), 
+                         ["ammo"] = weapon.getAllAmmo(),
+                         ["components"] = weapon.getAllComponents()
+                    };
+                    userweapons.Add(userweapon);
+                }
+        
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(userweapons);
+                if (userweapons.Count > 0)
+                {
+                    Exports["ghmattimysql"].execute($"UPDATE characters SET loadout = '{json}' WHERE identifier=?", new[] {uweapons.Key});
+                }
+            }
         }
 
 

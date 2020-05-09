@@ -17,19 +17,6 @@ namespace vorpinventory_sv
         public static Dictionary<string,Items> svItems = new Dictionary<string, Items>();
         public ItemDatabase()
         {
-            // WeaponClass wp = new WeaponClass("WEAPON_REVOLVER_LEMAT",new Dictionary<string, int>
-            // {
-            //     ["AMMO_PISTOL"] = 10,
-            //     ["AMMO_PISTOL_EXPRESS"] = 20
-            // });
-            // List<Dictionary<string,dynamic>> allweapons = new List<Dictionary<string, dynamic>>();
-            // Dictionary<string,dynamic> weapon = new Dictionary<string, dynamic>
-            // {
-            //     ["name"] = wp.getName(),
-            //     ["ammo"] = wp.getAllAmmo()
-            // };
-            // allweapons.Add(weapon);
-            // string js = Newtonsoft.Json.JsonConvert.SerializeObject(allweapons);
             Exports["ghmattimysql"].execute("SELECT * FROM items",new Action<dynamic>((result) =>
             {
                 if (result.Count == 0)
@@ -76,16 +63,34 @@ namespace vorpinventory_sv
                                 string weaponName = "";
                                 foreach (JObject x in weapons.Children())
                                 {
-                                    weaponName = x.First.First.ToString();
                                     Dictionary<string,int> ammos = new Dictionary<string, int>();
-                                    foreach (JProperty ammo in x.Properties())
+                                    List<string> components = new List<string>();
+                                    foreach (JProperty aux in x.Properties())
                                     {
-                                        foreach (JProperty type in ammo.First)
+                                        switch (aux.Name)
                                         {
-                                            ammos.Add(type.Name,int.Parse(type.Value.ToString()));
+                                            case "name":
+                                                weaponName = aux.Value.ToString();
+                                                Debug.WriteLine(aux.Value.ToString());
+                                                break;
+                                            case "ammo":
+                                                foreach (JObject ammo in aux.Children<JObject>())
+                                                {
+                                                    foreach (JProperty ammo2 in ammo.Properties())
+                                                    {
+                                                        ammos.Add(ammo2.Name,int.Parse(ammo2.Value.ToString()));
+                                                    }
+                                                }
+                                                break;
+                                            case "components":
+                                                foreach (var component in aux.Value)
+                                                {
+                                                    components.Add(component.ToString());
+                                                }
+                                                break;
                                         }
                                     }
-                                    WeaponClass weapon = new WeaponClass(weaponName,ammos);
+                                    WeaponClass weapon = new WeaponClass(weaponName,ammos,components);
                                     uweapons.Add(weapon);
                                 }
                                 usersWeapons.Add(user,uweapons);
