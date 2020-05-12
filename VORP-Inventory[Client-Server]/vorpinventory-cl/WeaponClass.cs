@@ -44,7 +44,15 @@ namespace vorpinventory_sv
 
         public int getAmmo(string type)
         {
-            return this.ammo[type];
+            if (this.ammo.ContainsKey(type))
+            {
+                return this.ammo[type];
+            }
+            else
+            {
+                return 0;
+            }
+            
         }
 
         public void addAmmo(int ammo,string type)

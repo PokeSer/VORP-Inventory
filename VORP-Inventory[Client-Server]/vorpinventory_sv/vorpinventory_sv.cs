@@ -28,7 +28,7 @@ namespace vorpinventory_sv
         [Tick]
         private async Task saveInventoryItems()
         {
-            await Delay(90000);
+            await Delay(10000);
             foreach (var uinventory in ItemDatabase.usersInventory)
             {
                 await Delay(30);

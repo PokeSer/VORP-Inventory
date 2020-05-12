@@ -6,6 +6,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using vorpinventory_sv;
 
 namespace vorpinventory_cl
 {
@@ -126,22 +127,31 @@ namespace vorpinventory_cl
             Dictionary<string, dynamic> aux = Utils.expandoProcessing(obj);
             string itemname = aux["item"];
             string type = aux["type"].ToString();
-            int cuantity = int.Parse(aux["number"].ToString());
             Debug.WriteLine(type);
-            Debug.WriteLine(cuantity.ToString());
+            Debug.WriteLine(itemname);
             if (type == "item_standard")
             {
-                if (cuantity > 0 && vorp_inventoryClient.useritems[itemname].getCount() >= cuantity)
-                {
-                    TriggerServerEvent("vorpinventory:serverDropItem", itemname, cuantity, 1);
-                    vorp_inventoryClient.useritems[itemname].quitCount(cuantity);
-                    Debug.Write(vorp_inventoryClient.useritems[itemname].getCount().ToString());
-                    if (vorp_inventoryClient.useritems[itemname].getCount() == 0)
-                    {
-                        vorp_inventoryClient.useritems.Remove(itemname);
-                    }
-                    
-                }
+                 if (int.Parse(aux["number"].ToString()) > 0 && vorp_inventoryClient.useritems[itemname].getCount() >= int.Parse(aux["number"].ToString()))
+                 {
+                     TriggerServerEvent("vorpinventory:serverDropItem", itemname, int.Parse(aux["number"].ToString()), 1);
+                     vorp_inventoryClient.useritems[itemname].quitCount(int.Parse(aux["number"].ToString()));
+                     Debug.Write(vorp_inventoryClient.useritems[itemname].getCount().ToString());
+                     if (vorp_inventoryClient.useritems[itemname].getCount() == 0)
+                     {
+                         vorp_inventoryClient.useritems.Remove(itemname);
+                     }
+                     
+                 }
+            }
+            else
+            {
+                 TriggerServerEvent("vorpinventory:serverDropWeapon",itemname,API.GetAmmoInPedWeapon(API.PlayerPedId(),int.Parse(aux["hash"])),int.Parse(aux["hash"]));
+                 Function.Call((Hash) 0x4899CB088EDF59B8, API.PlayerPedId(), (uint) int.Parse(aux["hash"]),false,false);
+                 //vorp_inventoryClient.userWeapons.Remove();
+                 Debug.WriteLine("Tirando Arma");
+                 Debug.WriteLine(aux["hash"].ToString());
+                 Debug.WriteLine(type);
+                 Debug.WriteLine(itemname);
             }
             LoadInv();
         }
@@ -175,6 +185,7 @@ namespace vorpinventory_cl
         public static async Task LoadInv()
         {
             Dictionary<string, dynamic> item;
+            Dictionary<string, dynamic> weapon;
             items.Clear();
             gg.Clear();
             foreach (KeyValuePair<string,ItemClass> userit in vorp_inventoryClient.useritems)
@@ -188,6 +199,20 @@ namespace vorpinventory_cl
                 item.Add("usable", userit.Value.getUsable());
                 item.Add("canRemove", userit.Value.getCanRemove());
                 gg.Add(item);
+            }
+
+            foreach (WeaponClass userwp in vorp_inventoryClient.userWeapons)
+            {
+                weapon = new Dictionary<string, dynamic>();
+                weapon.Add("count",userwp.getAmmo("Hola"));
+                weapon.Add("limit",-1);
+                weapon.Add("label",Function.Call<string>((Hash)0x89CF5FF3D363311E,API.GetHashKey(userwp.getName())));
+                weapon.Add("name", userwp.getName());
+                weapon.Add("hash",API.GetHashKey(userwp.getName()));
+                weapon.Add("type","item_weapon");
+                weapon.Add("usable",true);
+                weapon.Add("canRemove",true);
+                gg.Add(weapon);
             }
             items.Add("action", "setItems");
             items.Add("itemList", gg);

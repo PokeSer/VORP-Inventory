@@ -30,7 +30,7 @@ namespace vorpinventory_sv
                     {
                         svItems.Add(item.item.ToString(),new Items(item.item,item.label,int.Parse(item.limit.ToString()),item.can_remove));
                     }
-                    Exports["ghmattimysql"].execute("SELECT identifier,inventory,loadout FROM characters", new Action<dynamic>((uinvento) =>
+                    Exports["ghmattimysql"].execute("SELECT identifier,inventory FROM characters", new Action<dynamic>((uinvento) =>
                     {
                         foreach (var userInventory in uinvento)
                         {
@@ -56,48 +56,37 @@ namespace vorpinventory_sv
                             {
                                 usersInventory.Add(user,userinv);
                             }
-                            List<WeaponClass> uweapons = new List<WeaponClass>();
-                            if (userInventory.loadout != null)
+                        }
+                    }));
+                    Exports["ghmattimysql"].execute("SELECT * FROM loadout", new Action<dynamic>((weaponsinvento) =>
+                    {
+                        WeaponClass wp;
+                        foreach (var row in weaponsinvento)
+                        {
+                            
+                            JObject ammo = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
+                            JArray comp = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
+                            Dictionary<string,int> amunition = new Dictionary<string, int>();
+                            List<string>components = new List<string>();
+                            foreach (JProperty ammos in ammo.Properties())
                             {
-                                JArray weapons = JArray.Parse(userInventory.loadout);
-                                string weaponName = "";
-                                foreach (JObject x in weapons.Children())
-                                {
-                                    Dictionary<string,int> ammos = new Dictionary<string, int>();
-                                    List<string> components = new List<string>();
-                                    foreach (JProperty aux in x.Properties())
-                                    {
-                                        switch (aux.Name)
-                                        {
-                                            case "name":
-                                                weaponName = aux.Value.ToString();
-                                                Debug.WriteLine(aux.Value.ToString());
-                                                break;
-                                            case "ammo":
-                                                foreach (JObject ammo in aux.Children<JObject>())
-                                                {
-                                                    foreach (JProperty ammo2 in ammo.Properties())
-                                                    {
-                                                        ammos.Add(ammo2.Name,int.Parse(ammo2.Value.ToString()));
-                                                    }
-                                                }
-                                                break;
-                                            case "components":
-                                                foreach (var component in aux.Value)
-                                                {
-                                                    components.Add(component.ToString());
-                                                }
-                                                break;
-                                        }
-                                    }
-                                    WeaponClass weapon = new WeaponClass(weaponName,ammos,components);
-                                    uweapons.Add(weapon);
-                                }
-                                usersWeapons.Add(user,uweapons);
+                                //Debug.WriteLine(ammos.Name);
+                                amunition.Add(ammos.Name,int.Parse(ammos.Value.ToString()));
+                            }
+                            foreach (JToken x in comp)
+                            { 
+                                components.Add(x.ToString());
+                            }
+                            wp = new WeaponClass(int.Parse(row.id.ToString()),row.name.ToString(),amunition,components);
+                            if (usersWeapons.ContainsKey(row.identifier.ToString()))
+                            {
+                                usersWeapons[row.identifier.ToString()].Add(wp);
                             }
                             else
                             {
-                                usersWeapons.Add(user,uweapons);
+                                List<WeaponClass> weap = new List<WeaponClass>();
+                                weap.Add(wp);
+                                usersWeapons.Add(row.identifier.ToString(),weap);
                             }
                         }
                     }));
