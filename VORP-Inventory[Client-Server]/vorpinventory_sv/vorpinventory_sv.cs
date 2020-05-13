@@ -44,26 +44,17 @@ namespace vorpinventory_sv
                      Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE identifier=?", new[] {uinventory.Key});
                 }
             }
-            foreach (var uweapons in ItemDatabase.usersWeapons)
+            foreach (WeaponClass weapon in ItemDatabase.userWeapons)
             {
-                await Delay(30);
-                List<Dictionary<string,dynamic>> userweapons = new List<Dictionary<string, dynamic>>();
-                foreach (WeaponClass weapon in uweapons.Value)
-                {
-                    Dictionary<string,dynamic> userweapon = new Dictionary<string, dynamic>
-                    {
-                         ["name"] = weapon.getName(), 
-                         ["ammo"] = weapon.getAllAmmo(),
-                         ["components"] = weapon.getAllComponents()
-                    };
-                    userweapons.Add(userweapon);
-                }
-        
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(userweapons);
-                if (userweapons.Count > 0)
-                {
-                    Exports["ghmattimysql"].execute($"UPDATE characters SET loadout = '{json}' WHERE identifier=?", new[] {uweapons.Key});
-                }
+                string components = Newtonsoft.Json.JsonConvert.SerializeObject(weapon.getAllComponents());
+                string ammos = Newtonsoft.Json.JsonConvert.SerializeObject(weapon.getAllAmmo());
+                int id = weapon.getId();
+                string propietary = weapon.getPropietary();
+                string name = weapon.getName();
+                Exports["ghmattimysql"]
+                    .execute(
+                        $"UPDATE loadout SET identifier = '{propietary}',ammo = '{ammos}',components='{components}' WHERE id=?",
+                        new[] {id});
             }
         }
 
@@ -178,7 +169,7 @@ namespace vorpinventory_sv
         {
             string steamId = "steam:"+source.Identifiers["steam"];
             Debug.WriteLine(steamId);
-            Exports["ghmattimysql"].execute("SELECT inventory,loadout FROM characters WHERE identifier = ?;",new [] {steamId} ,new Action<dynamic>((result) =>
+            Exports["ghmattimysql"].execute("SELECT inventory FROM characters WHERE identifier = ?;",new [] {steamId} ,new Action<dynamic>((result) =>
             {
                 if (result.Count == 0)
                 {
@@ -186,9 +177,13 @@ namespace vorpinventory_sv
                 }
                 else
                 {
-                    Debug.WriteLine(result[0].inventory);
-                    source.TriggerEvent("vorpInventory:giveInventory",result[0].inventory,result[0].loadout);
+                    //Debug.WriteLine(result[0].inventory);
+                    source.TriggerEvent("vorpInventory:giveInventory",result[0].inventory);
                 }
+            }));
+            Exports["ghmattimysql"].execute("SELECT * FROM loadout WHERE identifier = ?;", new[] {steamId},new Action<dynamic>((result) =>
+            {
+                source.TriggerEvent("vorpInventory:giveLoadout",result);
             }));
         }
     }

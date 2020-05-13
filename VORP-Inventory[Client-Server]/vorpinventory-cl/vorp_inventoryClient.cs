@@ -18,7 +18,8 @@ namespace vorpinventory_cl
         public vorp_inventoryClient()
         {
             EventHandlers["vorpInventory:giveItemsTable"] += new Action<dynamic>(processItems);
-            EventHandlers["vorpInventory:giveInventory"] += new Action<string,string>(getInventory);
+            EventHandlers["vorpInventory:giveInventory"] += new Action<string>(getInventory);
+            EventHandlers["vorpInventory:giveLoadout"] += new Action<dynamic>(getLoadout);
             EventHandlers["onClientResourceStart"] += new Action<string>(OnClientResourceStart);
             EventHandlers["vorpinventory:receiveItem"] += new Action<string,int>(receiveItem);
         }
@@ -65,7 +66,29 @@ namespace vorpinventory_cl
             }
         }
 
-        private void getInventory(string inventory,string loadout)
+        private void getLoadout(dynamic loadout)
+        {
+            foreach (var row in loadout)
+            {
+                JArray componentes = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
+                JObject amunitions = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
+                List<string> components = new List<string>();
+                Dictionary<string,int> ammos = new Dictionary<string, int>();
+                foreach (JToken componente in componentes)
+                {
+                    components.Add(componente.ToString());
+                }
+
+                foreach (JProperty amunition in amunitions.Properties())
+                {
+                    ammos.Add(amunition.Name,int.Parse(amunition.Value.ToString()));
+                }
+                WeaponClass auxweapon = new WeaponClass(int.Parse(row.id.ToString()),row.identifier.ToString(),row.name.ToString(),ammos,components);
+                userWeapons.Add(auxweapon);
+            }
+        }
+
+        private void getInventory(string inventory)
         {
             if (inventory != null)
             {
@@ -86,47 +109,7 @@ namespace vorpinventory_cl
                         ItemClass item = new ItemClass(cuantity, limit, label, fitems.Key, type, usable, can_remove);
                         useritems.Add(fitems.Key, item);
                     }
-                }
-            }
-
-            if (loadout != null)
-            {
-                userWeapons.Clear();
-                string weaponName = "";
-                JArray weapons = JArray.Parse(loadout);
-                foreach (JObject x in weapons.Children())
-                {
-                    Dictionary<string,int> ammos = new Dictionary<string, int>();
-                    List<string> components = new List<string>();
-                    foreach (JProperty aux in x.Properties())
-                    {
-                        switch (aux.Name)
-                        {
-                            case "name":
-                                weaponName = aux.Value.ToString();
-                                Debug.WriteLine(aux.Value.ToString());
-                                break;
-                            case "ammo":
-                                foreach (JObject ammo in aux.Children<JObject>())
-                                {
-                                    foreach (JProperty ammo2 in ammo.Properties())
-                                    {
-                                        ammos.Add(ammo2.Name,int.Parse(ammo2.Value.ToString()));
-                                    }
-                                }
-                                break;
-                            case "components":
-                                foreach (var component in aux.Value)
-                                {
-                                    components.Add(component.ToString());
-                                }
-                                break;
-                        }
-                    }
-                    WeaponClass weapon = new WeaponClass(weaponName,ammos,components);
-                    Debug.WriteLine(weapon.getName());
-                    userWeapons.Add(weapon);
-                }
+                } 
             }
         }
     }
