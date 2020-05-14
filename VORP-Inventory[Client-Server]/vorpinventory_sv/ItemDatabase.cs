@@ -13,7 +13,7 @@ namespace vorpinventory_sv
         public static dynamic items;
         //Lista de itemclass con el nombre de su dueño para poder hacer todo el tema de añadir y quitar cuando se robe y demas
         public static Dictionary<string,Dictionary<string,ItemClass>> usersInventory = new Dictionary<string, Dictionary<string,ItemClass>>();
-        public static List<WeaponClass> userWeapons = new List<WeaponClass>();
+        public static Dictionary<int,WeaponClass> userWeapons = new Dictionary<int, WeaponClass>();
         public static Dictionary<string,Items> svItems = new Dictionary<string, Items>();
         public ItemDatabase()
         {
@@ -78,7 +78,7 @@ namespace vorpinventory_sv
                                 components.Add(x.ToString());
                             }
                             wp = new WeaponClass(int.Parse(row.id.ToString()),row.identifier.ToString(),row.name.ToString(),amunition,components);
-                            userWeapons.Add(wp);
+                            userWeapons.Add(wp.getId(),wp);
                         }
                     }));
                 }

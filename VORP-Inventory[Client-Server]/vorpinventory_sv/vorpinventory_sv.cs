@@ -44,13 +44,13 @@ namespace vorpinventory_sv
                      Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE identifier=?", new[] {uinventory.Key});
                 }
             }
-            foreach (WeaponClass weapon in ItemDatabase.userWeapons)
+            foreach (KeyValuePair<int,WeaponClass> weapon in ItemDatabase.userWeapons)
             {
-                string components = Newtonsoft.Json.JsonConvert.SerializeObject(weapon.getAllComponents());
-                string ammos = Newtonsoft.Json.JsonConvert.SerializeObject(weapon.getAllAmmo());
-                int id = weapon.getId();
-                string propietary = weapon.getPropietary();
-                string name = weapon.getName();
+                string components = Newtonsoft.Json.JsonConvert.SerializeObject(weapon.Value.getAllComponents());
+                string ammos = Newtonsoft.Json.JsonConvert.SerializeObject(weapon.Value.getAllAmmo());
+                int id = weapon.Value.getId();
+                string propietary = weapon.Value.getPropietary();
+                string name = weapon.Value.getName();
                 Exports["ghmattimysql"]
                     .execute(
                         $"UPDATE loadout SET identifier = '{propietary}',ammo = '{ammos}',components='{components}' WHERE id=?",

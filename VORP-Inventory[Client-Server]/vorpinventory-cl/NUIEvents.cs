@@ -145,13 +145,13 @@ namespace vorpinventory_cl
             }
             else
             {
-                 TriggerServerEvent("vorpinventory:serverDropWeapon",itemname,API.GetAmmoInPedWeapon(API.PlayerPedId(),int.Parse(aux["hash"])),int.Parse(aux["hash"]));
-                 Function.Call((Hash) 0x4899CB088EDF59B8, API.PlayerPedId(), (uint) int.Parse(aux["hash"]),false,false);
-                 //vorp_inventoryClient.userWeapons.Remove();
-                 Debug.WriteLine("Tirando Arma");
-                 Debug.WriteLine(aux["hash"].ToString());
-                 Debug.WriteLine(type);
-                 Debug.WriteLine(itemname);
+                TriggerServerEvent("vorpinventory:serverDropWeapon",aux["id"]);
+                Function.Call((Hash) 0x4899CB088EDF59B8, API.PlayerPedId(), (uint) int.Parse(aux["hash"]),false,false);
+                Debug.WriteLine("Tirando Arma");
+                 //Debug.WriteLine(aux["hash"].ToString());
+                 //Debug.WriteLine(aux["id"].ToString());
+                 //Debug.WriteLine(type);
+                 //Debug.WriteLine(itemname);
             }
             LoadInv();
         }
@@ -201,17 +201,19 @@ namespace vorpinventory_cl
                 gg.Add(item);
             }
 
-            foreach (WeaponClass userwp in vorp_inventoryClient.userWeapons)
+            foreach (KeyValuePair<int,WeaponClass> userwp in vorp_inventoryClient.userWeapons)
             {
                 weapon = new Dictionary<string, dynamic>();
-                weapon.Add("count",userwp.getAmmo("Hola"));
+                weapon.Add("count",userwp.Value.getAmmo("Hola"));
                 weapon.Add("limit",-1);
-                weapon.Add("label",Function.Call<string>((Hash)0x89CF5FF3D363311E,API.GetHashKey(userwp.getName())));
-                weapon.Add("name", userwp.getName());
-                weapon.Add("hash",API.GetHashKey(userwp.getName()));
+                weapon.Add("label",Function.Call<string>((Hash)0x89CF5FF3D363311E,API.GetHashKey(userwp.Value.getName())));
+                weapon.Add("name", userwp.Value.getName());
+                weapon.Add("hash",API.GetHashKey(userwp.Value.getName()));
                 weapon.Add("type","item_weapon");
                 weapon.Add("usable",true);
                 weapon.Add("canRemove",true);
+                weapon.Add("id",userwp.Value.getId());
+                Debug.WriteLine(userwp.Value.getId().ToString());
                 gg.Add(weapon);
             }
             items.Add("action", "setItems");

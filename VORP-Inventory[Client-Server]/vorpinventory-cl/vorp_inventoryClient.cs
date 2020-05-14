@@ -14,7 +14,7 @@ namespace vorpinventory_cl
     {    
         public static Dictionary<string,Dictionary<string,dynamic>> citems = new Dictionary<string, Dictionary<string, dynamic>>();
         public static Dictionary<string,ItemClass> useritems = new Dictionary<string, ItemClass>();
-        public static List<WeaponClass> userWeapons = new List<WeaponClass>();
+        public static Dictionary<int,WeaponClass> userWeapons = new Dictionary<int, WeaponClass>();
         public vorp_inventoryClient()
         {
             EventHandlers["vorpInventory:giveItemsTable"] += new Action<dynamic>(processItems);
@@ -84,7 +84,7 @@ namespace vorpinventory_cl
                     ammos.Add(amunition.Name,int.Parse(amunition.Value.ToString()));
                 }
                 WeaponClass auxweapon = new WeaponClass(int.Parse(row.id.ToString()),row.identifier.ToString(),row.name.ToString(),ammos,components);
-                userWeapons.Add(auxweapon);
+                userWeapons.Add(auxweapon.getId(),auxweapon);
             }
         }
 
