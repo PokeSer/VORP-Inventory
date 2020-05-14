@@ -222,8 +222,6 @@ namespace vorpinventory_cl
             Debug.WriteLine(json);
 
             API.SendNuiMessage(json);
-
-            Newtonsoft.Json.Linq.JObject wp = Newtonsoft.Json.Linq.JObject.Parse(json);
         }
 
         private async Task OpenInv()
