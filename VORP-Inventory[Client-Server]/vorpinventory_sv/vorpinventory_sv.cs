@@ -17,6 +17,7 @@ namespace vorpinventory_sv
             EventHandlers["vorpinventory:getInventory"] += new Action<Player>(getInventory);
             EventHandlers["vorpinventory:serverGiveItem"] += new Action<Player,string,int,int>(serverGiveItem);
             EventHandlers["vorpinventory:serverDropItem"] += new Action<Player,string,int>(serverDropItem);
+            EventHandlers["vorpinventory:serverDropWeapon"] += new Action<Player,int>(serverDropWeapon);
             EventHandlers["vorpInventory:sharePickupServer"] += new Action<string,int,int,Vector3,int>(sharePickupServer);
             EventHandlers["vorpInventory:onPickup"] += new Action<Player,int>(onPickup);
             EventHandlers["vorpInventory:addItem"] += new Action<int,string,int>(addItem);
@@ -28,7 +29,7 @@ namespace vorpinventory_sv
         [Tick]
         private async Task saveInventoryItems()
         {
-            await Delay(10000);
+            await Delay(90000);
             foreach (var uinventory in ItemDatabase.usersInventory)
             {
                 await Delay(30);
@@ -101,6 +102,29 @@ namespace vorpinventory_sv
                 }
             }
         }
+
+        private void addWeapon(int player, int weapId)
+        {
+            PlayerList pl = new PlayerList();
+            Player p = pl[player];
+            string identifier = "steam:" + p.Identifiers["steam"];
+            if (ItemDatabase.userWeapons.ContainsKey(weapId))
+            {
+                ItemDatabase.userWeapons[weapId].setPropietary(identifier);
+            }
+        }
+
+        private void subWeapon(int player, int weapId)
+        {
+            PlayerList pl = new PlayerList();
+            Player p = pl[player];
+            string identifier = "steam:" + p.Identifiers["steam"];
+            if (ItemDatabase.userWeapons.ContainsKey(weapId))
+            {
+                ItemDatabase.userWeapons[weapId].setPropietary("");
+            }
+        }
+        
         
         private void onPickup([FromSource]Player player,int obj)
         {
@@ -108,40 +132,67 @@ namespace vorpinventory_sv
             int source = int.Parse(player.Handle);
             if (Pickups.ContainsKey(obj))
             {
-                if (ItemDatabase.usersInventory.ContainsKey(identifier))
+                if (Pickups[obj]["weaponid"] == 1)
                 {
-                    addItem(source,Pickups[obj]["name"],Pickups[obj]["amount"]);
-                    Debug.WriteLine($"añado {Pickups[obj]["amount"]}");
+                    if (ItemDatabase.usersInventory.ContainsKey(identifier))
+                    {
+                        addItem(source,Pickups[obj]["name"],Pickups[obj]["amount"]);
+                        Debug.WriteLine($"añado {Pickups[obj]["amount"]}");
+                        TriggerClientEvent("vorpInventory:sharePickupClient",Pickups[obj]["name"],Pickups[obj]["obj"],
+                            Pickups[obj]["amount"],Pickups[obj]["coords"],2,Pickups[obj]["weaponid"]);
+                        TriggerClientEvent("vorpInventory:removePickupClient",Pickups[obj]["obj"]);
+                        player.TriggerEvent("vorpinventory:receiveItem",Pickups[obj]["name"],Pickups[obj]["amount"]);
+                        Pickups.Remove(obj);
+                        player.TriggerEvent("vorpInventory:playerAnim",obj);
+                    
+                    }
+                }
+                else
+                {
+                    int weaponId = Pickups[obj]["weaponid"];
+                    addWeapon(source,Pickups[obj]["weaponid"]);
+                    Debug.WriteLine($"añado {ItemDatabase.userWeapons[Pickups[obj]["weaponid"].ToString()].getPropietary()}");
                     TriggerClientEvent("vorpInventory:sharePickupClient",Pickups[obj]["name"],Pickups[obj]["obj"],
-                        Pickups[obj]["amount"],Pickups[obj]["coords"],2,Pickups[obj]["hash"]);
+                        Pickups[obj]["amount"],Pickups[obj]["coords"],2,Pickups[obj]["weaponid"]);
                     TriggerClientEvent("vorpInventory:removePickupClient",Pickups[obj]["obj"]);
-                    player.TriggerEvent("vorpinventory:receiveItem",Pickups[obj]["name"],Pickups[obj]["amount"]);
+                    player.TriggerEvent("vorpinventory:receiveWeapon",weaponId,ItemDatabase.userWeapons[weaponId].getPropietary(),
+                        ItemDatabase.userWeapons[weaponId].getName(),ItemDatabase.userWeapons[weaponId].getAllAmmo(),ItemDatabase.userWeapons[weaponId].getAllComponents());
                     Pickups.Remove(obj);
                     player.TriggerEvent("vorpInventory:playerAnim",obj);
-                    
                 }
             }
             
         }
         
-        private void sharePickupServer(string name, int obj, int amount, Vector3 position, int hash)
+        private void sharePickupServer(string name, int obj, int amount, Vector3 position, int weaponId)
         {
-            TriggerClientEvent("vorpInventory:sharePickupClient",name,obj,amount,position,1,hash);
+            TriggerClientEvent("vorpInventory:sharePickupClient",name,obj,amount,position,1,weaponId);
+            Debug.WriteLine(obj.ToString());
             Pickups.Add(obj,new Dictionary<string, dynamic>
             {
                 ["name"] = name,
                 ["obj"] = obj,
                 ["amount"] = amount,
-                ["hash"] = hash,
+                ["weaponid"] = weaponId,
                 ["inRange"] = false,
                 ["coords"] = position
             });
         }
+        
+        //Weapon methods
+        private void serverDropWeapon([FromSource] Player source,int weaponId)
+        {
+            subWeapon(int.Parse(source.Handle),weaponId);
+            source.TriggerEvent("vorpInventory:createPickup",ItemDatabase.userWeapons[weaponId].getName(),1,weaponId);
+        }
+        
+        //Items methods
         private void serverDropItem([FromSource] Player source, string itemname, int cuantity)
         {
             subItem(int.Parse(source.Handle),itemname,cuantity);
             source.TriggerEvent("vorpInventory:createPickup",itemname,cuantity,1);
         }
+        
 
         private void serverGiveItem([FromSource] Player source, string itemname, int amount, int target)
         {

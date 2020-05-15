@@ -22,6 +22,7 @@ namespace vorpinventory_cl
             EventHandlers["vorpInventory:giveLoadout"] += new Action<dynamic>(getLoadout);
             EventHandlers["onClientResourceStart"] += new Action<string>(OnClientResourceStart);
             EventHandlers["vorpinventory:receiveItem"] += new Action<string,int>(receiveItem);
+            EventHandlers["vorpinventory:receiveWeapon"] += new Action<int,string,string,Dictionary<string,int>,List<string>>(receiveWeapon);
         }
 
         private void receiveItem(string name, int count)
@@ -36,6 +37,16 @@ namespace vorpinventory_cl
                     "item_standard",true,citems[name]["can_remove"]));
             }
             
+            NUIEvents.LoadInv();
+        }
+
+        private void receiveWeapon(int id,string propietary,string name ,Dictionary<string,int> ammo ,List<string> components)
+        {
+            WeaponClass weapon = new WeaponClass(id,propietary,name,ammo,components);
+            if (!userWeapons.ContainsKey(weapon.getId()))
+            {
+                userWeapons.Add(weapon.getId(),weapon);
+            }
             NUIEvents.LoadInv();
         }
 

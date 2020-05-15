@@ -135,7 +135,7 @@ namespace vorpinventory_cl
                  {
                      TriggerServerEvent("vorpinventory:serverDropItem", itemname, int.Parse(aux["number"].ToString()), 1);
                      vorp_inventoryClient.useritems[itemname].quitCount(int.Parse(aux["number"].ToString()));
-                     Debug.Write(vorp_inventoryClient.useritems[itemname].getCount().ToString());
+                     //Debug.Write(vorp_inventoryClient.useritems[itemname].getCount().ToString());
                      if (vorp_inventoryClient.useritems[itemname].getCount() == 0)
                      {
                          vorp_inventoryClient.useritems.Remove(itemname);
@@ -145,13 +145,18 @@ namespace vorpinventory_cl
             }
             else
             {
-                TriggerServerEvent("vorpinventory:serverDropWeapon",aux["id"]);
-                Function.Call((Hash) 0x4899CB088EDF59B8, API.PlayerPedId(), (uint) int.Parse(aux["hash"]),false,false);
+                //Function.Call((Hash) 0x4899CB088EDF59B8, API.PlayerPedId(), (uint) int.Parse(aux["hash"]),false,false);
                 Debug.WriteLine("Tirando Arma");
-                 //Debug.WriteLine(aux["hash"].ToString());
-                 //Debug.WriteLine(aux["id"].ToString());
-                 //Debug.WriteLine(type);
-                 //Debug.WriteLine(itemname);
+                Debug.WriteLine(aux["id"].ToString());
+                TriggerServerEvent("vorpinventory:serverDropWeapon",int.Parse(aux["id"].ToString()));
+                if (vorp_inventoryClient.userWeapons.ContainsKey(int.Parse(aux["id"].ToString())))
+                {
+                    vorp_inventoryClient.userWeapons.Remove(int.Parse(aux["id"].ToString()));
+                }
+                //Debug.WriteLine(aux["hash"].ToString());
+                //Debug.WriteLine(aux["id"].ToString());
+                //Debug.WriteLine(type);
+                //Debug.WriteLine(itemname);
             }
             LoadInv();
         }

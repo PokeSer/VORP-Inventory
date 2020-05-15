@@ -26,13 +26,13 @@ namespace vorpinventory_cl
         {
             int playerPed = API.PlayerPedId();
             Vector3 coords = Function.Call<Vector3>((Hash) 0xA86D5F069399F44D, playerPed,true,true);
-
+        
             if (pickups.Count == 0)
             {
                 //Debug.WriteLine("Entro");
                 return;
             }
-
+            
             foreach (var pick in pickups)
             {
                 float distance = Function.Call<float>((Hash) 0x0BE7F4E3CDBAFB28, coords.X, coords.Y, coords.Z,
@@ -41,7 +41,7 @@ namespace vorpinventory_cl
                 
                 if (distance <= 5.0F)
                 {
-                    if (pick.Value["hash"] == 1)
+                    if (pick.Value["weaponid"] == 1)
                     {
                         string name = pick.Value["name"];
                         if (vorp_inventoryClient.citems.ContainsKey(name))
@@ -51,8 +51,14 @@ namespace vorpinventory_cl
                         //Debug.WriteLine(name);
                         Utils.DrawText3D(pick.Value["coords"],name);
                     }
+                    else
+                    {
+                        string name = Function.Call<string>((Hash) 0x89CF5FF3D363311E,
+                            (uint) API.GetHashKey(pick.Value["name"]));
+                        Utils.DrawText3D(pick.Value["coords"],name);
+                    }
                 }
-
+            
                 if (distance <= 0.7F && !pick.Value["inRange"])
                 {
                     Function.Call((Hash)0x69F4BE8C8CC4796C,playerPed,pick.Value["obj"],3000,2048,3);
@@ -117,28 +123,28 @@ namespace vorpinventory_cl
             API.DeleteObject(ref obj);
         }
 
-        private void sharePickupClient(string name, int obj, int amount, Vector3 position, int value, int hash)
+        private void sharePickupClient(string name, int obj, int amount, Vector3 position, int value, int weaponId)
         {
             if (value == 1)
             {
+                Debug.WriteLine(obj.ToString());
                 pickups.Add(obj,new Dictionary<string, dynamic>
                 {
                     ["name"] = name,
                     ["obj"] = obj,
                     ["amount"] = amount,
-                    ["hash"] = hash,
+                    ["weaponid"] = weaponId,
                     ["inRange"] = false,
                     ["coords"] = position
                 });
-                Debug.WriteLine($"name: {pickups[obj]["name"].ToString()} cuantity: {pickups[obj]["amount"].ToString()}");
-                
+                Debug.WriteLine($"name: {pickups[obj]["name"].ToString()} cuantity: {pickups[obj]["amount"].ToString()},id:{pickups[obj]["weaponid"].ToString()}");
             }
             else
             {
                 pickups.Remove(obj);
             }   
         }
-        private async void createPickup(string name, int amoun, int hash)
+        private async void createPickup(string name, int amoun, int weaponId)
         {
             int ped = API.PlayerPedId();
             Vector3 coords = Function.Call<Vector3>((Hash) 0xA86D5F069399F44D, ped, true, true);
@@ -159,7 +165,8 @@ namespace vorpinventory_cl
             Function.Call((Hash)0x58A850EAEE20FAA3,obj);
             Function.Call((Hash)0xDC19C288082E586E,obj,true,false);
             Function.Call((Hash)0x7D9EFB7AD6B19754,obj,true);
-            TriggerServerEvent("vorpInventory:sharePickupServer",name,obj,amoun,position,hash);
+            Debug.WriteLine(obj.ToString());
+            TriggerServerEvent("vorpInventory:sharePickupServer",name,obj,amoun,position,weaponId);
             Function.Call((Hash)0x67C540AA08E4A6F5,"show_info", "Study_Sounds", true, 0);
         }
 
