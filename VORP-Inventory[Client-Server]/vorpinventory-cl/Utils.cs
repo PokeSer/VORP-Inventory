@@ -71,7 +71,7 @@ namespace vorpinventory_cl
             {
                 int target = API.GetPlayerPed(player);
                 if (target != localPed)
-                {
+                { 
                     Vector3 targetCoords = API.GetEntityCoords(target, true, true);
                     float distance = API.GetDistanceBetweenCoords(targetCoords.X, targetCoords.Y, targetCoords.Z,
                         coords.X, coords.Y, coords.Z,false);
@@ -82,7 +82,6 @@ namespace vorpinventory_cl
                     }
                 }
             }
-
             return closestPlayers;
         }
     }

@@ -110,7 +110,10 @@ namespace vorpinventory_sv
             string identifier = "steam:" + p.Identifiers["steam"];
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
+                Debug.WriteLine(ItemDatabase.userWeapons[weapId].getPropietary());
+                Debug.WriteLine($"añadiendo arma con id: {weapId} a usuario {identifier}");
                 ItemDatabase.userWeapons[weapId].setPropietary(identifier);
+                Debug.WriteLine(ItemDatabase.userWeapons[weapId].getPropietary());
             }
         }
 
@@ -142,23 +145,22 @@ namespace vorpinventory_sv
                             Pickups[obj]["amount"],Pickups[obj]["coords"],2,Pickups[obj]["weaponid"]);
                         TriggerClientEvent("vorpInventory:removePickupClient",Pickups[obj]["obj"]);
                         player.TriggerEvent("vorpinventory:receiveItem",Pickups[obj]["name"],Pickups[obj]["amount"]);
-                        Pickups.Remove(obj);
                         player.TriggerEvent("vorpInventory:playerAnim",obj);
-                    
+                        Pickups.Remove(obj);
                     }
                 }
                 else
                 {
                     int weaponId = Pickups[obj]["weaponid"];
                     addWeapon(source,Pickups[obj]["weaponid"]);
-                    Debug.WriteLine($"añado {ItemDatabase.userWeapons[Pickups[obj]["weaponid"].ToString()].getPropietary()}");
+                    //Debug.WriteLine($"añado {ItemDatabase.userWeapons[Pickups[obj]["weaponid"].ToString()].getPropietary()}");
                     TriggerClientEvent("vorpInventory:sharePickupClient",Pickups[obj]["name"],Pickups[obj]["obj"],
                         Pickups[obj]["amount"],Pickups[obj]["coords"],2,Pickups[obj]["weaponid"]);
                     TriggerClientEvent("vorpInventory:removePickupClient",Pickups[obj]["obj"]);
                     player.TriggerEvent("vorpinventory:receiveWeapon",weaponId,ItemDatabase.userWeapons[weaponId].getPropietary(),
                         ItemDatabase.userWeapons[weaponId].getName(),ItemDatabase.userWeapons[weaponId].getAllAmmo(),ItemDatabase.userWeapons[weaponId].getAllComponents());
-                    Pickups.Remove(obj);
                     player.TriggerEvent("vorpInventory:playerAnim",obj);
+                    Pickups.Remove(obj);
                 }
             }
             

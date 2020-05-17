@@ -22,7 +22,7 @@ namespace vorpinventory_cl
             EventHandlers["vorpInventory:giveLoadout"] += new Action<dynamic>(getLoadout);
             EventHandlers["onClientResourceStart"] += new Action<string>(OnClientResourceStart);
             EventHandlers["vorpinventory:receiveItem"] += new Action<string,int>(receiveItem);
-            EventHandlers["vorpinventory:receiveWeapon"] += new Action<int,string,string,Dictionary<string,int>,List<string>>(receiveWeapon);
+            EventHandlers["vorpinventory:receiveWeapon"] += new Action<int,string,string,ExpandoObject,List<dynamic>>(receiveWeapon);
         }
 
         private void receiveItem(string name, int count)
@@ -40,9 +40,19 @@ namespace vorpinventory_cl
             NUIEvents.LoadInv();
         }
 
-        private void receiveWeapon(int id,string propietary,string name ,Dictionary<string,int> ammo ,List<string> components)
+        private void receiveWeapon(int id,string propietary,string name ,ExpandoObject ammo ,List<dynamic> components)
         {
-            WeaponClass weapon = new WeaponClass(id,propietary,name,ammo,components);
+            Dictionary<string,int> ammoaux = new Dictionary<string, int>();
+            foreach (KeyValuePair<string,object> amo in ammo)
+            {
+                ammoaux.Add(amo.Key,int.Parse(amo.Value.ToString()));
+            }
+            List<string> auxcomponents = new List<string>();
+            foreach (var comp in components)
+            {
+                auxcomponents.Add(comp.ToString());
+            }
+            WeaponClass weapon = new WeaponClass(id,propietary,name,ammoaux,auxcomponents);
             if (!userWeapons.ContainsKey(weapon.getId()))
             {
                 userWeapons.Add(weapon.getId(),weapon);

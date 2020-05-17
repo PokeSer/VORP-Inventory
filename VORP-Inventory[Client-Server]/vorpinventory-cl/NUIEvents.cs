@@ -44,44 +44,58 @@ namespace vorpinventory_cl
         private void NUIGetNearPlayers(ExpandoObject obj)
         {
             int playerPed = API.PlayerPedId();
-            List<int> players = Utils.getNearestPlayers();
+            //List<int> players = Utils.getNearestPlayers();
             bool foundPlayers = false;
             List<Dictionary<string,object>> elements = new List<Dictionary<string, object>>();
             Dictionary<string,object> nuireturn = new Dictionary<string, object>();
-            foreach (var player in players)
-            {
-                foundPlayers = true;
-                elements.Add(new Dictionary<string, object>
-                {
-                    ["label"] = API.GetPlayerName(player),
-                    ["player"] = API.GetPlayerServerId(player)
-                });
-            }
+            // foreach (var player in players)
+            // {
+            //     foundPlayers = true;
+            //     elements.Add(new Dictionary<string, object>
+            //     {
+            //         ["label"] = API.GetPlayerName(player),
+            //         ["player"] = API.GetPlayerServerId(player)
+            //     });
+            // }
 
-            if (!foundPlayers)
-            {
-                Debug.WriteLine("No near players");
-            }
-            else
-            {
+            // if (!foundPlayers)
+            // {
+            //     Debug.WriteLine("No near players");
+            // }
+            // else
+            // {
                 Dictionary<string,object> item = new Dictionary<string, object>();
                 foreach (var thing in obj)
                 {
                     item.Add(thing.Key,thing.Value);
-                    Debug.WriteLine(item[thing.Key].ToString());
+                    if (!item.ContainsKey("id"))
+                    {
+                        item.Add("id",1);
+                    }
+
+                    if (!item.ContainsKey("count"))
+                    {
+                        item.Add("count",1);
+                    }
+                    Debug.WriteLine($"{thing.Key}, {thing.Value.ToString()}");
+                    // Debug.WriteLine(item[thing.Key].ToString());
                 }
-                nuireturn.Add("action","nearPlayers");
-                nuireturn.Add("foundAny",foundPlayers);
-                nuireturn.Add("players",elements);
-                nuireturn.Add("item",item["item"]);
-                nuireturn.Add("hash","hash");
-                nuireturn.Add("count",item["count"]);
-                nuireturn.Add("type",item["type"]);
-                nuireturn.Add("what",item["what"]);
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(nuireturn);
-                Debug.WriteLine(json);
-                API.SendNuiMessage(json);
-            }
+                
+                // nuireturn.Add("action","nearPlayers");
+                // nuireturn.Add("foundAny",foundPlayers);
+                // nuireturn.Add("players",elements);
+                // nuireturn.Add("item",item["item"]);
+                // nuireturn.Add("hash",item["hash"]);
+                // nuireturn.Add("count",item["count"]);
+                // nuireturn.Add("id",item["id"]);
+                // nuireturn.Add("type",item["type"]);
+                // nuireturn.Add("what",item["what"]);
+                //
+                //
+                // string json = Newtonsoft.Json.JsonConvert.SerializeObject(nuireturn);
+                //  Debug.WriteLine(json);
+                // API.SendNuiMessage(json);
+            //}
         }
 
         private void NUIGiveItem(ExpandoObject obj)
@@ -90,6 +104,7 @@ namespace vorpinventory_cl
             List<int> players = Utils.getNearestPlayers();
             Dictionary<string, object> data = Utils.expandoProcessing(obj);
             Dictionary<string, object> data2 = Utils.expandoProcessing(data["data"]);
+            //Debug.WriteLine(data2["id"].ToString());
             foreach (var varia in players)
             {
                 if (varia != API.PlayerId())
@@ -140,7 +155,6 @@ namespace vorpinventory_cl
                      {
                          vorp_inventoryClient.useritems.Remove(itemname);
                      }
-                     
                  }
             }
             else
