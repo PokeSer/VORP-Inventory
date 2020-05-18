@@ -16,6 +16,7 @@ namespace vorpinventory_sv
             EventHandlers["vorpinventory:getItemsTable"] += new Action<Player>(getItemsTable);
             EventHandlers["vorpinventory:getInventory"] += new Action<Player>(getInventory);
             EventHandlers["vorpinventory:serverGiveItem"] += new Action<Player,string,int,int>(serverGiveItem);
+            EventHandlers["vorpinventory:serverGiveWeapon"] += new Action<Player,int,int>(serverGiveWeapon);
             EventHandlers["vorpinventory:serverDropItem"] += new Action<Player,string,int>(serverDropItem);
             EventHandlers["vorpinventory:serverDropWeapon"] += new Action<Player,int>(serverDropWeapon);
             EventHandlers["vorpInventory:sharePickupServer"] += new Action<string,int,int,Vector3,int>(sharePickupServer);
@@ -128,7 +129,6 @@ namespace vorpinventory_sv
             }
         }
         
-        
         private void onPickup([FromSource]Player player,int obj)
         {
             string identifier = "steam:" + player.Identifiers["steam"];
@@ -194,8 +194,21 @@ namespace vorpinventory_sv
             subItem(int.Parse(source.Handle),itemname,cuantity);
             source.TriggerEvent("vorpInventory:createPickup",itemname,cuantity,1);
         }
-        
 
+        private void serverGiveWeapon([FromSource] Player source, int weaponId, int target)
+        {
+            PlayerList pl = new PlayerList();
+            Player p = pl[target];
+            string identifier = "steam:" + source.Identifiers["steam"];
+
+            if (ItemDatabase.userWeapons.ContainsKey(weaponId))
+            {
+                subWeapon(int.Parse(source.Handle),weaponId);
+                addWeapon(int.Parse(p.Handle),weaponId);
+                p.TriggerEvent("vorpinventory:receiveWeapon",weaponId,ItemDatabase.userWeapons[weaponId].getPropietary(),
+                    ItemDatabase.userWeapons[weaponId].getName(),ItemDatabase.userWeapons[weaponId].getAllAmmo(),ItemDatabase.userWeapons[weaponId].getAllComponents());
+            }
+        }
         private void serverGiveItem([FromSource] Player source, string itemname, int amount, int target)
         {
             PlayerList pl = new PlayerList();

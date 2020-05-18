@@ -44,58 +44,58 @@ namespace vorpinventory_cl
         private void NUIGetNearPlayers(ExpandoObject obj)
         {
             int playerPed = API.PlayerPedId();
-            //List<int> players = Utils.getNearestPlayers();
+            List<int> players = Utils.getNearestPlayers();
             bool foundPlayers = false;
             List<Dictionary<string,object>> elements = new List<Dictionary<string, object>>();
             Dictionary<string,object> nuireturn = new Dictionary<string, object>();
-            // foreach (var player in players)
-            // {
-            //     foundPlayers = true;
-            //     elements.Add(new Dictionary<string, object>
-            //     {
-            //         ["label"] = API.GetPlayerName(player),
-            //         ["player"] = API.GetPlayerServerId(player)
-            //     });
-            // }
+             foreach (var player in players)
+             {
+                 foundPlayers = true;
+                 elements.Add(new Dictionary<string, object>
+                 {
+                     ["label"] = API.GetPlayerName(player),
+                     ["player"] = API.GetPlayerServerId(player)
+                 });
+             }
 
-            // if (!foundPlayers)
-            // {
-            //     Debug.WriteLine("No near players");
-            // }
-            // else
-            // {
+            if (!foundPlayers)
+            {
+                Debug.WriteLine("No near players");
+            }
+            else
+            {
                 Dictionary<string,object> item = new Dictionary<string, object>();
                 foreach (var thing in obj)
                 {
                     item.Add(thing.Key,thing.Value);
-                    if (!item.ContainsKey("id"))
-                    {
-                        item.Add("id",1);
-                    }
-
-                    if (!item.ContainsKey("count"))
-                    {
-                        item.Add("count",1);
-                    }
-                    Debug.WriteLine($"{thing.Key}, {thing.Value.ToString()}");
-                    // Debug.WriteLine(item[thing.Key].ToString());
+                    Debug.WriteLine($"{thing.Key}, {thing.Value}");
                 }
-                
-                // nuireturn.Add("action","nearPlayers");
-                // nuireturn.Add("foundAny",foundPlayers);
-                // nuireturn.Add("players",elements);
-                // nuireturn.Add("item",item["item"]);
-                // nuireturn.Add("hash",item["hash"]);
-                // nuireturn.Add("count",item["count"]);
-                // nuireturn.Add("id",item["id"]);
-                // nuireturn.Add("type",item["type"]);
-                // nuireturn.Add("what",item["what"]);
-                //
-                //
-                // string json = Newtonsoft.Json.JsonConvert.SerializeObject(nuireturn);
-                //  Debug.WriteLine(json);
-                // API.SendNuiMessage(json);
-            //}
+                if (!item.ContainsKey("id"))
+                {
+                    item.Add("id",0);
+                }
+                if (!item.ContainsKey("count"))
+                {
+                    item.Add("count",1);
+                }
+
+                if (!item.ContainsKey("hash"))
+                {
+                    item.Add("hash",1);
+                }
+                nuireturn.Add("action","nearPlayers");
+                nuireturn.Add("foundAny",foundPlayers);
+                nuireturn.Add("players",elements);
+                nuireturn.Add("item",item["item"]);
+                nuireturn.Add("hash",item["hash"]);
+                nuireturn.Add("count",item["count"]);
+                nuireturn.Add("id",item["id"]);
+                nuireturn.Add("type",item["type"]);
+                nuireturn.Add("what",item["what"]);
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(nuireturn);
+                Debug.WriteLine(json);
+                API.SendNuiMessage(json);
+            }
         }
 
         private void NUIGiveItem(ExpandoObject obj)
@@ -114,15 +114,27 @@ namespace vorpinventory_cl
                         string itemname = data2["item"].ToString();
                         int amount = int.Parse(data2["count"].ToString());
                         int target = int.Parse(data["player"].ToString());
-                        if (amount > 0 && vorp_inventoryClient.useritems[itemname].getCount() >= amount)
+                        if (int.Parse(data2["id"].ToString()) == 0)
                         {
-                            TriggerServerEvent("vorpinventory:serverGiveItem",itemname,amount,target,1);
-                            vorp_inventoryClient.useritems[itemname].quitCount(amount);
-                            if (vorp_inventoryClient.useritems[itemname].getCount() == 0)
+                            if (amount > 0 && vorp_inventoryClient.useritems[itemname].getCount() >= amount)
                             {
-                                vorp_inventoryClient.useritems.Remove(itemname);
+                                TriggerServerEvent("vorpinventory:serverGiveItem",itemname,amount,target,1);
+                                vorp_inventoryClient.useritems[itemname].quitCount(amount);
+                                if (vorp_inventoryClient.useritems[itemname].getCount() == 0)
+                                {
+                                    vorp_inventoryClient.useritems.Remove(itemname);
+                                }
                             }
                         }
+                        else
+                        {
+                            TriggerServerEvent("vorpinventory:serverGiveWeapon",int.Parse(data2["id"].ToString()),target);
+                            if (vorp_inventoryClient.userWeapons.ContainsKey(int.Parse(data2["id"].ToString())))
+                            {
+                                vorp_inventoryClient.userWeapons.Remove(int.Parse(data2["id"].ToString()));
+                            }
+                        }
+                        
                         LoadInv();
                     }
                 }
