@@ -98,7 +98,7 @@ namespace vorpinventory_sv
             {
                 if (!ItemDatabase.svItems.ContainsKey(name))
                 {
-                    ItemDatabase.usersInventory[identifier].Add(name,new ItemClass(cuantity,ItemDatabase.svItems[name].getLimit(),
+                    ItemDatabase.usersInventory[identifier].Add(name,new ItemClass(cuantity,ItemDatabase.svItems[name].getLimit(), 
                         ItemDatabase.svItems[name].getLabel(),name,"item_inventory",true,ItemDatabase.svItems[name].getCanRemove()));
                 }
             }
@@ -111,10 +111,7 @@ namespace vorpinventory_sv
             string identifier = "steam:" + p.Identifiers["steam"];
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
-                Debug.WriteLine(ItemDatabase.userWeapons[weapId].getPropietary());
-                Debug.WriteLine($"añadiendo arma con id: {weapId} a usuario {identifier}");
                 ItemDatabase.userWeapons[weapId].setPropietary(identifier);
-                Debug.WriteLine(ItemDatabase.userWeapons[weapId].getPropietary());
             }
         }
 

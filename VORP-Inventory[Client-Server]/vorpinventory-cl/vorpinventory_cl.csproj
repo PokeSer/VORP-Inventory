@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InventoryAPI.cs" />
     <Compile Include="ItemClass.cs" />
     <Compile Include="NUIEvents.cs" />
     <Compile Include="Pickups.cs" />
