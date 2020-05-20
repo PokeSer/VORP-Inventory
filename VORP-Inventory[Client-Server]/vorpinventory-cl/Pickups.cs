@@ -72,7 +72,7 @@ namespace vorpinventory_cl
                     if (Function.Call<bool>((Hash) 0xE0F65F0640EF0617, PickPrompt))
                     {
                         Debug.WriteLine("He terminado");
-                        TriggerServerEvent("vorpInventory:onPickup",pick.Value["obj"]);
+                        TriggerServerEvent("vorpinventory:onPickup",pick.Value["obj"]);
                         pick.Value["inRange"] = true;
                         active = true;
                     }
@@ -166,7 +166,7 @@ namespace vorpinventory_cl
             Function.Call((Hash)0xDC19C288082E586E,obj,true,false);
             Function.Call((Hash)0x7D9EFB7AD6B19754,obj,true);
             Debug.WriteLine(obj.ToString());
-            TriggerServerEvent("vorpInventory:sharePickupServer",name,obj,amoun,position,weaponId);
+            TriggerServerEvent("vorpinventory:sharePickupServer",name,obj,amoun,position,weaponId);
             Function.Call((Hash)0x67C540AA08E4A6F5,"show_info", "Study_Sounds", true, 0);
         }
 

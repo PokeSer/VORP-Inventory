@@ -19,10 +19,8 @@ namespace vorpinventory_sv
             EventHandlers["vorpinventory:serverGiveWeapon"] += new Action<Player,int,int>(serverGiveWeapon);
             EventHandlers["vorpinventory:serverDropItem"] += new Action<Player,string,int>(serverDropItem);
             EventHandlers["vorpinventory:serverDropWeapon"] += new Action<Player,int>(serverDropWeapon);
-            EventHandlers["vorpInventory:sharePickupServer"] += new Action<string,int,int,Vector3,int>(sharePickupServer);
-            EventHandlers["vorpInventory:onPickup"] += new Action<Player,int>(onPickup);
-            EventHandlers["vorpInventory:addItem"] += new Action<int,string,int>(addItem);
-            EventHandlers["vorpInventory:quitItem"] += new Action<int,string,int>(subItem);
+            EventHandlers["vorpinventory:sharePickupServer"] += new Action<string,int,int,Vector3,int>(sharePickupServer);
+            EventHandlers["vorpinventory:onPickup"] += new Action<Player,int>(onPickup);
             Tick += saveInventoryItems;
         }
         public static Dictionary<int,Dictionary<string,dynamic>> Pickups = new Dictionary<int, Dictionary<string, dynamic>>();
@@ -96,7 +94,7 @@ namespace vorpinventory_sv
             }
             else
             {
-                if (!ItemDatabase.svItems.ContainsKey(name))
+                if (ItemDatabase.svItems.ContainsKey(name))
                 {
                     ItemDatabase.usersInventory[identifier].Add(name,new ItemClass(cuantity,ItemDatabase.svItems[name].getLimit(), 
                         ItemDatabase.svItems[name].getLabel(),name,"item_inventory",true,ItemDatabase.svItems[name].getCanRemove()));

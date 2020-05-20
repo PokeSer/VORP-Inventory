@@ -96,7 +96,7 @@
             this.canRemove = canRemove;
         }
 
-        public bool setCanRemove()
+        public bool getCanRemove()
         {
             return this.canRemove;
         }
