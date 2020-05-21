@@ -81,6 +81,10 @@ namespace vorpinventory_sv
                             userWeapons.Add(wp.getId(),wp);
                         }
                     }));
+                    // Exports["ghmattimysql"].execute("SELECT * FROM loadout", new Action<dynamic>((id) =>
+                    // {
+                    //     Debug.WriteLine(id[1].ToString());
+                    // }));
                 }
             }));
         }

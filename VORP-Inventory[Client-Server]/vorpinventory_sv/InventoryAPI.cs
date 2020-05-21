@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Dynamic;
 using CitizenFX.Core;
 namespace vorpinventory_sv
 {
@@ -65,10 +67,54 @@ namespace vorpinventory_sv
             }
         }
 
-        // private void registerWeapon(int target,)
-        // {
-        //     
-        // }
+        private void registerWeapon(int target,string name,ExpandoObject ammo ,List<dynamic> components)//Needs dirt level
+        {
+            PlayerList pl = new PlayerList();
+            Player p = null;
+            bool targetIsPlayer = false;
+            foreach (Player pla in pl)
+            {
+                if (int.Parse(pla.Handle) == target)
+                {
+                    p = pl[target];
+                    targetIsPlayer = true;
+                }
+            }
+
+            string identifier;
+            if (targetIsPlayer)
+            { 
+                identifier = "steam:" + p.Identifiers["steam"];
+            }
+            else
+            {
+                identifier = target.ToString();
+            }
+            
+            Dictionary<string,int> ammoaux = new Dictionary<string, int>();
+            foreach (KeyValuePair<string,object> amo in ammo)
+            {
+                ammoaux.Add(amo.Key,int.Parse(amo.Value.ToString()));
+            }
+            List<string> auxcomponents = new List<string>();
+            foreach (var comp in components)
+            {
+                auxcomponents.Add(comp.ToString());
+            }
+            string componentsJ = Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents);
+            string ammosJ = Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux);
+            int weaponId;
+            Exports["ghmattimysql"].execute("SELECT * FROM loadout", new Action<dynamic>((id) =>
+            {
+                Debug.WriteLine(id[0].ToString());
+                weaponId = int.Parse(id[0].ToString());
+            }));
+            Exports["ghmattimysql"]
+                .execute(
+                    $"INSERT INTO loadout (identifier,name,ammo,components) VALUES ({identifier},{name},{ammosJ},{componentsJ}");
+            
+
+        }
         private void giveWeapon(int player, int weapId, int target)
         {
             PlayerList pl = new PlayerList();
