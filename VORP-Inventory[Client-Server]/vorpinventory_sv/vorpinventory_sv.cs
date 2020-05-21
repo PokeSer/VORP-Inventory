@@ -44,18 +44,18 @@ namespace vorpinventory_sv
                      Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE identifier=?", new[] {uinventory.Key});
                 }
             }
-            foreach (KeyValuePair<int,WeaponClass> weapon in ItemDatabase.userWeapons)
-            {
-                string components = Newtonsoft.Json.JsonConvert.SerializeObject(weapon.Value.getAllComponents());
-                string ammos = Newtonsoft.Json.JsonConvert.SerializeObject(weapon.Value.getAllAmmo());
-                int id = weapon.Value.getId();
-                string propietary = weapon.Value.getPropietary();
-                string name = weapon.Value.getName();
-                Exports["ghmattimysql"]
-                    .execute(
-                        $"UPDATE loadout SET identifier = '{propietary}',ammo = '{ammos}',components='{components}' WHERE id=?",
-                        new[] {id});
-            }
+            // foreach (KeyValuePair<int,WeaponClass> weapon in ItemDatabase.userWeapons)
+            // {
+            //     string components = Newtonsoft.Json.JsonConvert.SerializeObject(weapon.Value.getAllComponents());
+            //     string ammos = Newtonsoft.Json.JsonConvert.SerializeObject(weapon.Value.getAllAmmo());
+            //     int id = weapon.Value.getId();
+            //     string propietary = weapon.Value.getPropietary();
+            //     string name = weapon.Value.getName();
+            //     Exports["ghmattimysql"]
+            //         .execute(
+            //             $"UPDATE loadout SET identifier = '{propietary}',ammo = '{ammos}',components='{components}' WHERE id=?",
+            //             new[] {id});
+            // }
         }
 
 
@@ -110,6 +110,10 @@ namespace vorpinventory_sv
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
                 ItemDatabase.userWeapons[weapId].setPropietary(identifier);
+                Exports["ghmattimysql"]
+                    .execute(
+                        $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}' WHERE id=?",
+                        new[] {weapId});
             }
         }
 
@@ -121,6 +125,10 @@ namespace vorpinventory_sv
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
                 ItemDatabase.userWeapons[weapId].setPropietary("");
+                Exports["ghmattimysql"]
+                    .execute(
+                        $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}' WHERE id=?",
+                        new[] {weapId});
             }
         }
         

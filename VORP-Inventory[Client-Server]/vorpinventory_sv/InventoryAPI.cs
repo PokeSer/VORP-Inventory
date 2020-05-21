@@ -92,6 +92,10 @@ namespace vorpinventory_sv
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
                 ItemDatabase.userWeapons[weapId].setPropietary(identifier);
+                Exports["ghmattimysql"]
+                    .execute(
+                        $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}' WHERE id=?",
+                        new[] {weapId});
                 p.TriggerEvent("vorpinventory:receiveWeapon",weapId,ItemDatabase.userWeapons[weapId].getPropietary(),
                     ItemDatabase.userWeapons[weapId].getName(),ItemDatabase.userWeapons[weapId].getAllAmmo(),ItemDatabase.userWeapons[weapId].getAllComponents());
                 if (targetIsPlayer && ptarget != null)
@@ -109,6 +113,10 @@ namespace vorpinventory_sv
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
                 ItemDatabase.userWeapons[weapId].setPropietary("");
+                Exports["ghmattimysql"]
+                    .execute(
+                        $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}' WHERE id=?",
+                        new[] {weapId});
             }
             p.TriggerEvent("vorpCoreClient:subWeapon",weapId);
         }
