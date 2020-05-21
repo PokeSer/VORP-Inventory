@@ -103,16 +103,23 @@ namespace vorpinventory_sv
             }
             string componentsJ = Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents);
             string ammosJ = Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux);
-            int weaponId;
-            Exports["ghmattimysql"].execute("SELECT * FROM loadout", new Action<dynamic>((id) =>
+            int weaponId = -1;
+            Exports["ghmattimysql"].execute("SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'vorp' AND TABLE_NAME   = 'loadout';",
+                new Action<dynamic>((id) =>
             {
-                Debug.WriteLine(id[0].ToString());
-                weaponId = int.Parse(id[0].ToString());
+                weaponId = int.Parse(id[0].AUTO_INCREMENT.ToString());
             }));
             Exports["ghmattimysql"]
                 .execute(
                     $"INSERT INTO loadout (identifier,name,ammo,components) VALUES ({identifier},{name},{ammosJ},{componentsJ}");
             
+            WeaponClass auxWeapon = new WeaponClass(weaponId,identifier,name,ammoaux,auxcomponents);
+            ItemDatabase.userWeapons.Add(weaponId,auxWeapon);
+            if (targetIsPlayer)
+            {
+                p.TriggerEvent("vorpinventory:receiveWeapon",weaponId,ItemDatabase.userWeapons[weaponId].getPropietary(),
+                    ItemDatabase.userWeapons[weaponId].getName(),ItemDatabase.userWeapons[weaponId].getAllAmmo(),ItemDatabase.userWeapons[weaponId].getAllComponents());
+            }
 
         }
         private void giveWeapon(int player, int weapId, int target)
