@@ -15,6 +15,7 @@ namespace vorpinventory_cl
         public static Dictionary<string,Dictionary<string,dynamic>> citems = new Dictionary<string, Dictionary<string, dynamic>>();
         public static Dictionary<string,ItemClass> useritems = new Dictionary<string, ItemClass>();
         public static Dictionary<int,WeaponClass> userWeapons = new Dictionary<int, WeaponClass>();
+        public static Dictionary<int,string> bulletsHash = new Dictionary<int, string>();
         public vorp_inventoryClient()
         {
             EventHandlers["vorpInventory:giveItemsTable"] += new Action<dynamic>(processItems);
@@ -23,7 +24,28 @@ namespace vorpinventory_cl
             EventHandlers["onClientResourceStart"] += new Action<string>(OnClientResourceStart);
             EventHandlers["vorpinventory:receiveItem"] += new Action<string,int>(receiveItem);
             EventHandlers["vorpinventory:receiveWeapon"] += new Action<int,string,string,ExpandoObject,List<dynamic>>(receiveWeapon);
+            Tick += updateAmmoInWeapon;
         }
+
+        private async Task updateAmmoInWeapon()
+        {
+            uint weaponHash = 0;
+            if (API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, true, 0, true))
+            {
+               int ammo = Function.Call<int>((Hash) 0x015A522136D7F951, API.PlayerPedId(), weaponHash);
+               int type = API.GetPedAmmoTypeFromWeapon(API.PlayerPedId(), weaponHash);
+               foreach (KeyValuePair<int,WeaponClass> weap in userWeapons)
+               {
+                   if (API.GetHashKey(weap.Value.getName()) == weaponHash && weap.Value.getUsed())
+                   {
+                       if (weap.Value.getAmmo(Utils.Publicammo[(uint) type]) != ammo)
+                       {
+                           weap.Value.addAmmo(ammo,Utils.Publicammo[(uint)type]);
+                       }
+                   }
+               }
+            }
+        }//Update weapon ammo
 
         private void receiveItem(string name, int count)
         {
@@ -52,7 +74,7 @@ namespace vorpinventory_cl
             {
                 auxcomponents.Add(comp.ToString());
             }
-            WeaponClass weapon = new WeaponClass(id,propietary,name,ammoaux,auxcomponents);
+            WeaponClass weapon = new WeaponClass(id,propietary,name,ammoaux,auxcomponents,false);
             if (!userWeapons.ContainsKey(weapon.getId()))
             {
                 userWeapons.Add(weapon.getId(),weapon);
@@ -104,7 +126,7 @@ namespace vorpinventory_cl
                 {
                     ammos.Add(amunition.Name,int.Parse(amunition.Value.ToString()));
                 }
-                WeaponClass auxweapon = new WeaponClass(int.Parse(row.id.ToString()),row.identifier.ToString(),row.name.ToString(),ammos,components);
+                WeaponClass auxweapon = new WeaponClass(int.Parse(row.id.ToString()),row.identifier.ToString(),row.name.ToString(),ammos,components,false);
                 userWeapons.Add(auxweapon.getId(),auxweapon);
             }
         }

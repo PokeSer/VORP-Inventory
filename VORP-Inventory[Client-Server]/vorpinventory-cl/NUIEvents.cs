@@ -131,6 +131,12 @@ namespace vorpinventory_cl
                             TriggerServerEvent("vorpinventory:serverGiveWeapon",int.Parse(data2["id"].ToString()),target);
                             if (vorp_inventoryClient.userWeapons.ContainsKey(int.Parse(data2["id"].ToString())))
                             {
+                                if (vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].getUsed())
+                                {
+                                    API.RemoveWeaponFromPed(API.PlayerPedId(),
+                                        (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].getName()),
+                                        true,0); //Falta revisar que pasa con esto
+                                }
                                 vorp_inventoryClient.userWeapons.Remove(int.Parse(data2["id"].ToString()));
                             }
                         }
@@ -143,9 +149,30 @@ namespace vorpinventory_cl
         
         private void NUIUseItem(ExpandoObject obj)
         {
-            if (Utils.expandoProcessing(obj)["type"] == "item_standard")
+            Debug.WriteLine("Llego");
+            Dictionary<string, object> data = Utils.expandoProcessing(obj);
+            Debug.WriteLine(obj.ToString());
+            foreach (var VARIABLE in data)
             {
-                TriggerServerEvent("vorpinventory:useItem",Utils.expandoProcessing(obj)["item"]);
+                Debug.WriteLine($"{VARIABLE.Key}: {VARIABLE.Value}");
+            }
+            if (data["type"].ToString() == "item_standard")
+            {
+                TriggerServerEvent("vorp:use"+data["item"],int.Parse(data["count"].ToString()));
+                Debug.WriteLine(data["item"].ToString());
+            }
+            else
+            {
+                if (!vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed())
+                {
+                    Function.Call((Hash) 0x5E3BDDBCB83F3D84,API.PlayerPedId(), int.Parse(data["hash"].ToString()), 0,
+                        false, true);
+                    vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].setUsed(true);
+                }
+                else
+                {
+                    TriggerEvent("vorp:Tip", "Ya tienes equipada esa arma",2000);
+                }
             }
         }
 

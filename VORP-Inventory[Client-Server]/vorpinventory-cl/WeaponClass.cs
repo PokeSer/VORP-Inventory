@@ -9,15 +9,26 @@ namespace vorpinventory_sv
         private string propietary;
         private Dictionary<string, int> ammo;
         private List<string> components;
-        public WeaponClass(int id,string propietary,string name, Dictionary<string,int>ammo,List<string>components)
+        private bool used;
+        public WeaponClass(int id,string propietary,string name, Dictionary<string,int>ammo,List<string>components,bool used)
         {
             this.id = id;
             this.name = name;
             this.ammo = ammo;
             this.components = components;
             this.propietary = propietary;
+            this.used = used;
         }
 
+        public bool getUsed()
+        {
+            return this.used;
+        }
+
+        public void setUsed(bool used)
+        {
+            this.used = used;
+        }
         public string getPropietary()
         {
             return this.propietary;

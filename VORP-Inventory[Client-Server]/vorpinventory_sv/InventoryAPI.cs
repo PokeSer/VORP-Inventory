@@ -10,7 +10,7 @@ namespace vorpinventory_sv
         {
             EventHandlers["vorpCore:subWeapon"] += new Action<int, int>(subWeapon);
             EventHandlers["vorpCore:giveWeapon"] += new Action<int,int,int>(giveWeapon);
-            //EventHandlers["vorpCore:registerWeapon"] += new Action<int(registerWeapon);
+            EventHandlers["vorpCore:registerWeapon"] += new Action<int,string,ExpandoObject,List<dynamic>>(registerWeapon);
             EventHandlers["vorpCore:addItem"] += new Action<int, string, int>(addItem);
             EventHandlers["vorpCore:subItem"] += new Action<int,string,int>(subItem);
         }
