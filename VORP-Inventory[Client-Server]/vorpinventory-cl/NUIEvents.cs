@@ -165,8 +165,15 @@ namespace vorpinventory_cl
             {
                 if (!vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed())
                 {
-                    Function.Call((Hash) 0x5E3BDDBCB83F3D84,API.PlayerPedId(), int.Parse(data["hash"].ToString()), 0,
-                        false, true);
+                    // Function.Call((Hash) 0x5E3BDDBCB83F3D84,API.PlayerPedId(), int.Parse(data["hash"].ToString()), 0,
+                    //     false, true);
+                    API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)int.Parse(data["hash"].ToString()),0, true, 2);
+                    foreach (KeyValuePair<string,int> ammos in vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getAllAmmo())
+                    {
+                        API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey(ammos.Key),ammos.Value);
+                        Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
+                    }
+                    
                     vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].setUsed(true);
                 }
                 else

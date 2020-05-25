@@ -24,28 +24,28 @@ namespace vorpinventory_cl
             EventHandlers["onClientResourceStart"] += new Action<string>(OnClientResourceStart);
             EventHandlers["vorpinventory:receiveItem"] += new Action<string,int>(receiveItem);
             EventHandlers["vorpinventory:receiveWeapon"] += new Action<int,string,string,ExpandoObject,List<dynamic>>(receiveWeapon);
-            Tick += updateAmmoInWeapon;
+            //Tick += updateAmmoInWeapon;
         }
 
-        private async Task updateAmmoInWeapon()
-        {
-            uint weaponHash = 0;
-            if (API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, true, 0, true))
-            {
-               int ammo = Function.Call<int>((Hash) 0x015A522136D7F951, API.PlayerPedId(), weaponHash);
-               int type = API.GetPedAmmoTypeFromWeapon(API.PlayerPedId(), weaponHash);
-               foreach (KeyValuePair<int,WeaponClass> weap in userWeapons)
-               {
-                   if (API.GetHashKey(weap.Value.getName()) == weaponHash && weap.Value.getUsed())
-                   {
-                       if (weap.Value.getAmmo(Utils.Publicammo[(uint) type]) != ammo)
-                       {
-                           weap.Value.addAmmo(ammo,Utils.Publicammo[(uint)type]);
-                       }
-                   }
-               }
-            }
-        }//Update weapon ammo
+        // private async Task updateAmmoInWeapon()
+        // {
+        //     uint weaponHash = 0;
+        //     if (API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, true, 0, true))
+        //     {
+        //        int ammo = Function.Call<int>((Hash) 0x015A522136D7F951, API.PlayerPedId(), weaponHash);
+        //        int type = API.GetPedAmmoTypeFromWeapon(API.PlayerPedId(), weaponHash);
+        //        foreach (KeyValuePair<int,WeaponClass> weap in userWeapons)
+        //        {
+        //            if (API.GetHashKey(weap.Value.getName()) == weaponHash && weap.Value.getUsed())
+        //            {
+        //                if (weap.Value.getAmmo(Utils.Publicammo[(uint) type]) != ammo)
+        //                {
+        //                    weap.Value.addAmmo(ammo,Utils.Publicammo[(uint)type]);
+        //                }
+        //            }
+        //        }
+        //     }
+        // }//Update weapon ammo
 
         private void receiveItem(string name, int count)
         {
