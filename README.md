@@ -10,4 +10,4 @@ Inventory System
 * Copy and paste ```vorp_inventory``` folder to ```resources/vorp_inventory```
 * Add ```ensure vorp_inventory``` to your ```server.cfg``` file
 * To change the language go to ```resources/vorp_inventory``` and change the default language
-Now you are ready!
+* Now you are ready!
