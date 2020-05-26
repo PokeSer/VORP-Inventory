@@ -163,7 +163,8 @@ namespace vorpinventory_cl
             }
             else
             {
-                if (!vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed())
+                if (!vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed() && 
+                    !Function.Call<bool>((Hash)0x8DECB02F88F428BC,API.PlayerPedId(),API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName()),0,true))
                 {
                     // Function.Call((Hash) 0x5E3BDDBCB83F3D84,API.PlayerPedId(), int.Parse(data["hash"].ToString()), 0,
                     //     false, true);
@@ -178,7 +179,8 @@ namespace vorpinventory_cl
                 }
                 else
                 {
-                    TriggerEvent("vorp:Tip", "Ya tienes equipada esa arma",2000);
+                    Debug.WriteLine($"No uso el arma {data["id"]}");
+                    TriggerEvent("vorp:Tip", "Ya tienes equipada esa arma",3000);
                 }
             }
         }
@@ -211,6 +213,12 @@ namespace vorpinventory_cl
                 TriggerServerEvent("vorpinventory:serverDropWeapon",int.Parse(aux["id"].ToString()));
                 if (vorp_inventoryClient.userWeapons.ContainsKey(int.Parse(aux["id"].ToString())))
                 {
+                    WeaponClass wp = vorp_inventoryClient.userWeapons[int.Parse(aux["id"].ToString())];
+                    if (wp.getUsed())
+                    { 
+                        API.RemoveWeaponFromPed(API.PlayerPedId(),(uint)API.GetHashKey(wp.getName()),
+                            true,0);
+                    }
                     vorp_inventoryClient.userWeapons.Remove(int.Parse(aux["id"].ToString()));
                 }
                 //Debug.WriteLine(aux["hash"].ToString());
