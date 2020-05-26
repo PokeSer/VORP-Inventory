@@ -11,3 +11,11 @@ Inventory System
 * Add ```ensure vorp_inventory``` to your ```server.cfg``` file
 * To change the language go to ```resources/vorp_inventory``` and change the default language
 * Now you are ready!
+
+## Features
+* Unique weapons in order not to duplicate them.
+* Each weapon has its own ammo and can have diferent type of ammo.
+* Each weapon has its own modifications.
+* When dropping or giving weapon you give it with all modifications and ammo.
+* Also has use of items.
+
