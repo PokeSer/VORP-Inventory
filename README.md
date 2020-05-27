@@ -26,8 +26,8 @@ this will return a table to simply use inventory
 * Uses:
 * Quit weapon
 ``` vorpInventory.subWeapon(source,weaponId)```
-* Create and give new Weapon
-``` vorpInventory.addWeapon(source,weaponId)```
+* Create and give new Weapon with the name of weapon in capital leters
+``` vorpInventory.addWeapon(source,weaponName)```
 * Add an item with cuantity
 ``` vorpInventory.addItem(source,item,cuantity)```
 * Sub item with cuantity
