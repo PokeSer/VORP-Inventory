@@ -43,6 +43,7 @@ namespace vorpinventory_cl
             {
                 Debug.WriteLine(Function.Call<bool>((Hash)0x8DECB02F88F428BC,API.PlayerPedId(),API.GetHashKey("WEAPON_RIFLE_VARMINT"),0,true).ToString());
             }),false );
+            
             EventHandlers["vorpInventory:giveItemsTable"] += new Action<dynamic>(processItems);
             EventHandlers["vorpInventory:giveInventory"] += new Action<string>(getInventory);
             EventHandlers["vorpInventory:giveLoadout"] += new Action<dynamic>(getLoadout);

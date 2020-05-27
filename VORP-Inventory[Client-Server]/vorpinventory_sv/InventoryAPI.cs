@@ -10,9 +10,25 @@ namespace vorpinventory_sv
         {
             EventHandlers["vorpCore:subWeapon"] += new Action<int, int>(subWeapon);
             EventHandlers["vorpCore:giveWeapon"] += new Action<int,int,int>(giveWeapon);
-            EventHandlers["vorpCore:registerWeapon"] += new Action<int,string,ExpandoObject,List<dynamic>>(registerWeapon);
-            EventHandlers["vorpCore:addItem"] += new Action<int, string, int>(addItem);
+            EventHandlers["vorpCore:registerWeapon"] += new Action<int,string>(registerWeapon);
+            EventHandlers["vorpCore:addItem"] += new Action<int,string,int>(addItem);
             EventHandlers["vorpCore:subItem"] += new Action<int,string,int>(subItem);
+            EventHandlers["vorpCore:pruebaCallback"] += new Action<Player,NetworkCallbackDelegate,string>(prueba);
+        }
+
+        private void prueba([FromSource]Player p, NetworkCallbackDelegate funcion,string item)
+        {
+            string identifier = "steam:" + p.Identifiers["steam"];
+            if (ItemDatabase.usersInventory[identifier].ContainsKey(item))
+            {
+                object a = 2;
+                object[] args = new[] {a};
+                funcion.Invoke(args);
+            }
+            // else
+            // {
+            //     funcion.Invoke(0);
+            // }
         }
         private void addItem(int player, string name, int cuantity)
         {
@@ -21,29 +37,29 @@ namespace vorpinventory_sv
             string identifier = "steam:" + p.Identifiers["steam"];
             if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
             {
-                if (cuantity > 0)
+                if (int.Parse(cuantity.ToString()) > 0)
                 {
-                    ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
+                    ItemDatabase.usersInventory[identifier][name].addCount(int.Parse(cuantity.ToString()));
+                    Debug.WriteLine(ItemDatabase.usersInventory[identifier][name].getCount().ToString());
                 }
             }
             else
             {
                 if (ItemDatabase.svItems.ContainsKey(name))
                 {
-                    ItemDatabase.usersInventory[identifier].Add(name,new ItemClass(cuantity,ItemDatabase.svItems[name].getLimit(), 
+                    ItemDatabase.usersInventory[identifier].Add(name,new ItemClass(int.Parse(cuantity.ToString()),ItemDatabase.svItems[name].getLimit(), 
                         ItemDatabase.svItems[name].getLabel(),name,"item_inventory",true,ItemDatabase.svItems[name].getCanRemove()));
                 }
             }
-
+            
             if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
             {
-                int count = ItemDatabase.usersInventory[identifier][name].getCount();
                 int limit = ItemDatabase.usersInventory[identifier][name].getLimit();
                 string label = ItemDatabase.usersInventory[identifier][name].getLabel();
                 string type = ItemDatabase.usersInventory[identifier][name].getType();
                 bool usable = ItemDatabase.usersInventory[identifier][name].getUsable();
                 bool canRemove = ItemDatabase.usersInventory[identifier][name].getCanRemove();
-                p.TriggerEvent("vorpCoreClient:addItem",count,limit,label,name,type,usable,canRemove);//Pass item to client
+                p.TriggerEvent("vorpCoreClient:addItem",cuantity,limit,label,name,type,usable,canRemove);//Pass item to client
             }
         }
         
@@ -58,16 +74,16 @@ namespace vorpinventory_sv
                 {
                     ItemDatabase.usersInventory[identifier][name].quitCount(cuantity);
                 }
-
+                p.TriggerEvent("vorpCoreClient:subItem",name,ItemDatabase.usersInventory[identifier][name].getCount());
                 if (ItemDatabase.usersInventory[identifier][name].getCount() == 0)
                 {
                     ItemDatabase.usersInventory[identifier].Remove(name);
                 }
-                p.TriggerEvent("vorpCoreClient:subItem",name,cuantity);
+                
             }
         }
 
-        private void registerWeapon(int target,string name,ExpandoObject ammo ,List<dynamic> components)//Needs dirt level
+        private void registerWeapon(int target,string name)//Needs dirt level
         {
             PlayerList pl = new PlayerList();
             Player p = null;
@@ -90,19 +106,18 @@ namespace vorpinventory_sv
             {
                 identifier = target.ToString();
             }
-            
             Dictionary<string,int> ammoaux = new Dictionary<string, int>();
-            foreach (KeyValuePair<string,object> amo in ammo)
-            {
-                ammoaux.Add(amo.Key,int.Parse(amo.Value.ToString()));
-            }
+            // foreach (KeyValuePair<string,object> amo in ammo)
+            // {
+            //     ammoaux.Add(amo.Key,int.Parse(amo.Value.ToString()));
+            // }
             List<string> auxcomponents = new List<string>();
-            foreach (var comp in components)
-            {
-                auxcomponents.Add(comp.ToString());
-            }
-            string componentsJ = Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents);
-            string ammosJ = Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux);
+            // foreach (var comp in components)
+            // {
+            //     auxcomponents.Add(comp.ToString());
+            // }
+            // string componentsJ = Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents);
+            // string ammosJ = Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux);
             int weaponId = -1;
             Exports["ghmattimysql"].execute("SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'vorp' AND TABLE_NAME   = 'loadout';",
                 new Action<dynamic>((id) =>
@@ -111,7 +126,7 @@ namespace vorpinventory_sv
             }));
             Exports["ghmattimysql"]
                 .execute(
-                    $"INSERT INTO loadout (identifier,name,ammo,components) VALUES ({identifier},{name},{ammosJ},{componentsJ}");
+                    "INSERT INTO loadout (`identifier`,`name`) VALUES (?,?)",new object[] {identifier,name});
             
             WeaponClass auxWeapon = new WeaponClass(weaponId,identifier,name,ammoaux,auxcomponents);
             ItemDatabase.userWeapons.Add(weaponId,auxWeapon);
@@ -163,6 +178,7 @@ namespace vorpinventory_sv
             PlayerList pl = new PlayerList();
             Player p = pl[player];
             string identifier = "steam:" + p.Identifiers["steam"];
+            Debug.WriteLine($"Me han llamado desde lua {player} {p}");
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
                 ItemDatabase.userWeapons[weapId].setPropietary("");

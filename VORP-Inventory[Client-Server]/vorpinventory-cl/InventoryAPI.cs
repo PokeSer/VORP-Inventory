@@ -1,5 +1,6 @@
 ﻿using System;
 using CitizenFX.Core;
+using CitizenFX.Core.Native;
 
 namespace vorpinventory_cl
 {
@@ -16,6 +17,12 @@ namespace vorpinventory_cl
         {
             if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
             {
+                if (vorp_inventoryClient.userWeapons[weaponId].getUsed())
+                {
+                    API.RemoveWeaponFromPed(API.PlayerPedId(),
+                        (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[weaponId].getName()),
+                        true,0); //Falta revisar que pasa con esto
+                }
                 vorp_inventoryClient.userWeapons.Remove(weaponId);
             }
             NUIEvents.LoadInv();
@@ -23,9 +30,10 @@ namespace vorpinventory_cl
         
         private void subItem(string name, int cuantity)
         {
+            Debug.WriteLine($"Me llaman con cantidad a poner = {cuantity}");
             if (vorp_inventoryClient.useritems.ContainsKey(name))
             {
-                vorp_inventoryClient.useritems[name].quitCount(cuantity);
+                vorp_inventoryClient.useritems[name].setCount(cuantity);
                 if (vorp_inventoryClient.useritems[name].getCount() == 0)
                 {
                     vorp_inventoryClient.useritems.Remove(name);
