@@ -13,22 +13,22 @@ namespace vorpinventory_sv
             EventHandlers["vorpCore:registerWeapon"] += new Action<int,string>(registerWeapon);
             EventHandlers["vorpCore:addItem"] += new Action<int,string,int>(addItem);
             EventHandlers["vorpCore:subItem"] += new Action<int,string,int>(subItem);
-            EventHandlers["vorpCore:pruebaCallback"] += new Action<Player,NetworkCallbackDelegate,string>(prueba);
+            EventHandlers["vorpCore:getItemCount"] += new Action<int,CallbackDelegate,string>(getItems);
         }
 
-        private void prueba([FromSource]Player p, NetworkCallbackDelegate funcion,string item)
+        private void getItems(int source, CallbackDelegate funcion,string item)
         {
+            PlayerList pl = new PlayerList();
+            Player p = pl[source];
             string identifier = "steam:" + p.Identifiers["steam"];
             if (ItemDatabase.usersInventory[identifier].ContainsKey(item))
             {
-                object a = 2;
-                object[] args = new[] {a};
-                funcion.Invoke(args);
+                funcion.Invoke(ItemDatabase.usersInventory[identifier][item].getCount());
             }
-            // else
-            // {
-            //     funcion.Invoke(0);
-            // }
+            else
+            {
+                funcion.Invoke(0);
+            }
         }
         private void addItem(int player, string name, int cuantity)
         {

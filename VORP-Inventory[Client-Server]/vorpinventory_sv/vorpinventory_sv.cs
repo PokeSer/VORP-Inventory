@@ -183,7 +183,7 @@ namespace vorpinventory_sv
                 ["coords"] = position
             });
         }
-        
+      
         //Weapon methods
         private void serverDropWeapon([FromSource] Player source,int weaponId)
         {

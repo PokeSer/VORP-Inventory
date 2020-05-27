@@ -97,7 +97,7 @@
             });
         }
 
-        function dropGetHowMany(item, type, hash,id) {
+        function dropGetHowMany(item, type, hash, id) {
             if (type != "item_weapon") {
                 dialog.prompt({
                     title: "Cantidad",
@@ -127,7 +127,7 @@
             }
         }
 
-        function giveGetHowMany(item, type, hash,id) {
+        function giveGetHowMany(item, type, hash, id) {
             if (type != "item_weapon") {
                 dialog.prompt({
                     title: "Cantidad",
@@ -174,7 +174,7 @@
                     count = count + " / " + item.limit;
                 }
 
-                $("#inventoryElement").append("<div data-label='" + item.label + "' style='background-image: url(\"img/items/" + item.name + ".png\"); background-size: 60px 60px; background-repeat: no-repeat; background-position: center;' id='item-" + index + "' class='item'><div class='count'>" + count + "</div><div class='text'></div></div>")
+                $("#inventoryElement").append("<div data-label='" + item.label + "' style='background-image: url(\"img/items/" + item.name.toLowerCase() + ".png\"); background-size: 60px 60px; background-repeat: no-repeat; background-position: center;' id='item-" + index + "' class='item'><div class='count'>" + count + "</div><div class='text'></div></div>")
 
                 var data = [];
 
@@ -186,7 +186,8 @@
                                 item: item.name,
                                 type: item.type,
                                 hash: item.hash,
-                                amount: item.count
+                                amount: item.count,
+                                id: item.id
                             }));
                         }
                     });
@@ -196,14 +197,14 @@
                     data.push({
                         text: "Dar",
                         action: function() {
-                            giveGetHowMany(item.name, item.type, item.hash,item.id);
+                            giveGetHowMany(item.name, item.type, item.hash, item.id);
                         }
                     });
 
                     data.push({
                         text: "Soltar",
                         action: function() {
-                            dropGetHowMany(item.name, item.type, item.hash,item.id);
+                            dropGetHowMany(item.name, item.type, item.hash, item.id);
                         }
                     });
                 }
