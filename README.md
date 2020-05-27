@@ -19,3 +19,18 @@ Inventory System
 * When dropping or giving weapon you give it with all modifications and ammo.
 * Also has use of items.
 
+## API For Lua
+For import the api on top of your server resource file
+```vorpInventory = exports.vorp_inventory:inventoryApi()```
+this will return a table to simply use inventory
+* Uses:
+* Quit weapon
+``` vorpInventory.subWeapon(source,weaponId)```
+* Create and give new Weapon
+``` vorpInventory.addWeapon(source,weaponId)```
+* Add an item with cuantity
+``` vorpInventory.addItem(source,item,cuantity)```
+* Sub item with cuantity
+``` vorpInventory.subItem(source,item,subCuantity)```
+* Returns item cuantity
+``` vorpInventory.getItemCuantity(source,item)```

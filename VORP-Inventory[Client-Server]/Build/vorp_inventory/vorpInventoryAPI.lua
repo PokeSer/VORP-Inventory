@@ -5,7 +5,7 @@ function inventoryApi()
         TriggerEvent("vorpCore:subWeapon",source,tonumber(weaponid))
     end
 
-    self.giveWeapon = function(source,weaponName)
+    self.addWeapon = function(source,weaponName)
         TriggerEvent("vorpCore:registerWeapon",source,tostring(weaponName))
     end
 
