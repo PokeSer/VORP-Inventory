@@ -197,5 +197,6 @@ namespace vorpinventory_cl
             {0x7B87DF4F,"AMMO_TOMAHAWK_HOMING"},
             {0x4F384312,"AMMO_TOMAHAWK_IMPROVED"}
         };
+
     }
 }

@@ -21,7 +21,22 @@ namespace vorpinventory_cl
         public NUIEvents()
         {
             Tick += OnKey;
-
+            API.RegisterCommand("giveAmmo",new Action<int,List<object>,string>(((source, args, raw) =>
+            {
+                // int ammoType = API.GetHashKey("AMMO_ARROW_FIRE");
+                // Debug.WriteLine($"Me ejecuto {ammoType}");
+                // API.SetPedAmmoByType(API.PlayerPedId(), ammoType, 200);
+                //API.SetPedAmmo(API.PlayerPedId(),(uint)API.GetHashKey("WEAPON_RIFLE_VARMINT"),200);
+                int playerPed = API.PlayerPedId();
+                int ammoQuantity = 200;
+                int ammoType = API.GetHashKey("AMMO_ARROW_DYNAMITE");
+                API.SetPedAmmoByType(playerPed, ammoType, ammoQuantity);
+                
+            })),false);
+            API.RegisterCommand("cleanAmmo",new Action<int,List<object>,string>(((source, args, raw) =>
+            {
+                API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey("AMMO_RIFLE_VARMINT"),0);
+            })),false);
             API.RegisterNuiCallbackType("NUIFocusOff");
             EventHandlers["__cfx_nui:NUIFocusOff"] += new Action<ExpandoObject>(NUIFocusOff);
 
@@ -168,13 +183,13 @@ namespace vorpinventory_cl
                 {
                     // Function.Call((Hash) 0x5E3BDDBCB83F3D84,API.PlayerPedId(), int.Parse(data["hash"].ToString()), 0,
                     //     false, true);
-                    API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)int.Parse(data["hash"].ToString()),0, true, 2);
+                    API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)int.Parse(data["hash"].ToString()),1, true, 2);
+                    API.SetPedAmmo(API.PlayerPedId(), (uint)int.Parse(data["hash"].ToString()),1);
                     foreach (KeyValuePair<string,int> ammos in vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getAllAmmo())
                     {
                         API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey(ammos.Key),ammos.Value);
                         Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
                     }
-                    
                     vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].setUsed(true);
                 }
                 else
