@@ -14,6 +14,18 @@ namespace vorpinventory_cl
         {
             
         }
+
+        public static void cleanAmmo(int id)
+        {
+            if (vorp_inventoryClient.userWeapons.ContainsKey(id))
+            {
+                API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()),0);
+                foreach (KeyValuePair<string,int> ammo in vorp_inventoryClient.userWeapons[id].getAllAmmo())
+                {
+                    API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey(ammo.Key),0);
+                }
+            }
+        }
         
         public static void addItems(string name, int cuantity)
         {

@@ -54,6 +54,23 @@ namespace vorpinventory_cl
 
             API.RegisterNuiCallbackType("GetNearPlayers");
             EventHandlers["__cfx_nui:GetNearPlayers"] += new Action<ExpandoObject>(NUIGetNearPlayers);
+            
+            API.RegisterNuiCallbackType("UnequipWeapon");
+            EventHandlers["__cfx_nui:UnequipWeapon"] += new Action<ExpandoObject>(NUIUnequipWeapon);
+        }
+
+        private void NUIUnequipWeapon(ExpandoObject obj)
+        {
+            Dictionary<string, object> data = Utils.expandoProcessing(obj);
+            if (vorp_inventoryClient.userWeapons.ContainsKey(int.Parse(data["id"].ToString())))
+            {
+                vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].setUsed(false);
+                int hash = API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName());
+                API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)hash,true,0);
+                Utils.cleanAmmo(int.Parse(data["id"].ToString()));
+            }
+
+            LoadInv();
         }
 
         private void NUIGetNearPlayers(ExpandoObject obj)
@@ -183,13 +200,14 @@ namespace vorpinventory_cl
                 {
                     // Function.Call((Hash) 0x5E3BDDBCB83F3D84,API.PlayerPedId(), int.Parse(data["hash"].ToString()), 0,
                     //     false, true);
-                    API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)int.Parse(data["hash"].ToString()),1, true, 2);
-                    API.SetPedAmmo(API.PlayerPedId(), (uint)int.Parse(data["hash"].ToString()),1);
+                    API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)int.Parse(data["hash"].ToString()),0, true, 2);
+                    API.SetPedAmmo(API.PlayerPedId(), (uint)int.Parse(data["hash"].ToString()),0);
                     foreach (KeyValuePair<string,int> ammos in vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getAllAmmo())
                     {
                         API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey(ammos.Key),ammos.Value);
                         Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
                     }
+
                     vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].setUsed(true);
                 }
                 else
@@ -197,6 +215,8 @@ namespace vorpinventory_cl
                     Debug.WriteLine($"No uso el arma {data["id"]}");
                     TriggerEvent("vorp:Tip", "Ya tienes equipada esa arma",3000);
                 }
+
+                LoadInv();
             }
         }
 
@@ -301,6 +321,7 @@ namespace vorpinventory_cl
                 weapon.Add("usable",true);
                 weapon.Add("canRemove",true);
                 weapon.Add("id",userwp.Value.getId());
+                weapon.Add("used",userwp.Value.getUsed());
                 Debug.WriteLine(userwp.Value.getId().ToString());
                 gg.Add(weapon);
             }
