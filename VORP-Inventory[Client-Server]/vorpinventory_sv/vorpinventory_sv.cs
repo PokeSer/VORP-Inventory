@@ -21,6 +21,7 @@ namespace vorpinventory_sv
             EventHandlers["vorpinventory:serverDropWeapon"] += new Action<Player,int>(serverDropWeapon);
             EventHandlers["vorpinventory:sharePickupServer"] += new Action<string,int,int,Vector3,int>(sharePickupServer);
             EventHandlers["vorpinventory:onPickup"] += new Action<Player,int>(onPickup);
+            EventHandlers["vorpinventory:setUsedWeapon"] += new Action<Player,int,bool>(usedWeapon);
             Tick += saveInventoryItems;
         }
         public static Dictionary<int,Dictionary<string,dynamic>> Pickups = new Dictionary<int, Dictionary<string, dynamic>>();
@@ -58,7 +59,14 @@ namespace vorpinventory_sv
             // }
         }
 
-
+        private void usedWeapon([FromSource]Player source,int id,bool used)
+        {
+            int Used = used ? 1 : 0;
+            Exports["ghmattimysql"]
+                .execute(
+                    $"UPDATE loadout SET used = '{Used}' WHERE id=?",
+                    new[] {id});
+        }
         //Sub items for other scripts
         private void subItem(int player , string name, int cuantity)
         {

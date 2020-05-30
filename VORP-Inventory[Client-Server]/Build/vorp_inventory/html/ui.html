@@ -177,7 +177,17 @@
                 $("#inventoryElement").append("<div data-label='" + item.label + "' style='background-image: url(\"img/items/" + item.name.toLowerCase() + ".png\"); background-size: 60px 60px; background-repeat: no-repeat; background-position: center;' id='item-" + index + "' class='item'><div class='count'>" + count + "</div><div class='text'></div></div>")
 
                 var data = [];
-
+                if(item.used){
+                    data.push({
+                        text:"Unequip",
+                        action:function(){
+                            $.post("http://vorp_inventory/UnequipWeapon",JSON.stringify({
+                                item: item.name,
+                                id: item.id
+                            }));
+                        }
+                    })
+                }
                 if (item.usable) {
                     data.push({
                         text: "Use",

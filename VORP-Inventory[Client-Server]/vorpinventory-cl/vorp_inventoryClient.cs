@@ -138,6 +138,7 @@ namespace vorpinventory_cl
 
         private void getLoadout(dynamic loadout)
         {
+            Debug.WriteLine(API.PlayerPedId().ToString());
             foreach (var row in loadout)
             {
                 JArray componentes = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
@@ -153,8 +154,18 @@ namespace vorpinventory_cl
                 {
                     ammos.Add(amunition.Name,int.Parse(amunition.Value.ToString()));
                 }
-                WeaponClass auxweapon = new WeaponClass(int.Parse(row.id.ToString()),row.identifier.ToString(),row.name.ToString(),ammos,components,false);
+                Debug.WriteLine(row.used.ToString());
+                bool auused = false;
+                if (row.used == 1)
+                {
+                    auused = true;
+                }
+                WeaponClass auxweapon = new WeaponClass(int.Parse(row.id.ToString()),row.identifier.ToString(),row.name.ToString(),ammos,components,auused);
                 userWeapons.Add(auxweapon.getId(),auxweapon);
+                if (auxweapon.getUsed())
+                {
+                    Utils.useWeapon(auxweapon.getId());
+                }
             }
         }
 

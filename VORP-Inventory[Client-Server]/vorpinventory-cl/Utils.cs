@@ -26,6 +26,20 @@ namespace vorpinventory_cl
                 }
             }
         }
+
+        public static void useWeapon(int id)
+        {
+            API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()),0, true, 2);
+            API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()),0);
+            foreach (KeyValuePair<string,int> ammos in vorp_inventoryClient.userWeapons[id].getAllAmmo())
+            {
+                API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey(ammos.Key),ammos.Value);
+                Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
+            }
+
+            vorp_inventoryClient.userWeapons[id].setUsed(true);
+            TriggerServerEvent("vorpinventory:setUsedWeapon",id,vorp_inventoryClient.userWeapons[id].getUsed());
+        }
         
         public static void addItems(string name, int cuantity)
         {

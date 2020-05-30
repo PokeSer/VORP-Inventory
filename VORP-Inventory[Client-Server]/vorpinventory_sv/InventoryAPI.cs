@@ -128,7 +128,7 @@ namespace vorpinventory_sv
                 .execute(
                     "INSERT INTO loadout (`identifier`,`name`) VALUES (?,?)",new object[] {identifier,name});
             
-            WeaponClass auxWeapon = new WeaponClass(weaponId,identifier,name,ammoaux,auxcomponents);
+            WeaponClass auxWeapon = new WeaponClass(weaponId,identifier,name,ammoaux,auxcomponents,false);
             ItemDatabase.userWeapons.Add(weaponId,auxWeapon);
             if (targetIsPlayer)
             {

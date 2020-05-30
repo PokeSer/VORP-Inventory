@@ -77,7 +77,13 @@ namespace vorpinventory_sv
                             { 
                                 components.Add(x.ToString());
                             }
-                            wp = new WeaponClass(int.Parse(row.id.ToString()),row.identifier.ToString(),row.name.ToString(),amunition,components);
+
+                            bool auused = false;
+                            if (row.used == 1)
+                            {
+                                auused = true;
+                            }
+                            wp = new WeaponClass(int.Parse(row.id.ToString()),row.identifier.ToString(),row.name.ToString(),amunition,components,auused);
                             userWeapons.Add(wp.getId(),wp);
                         }
                     }));

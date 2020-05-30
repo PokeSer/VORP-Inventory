@@ -65,6 +65,8 @@ namespace vorpinventory_cl
             if (vorp_inventoryClient.userWeapons.ContainsKey(int.Parse(data["id"].ToString())))
             {
                 vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].setUsed(false);
+                TriggerServerEvent("vorpinventory:setUsedWeapon",int.Parse(data["id"].ToString()),
+                    vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed());
                 int hash = API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName());
                 API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)hash,true,0);
                 Utils.cleanAmmo(int.Parse(data["id"].ToString()));
@@ -165,6 +167,8 @@ namespace vorpinventory_cl
                             {
                                 if (vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].getUsed())
                                 {
+                                    vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].setUsed(false);
+                                    TriggerServerEvent("vorpinventory:setUsedWeapon",vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].getId(),false);
                                     API.RemoveWeaponFromPed(API.PlayerPedId(),
                                         (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].getName()),
                                         true,0); //Falta revisar que pasa con esto
@@ -209,6 +213,7 @@ namespace vorpinventory_cl
                     }
 
                     vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].setUsed(true);
+                    TriggerServerEvent("vorpinventory:setUsedWeapon",int.Parse(data["id"].ToString()),vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed());
                 }
                 else
                 {
@@ -251,6 +256,8 @@ namespace vorpinventory_cl
                     WeaponClass wp = vorp_inventoryClient.userWeapons[int.Parse(aux["id"].ToString())];
                     if (wp.getUsed())
                     { 
+                        wp.setUsed(false);
+                        TriggerServerEvent("vorpinventory:setUsedWeapon",wp.getId(),false);
                         API.RemoveWeaponFromPed(API.PlayerPedId(),(uint)API.GetHashKey(wp.getName()),
                             true,0);
                     }
