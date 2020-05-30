@@ -22,43 +22,24 @@ namespace vorpinventory_sv
             EventHandlers["vorpinventory:sharePickupServer"] += new Action<string,int,int,Vector3,int>(sharePickupServer);
             EventHandlers["vorpinventory:onPickup"] += new Action<Player,int>(onPickup);
             EventHandlers["vorpinventory:setUsedWeapon"] += new Action<Player,int,bool>(usedWeapon);
-            Tick += saveInventoryItems;
+            EventHandlers["playerDropped"] += new Action<Player, string>(SaveInventoryItems);
         }
         public static Dictionary<int,Dictionary<string,dynamic>> Pickups = new Dictionary<int, Dictionary<string, dynamic>>();
 
-        [Tick]
-        private async Task saveInventoryItems()
+        private void SaveInventoryItems([FromSource] Player p, string something)
         {
-            await Delay(90000);
-            foreach (var uinventory in ItemDatabase.usersInventory)
+            string identifier = "steam:" + p.Identifiers["steam"];
+            Dictionary<string,int> items = new Dictionary<string, int>();
+             foreach (var item in ItemDatabase.usersInventory[identifier])
             {
-                await Delay(30);
-                Dictionary<string,int> items = new Dictionary<string, int>();
-                 foreach (var item in uinventory.Value)
-                {
-                    items.Add(item.Key,item.Value.getCount());
-                }
-                 
-                if (items.Count > 0) 
-                {
-                     string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
-                     Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE identifier=?", new[] {uinventory.Key});
-                }
+                items.Add(item.Key,item.Value.getCount());
             }
-            // foreach (KeyValuePair<int,WeaponClass> weapon in ItemDatabase.userWeapons)
-            // {
-            //     string components = Newtonsoft.Json.JsonConvert.SerializeObject(weapon.Value.getAllComponents());
-            //     string ammos = Newtonsoft.Json.JsonConvert.SerializeObject(weapon.Value.getAllAmmo());
-            //     int id = weapon.Value.getId();
-            //     string propietary = weapon.Value.getPropietary();
-            //     string name = weapon.Value.getName();
-            //     Exports["ghmattimysql"]
-            //         .execute(
-            //             $"UPDATE loadout SET identifier = '{propietary}',ammo = '{ammos}',components='{components}' WHERE id=?",
-            //             new[] {id});
-            // }
+            if (items.Count > 0) 
+            {
+                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
+                 Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE identifier=?", new[] {p.Identifiers["steam"]});
+            }
         }
-
         private void usedWeapon([FromSource]Player source,int id,bool used)
         {
             int Used = used ? 1 : 0;
