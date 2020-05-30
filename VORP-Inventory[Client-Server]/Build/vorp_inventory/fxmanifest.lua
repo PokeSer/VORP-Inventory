@@ -9,7 +9,7 @@ server_scripts {
   'vorpinventory_sv.net.dll',
   'vorpInventoryAPI.lua'
 }
-server_export 'inventoryApi'
+server_exports{'vorp_inventoryApi'} 
 
 files{
   'Newtonsoft.Json.dll',

@@ -21,7 +21,7 @@ Inventory System
 
 ## API For Lua
 For import the api on top of your server resource file
-```vorpInventory = exports.vorp_inventory:inventoryApi()```
+```vorpInventory = exports.vorp_inventory:vorp_inventoryApi()```
 this will return a table to simply use inventory
 * Uses:
 * Quit weapon
