@@ -30,14 +30,17 @@ namespace vorpinventory_sv
         {
             string identifier = "steam:" + p.Identifiers["steam"];
             Dictionary<string,int> items = new Dictionary<string, int>();
-             foreach (var item in ItemDatabase.usersInventory[identifier])
+            if (ItemDatabase.usersInventory.ContainsKey(identifier))
             {
-                items.Add(item.Key,item.Value.getCount());
-            }
-            if (items.Count > 0) 
-            {
-                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
-                 Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE identifier=?", new[] {p.Identifiers["steam"]});
+                foreach (var item in ItemDatabase.usersInventory[identifier])
+                {
+                    items.Add(item.Key,item.Value.getCount());
+                }
+                if (items.Count > 0) 
+                {
+                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
+                    Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE identifier=?", new[] {identifier});
+                }   
             }
         }
         private void usedWeapon([FromSource]Player source,int id,bool used)
