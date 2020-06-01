@@ -188,10 +188,10 @@ namespace vorpinventory_cl
             Debug.WriteLine("Llego");
             Dictionary<string, object> data = Utils.expandoProcessing(obj);
             Debug.WriteLine(obj.ToString());
-            foreach (var VARIABLE in data)
-            {
-                Debug.WriteLine($"{VARIABLE.Key}: {VARIABLE.Value}");
-            }
+            // foreach (var VARIABLE in data)
+            // {
+            //     Debug.WriteLine($"{VARIABLE.Key}: {VARIABLE.Value}");
+            // }
             if (data["type"].ToString() == "item_standard")
             {
                 TriggerServerEvent("vorp:use"+data["item"],int.Parse(data["count"].ToString()));

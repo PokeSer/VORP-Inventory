@@ -21,13 +21,16 @@ namespace vorpinventory_sv
             PlayerList pl = new PlayerList();
             Player p = pl[source];
             string identifier = "steam:" + p.Identifiers["steam"];
-            if (ItemDatabase.usersInventory[identifier].ContainsKey(item))
+            if (ItemDatabase.usersInventory.ContainsKey(identifier))
             {
-                funcion.Invoke(ItemDatabase.usersInventory[identifier][item].getCount());
-            }
-            else
-            {
-                funcion.Invoke(0);
+                if (ItemDatabase.usersInventory[identifier].ContainsKey(item))
+                {
+                    funcion.Invoke(ItemDatabase.usersInventory[identifier][item].getCount());
+                }
+                else
+                {
+                    funcion.Invoke(0);
+                }
             }
         }
         private void addItem(int player, string name, int cuantity)
@@ -35,31 +38,39 @@ namespace vorpinventory_sv
             PlayerList pl = new PlayerList();
             Player p = pl[player];
             string identifier = "steam:" + p.Identifiers["steam"];
-            if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
+            if (!ItemDatabase.usersInventory.ContainsKey(identifier))
             {
-                if (int.Parse(cuantity.ToString()) > 0)
-                {
-                    ItemDatabase.usersInventory[identifier][name].addCount(int.Parse(cuantity.ToString()));
-                    Debug.WriteLine(ItemDatabase.usersInventory[identifier][name].getCount().ToString());
-                }
+                Dictionary<string,ItemClass> userinv = new Dictionary<string, ItemClass>();
+                ItemDatabase.usersInventory.Add(identifier,userinv);
             }
-            else
+
+            if (ItemDatabase.usersInventory.ContainsKey(identifier))
             {
-                if (ItemDatabase.svItems.ContainsKey(name))
+                if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
                 {
-                    ItemDatabase.usersInventory[identifier].Add(name,new ItemClass(int.Parse(cuantity.ToString()),ItemDatabase.svItems[name].getLimit(), 
-                        ItemDatabase.svItems[name].getLabel(),name,"item_inventory",true,ItemDatabase.svItems[name].getCanRemove()));
+                    if (int.Parse(cuantity.ToString()) > 0)
+                    {
+                        ItemDatabase.usersInventory[identifier][name].addCount(int.Parse(cuantity.ToString()));
+                        Debug.WriteLine(ItemDatabase.usersInventory[identifier][name].getCount().ToString());
+                    }
                 }
-            }
-            
-            if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
-            {
-                int limit = ItemDatabase.usersInventory[identifier][name].getLimit();
-                string label = ItemDatabase.usersInventory[identifier][name].getLabel();
-                string type = ItemDatabase.usersInventory[identifier][name].getType();
-                bool usable = ItemDatabase.usersInventory[identifier][name].getUsable();
-                bool canRemove = ItemDatabase.usersInventory[identifier][name].getCanRemove();
-                p.TriggerEvent("vorpCoreClient:addItem",cuantity,limit,label,name,type,usable,canRemove);//Pass item to client
+                else
+                {
+                    if (ItemDatabase.svItems.ContainsKey(name))
+                    {
+                        ItemDatabase.usersInventory[identifier].Add(name,new ItemClass(int.Parse(cuantity.ToString()),ItemDatabase.svItems[name].getLimit(), 
+                            ItemDatabase.svItems[name].getLabel(),name,"item_inventory",true,ItemDatabase.svItems[name].getCanRemove()));
+                    }
+                }
+                if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
+                {
+                    int limit = ItemDatabase.usersInventory[identifier][name].getLimit();
+                    string label = ItemDatabase.usersInventory[identifier][name].getLabel();
+                    string type = ItemDatabase.usersInventory[identifier][name].getType();
+                    bool usable = ItemDatabase.usersInventory[identifier][name].getUsable();
+                    bool canRemove = ItemDatabase.usersInventory[identifier][name].getCanRemove();
+                    p.TriggerEvent("vorpCoreClient:addItem",cuantity,limit,label,name,type,usable,canRemove);//Pass item to client
+                }
             }
         }
         
@@ -68,18 +79,21 @@ namespace vorpinventory_sv
             PlayerList pl = new PlayerList();
             Player p = pl[player];
             string identifier = "steam:" + p.Identifiers["steam"];
-            if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
+            if (ItemDatabase.usersInventory.ContainsKey(identifier))
             {
-                if (cuantity <= ItemDatabase.usersInventory[identifier][name].getCount())
+                if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
                 {
-                    ItemDatabase.usersInventory[identifier][name].quitCount(cuantity);
-                }
-                p.TriggerEvent("vorpCoreClient:subItem",name,ItemDatabase.usersInventory[identifier][name].getCount());
-                if (ItemDatabase.usersInventory[identifier][name].getCount() == 0)
-                {
-                    ItemDatabase.usersInventory[identifier].Remove(name);
-                }
+                    if (cuantity <= ItemDatabase.usersInventory[identifier][name].getCount())
+                    {
+                        ItemDatabase.usersInventory[identifier][name].quitCount(cuantity);
+                    }
+                    p.TriggerEvent("vorpCoreClient:subItem",name,ItemDatabase.usersInventory[identifier][name].getCount());
+                    if (ItemDatabase.usersInventory[identifier][name].getCount() == 0)
+                    {
+                        ItemDatabase.usersInventory[identifier].Remove(name);
+                    }
                 
+                }
             }
         }
 

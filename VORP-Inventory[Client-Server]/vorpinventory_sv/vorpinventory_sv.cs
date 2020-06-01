@@ -57,16 +57,19 @@ namespace vorpinventory_sv
             PlayerList pl = new PlayerList();
             Player p = pl[player];
             string identifier = "steam:" + p.Identifiers["steam"];
-            if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
+            if (ItemDatabase.usersInventory.ContainsKey(identifier))
             {
-                if (cuantity <= ItemDatabase.usersInventory[identifier][name].getCount())
+                if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
                 {
-                    ItemDatabase.usersInventory[identifier][name].quitCount(cuantity);
-                }
+                    if (cuantity <= ItemDatabase.usersInventory[identifier][name].getCount())
+                    {
+                        ItemDatabase.usersInventory[identifier][name].quitCount(cuantity);
+                    }
 
-                if (ItemDatabase.usersInventory[identifier][name].getCount() == 0)
-                {
-                    ItemDatabase.usersInventory[identifier].Remove(name);
+                    if (ItemDatabase.usersInventory[identifier][name].getCount() == 0)
+                    {
+                        ItemDatabase.usersInventory[identifier].Remove(name);
+                    }
                 }
             }
         }
@@ -77,15 +80,28 @@ namespace vorpinventory_sv
             PlayerList pl = new PlayerList();
             Player p = pl[player];
             string identifier = "steam:" + p.Identifiers["steam"];
-            if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
+            if (ItemDatabase.usersInventory.ContainsKey(identifier))
             {
-                if (cuantity > 0)
+                if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
                 {
-                    ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
+                    if (cuantity > 0)
+                    {
+                        ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
+                    }
+                }
+                else
+                {
+                    if (ItemDatabase.svItems.ContainsKey(name))
+                    {
+                        ItemDatabase.usersInventory[identifier].Add(name,new ItemClass(cuantity,ItemDatabase.svItems[name].getLimit(), 
+                            ItemDatabase.svItems[name].getLabel(),name,"item_inventory",true,ItemDatabase.svItems[name].getCanRemove()));
+                    }
                 }
             }
             else
             {
+                Dictionary<string,ItemClass> userinv = new Dictionary<string, ItemClass>();
+                ItemDatabase.usersInventory.Add(identifier,userinv);
                 if (ItemDatabase.svItems.ContainsKey(name))
                 {
                     ItemDatabase.usersInventory[identifier].Add(name,new ItemClass(cuantity,ItemDatabase.svItems[name].getLimit(), 
@@ -244,7 +260,14 @@ namespace vorpinventory_sv
             }));
             Exports["ghmattimysql"].execute("SELECT * FROM loadout WHERE identifier = ?;", new[] {steamId},new Action<dynamic>((result) =>
             {
-                source.TriggerEvent("vorpInventory:giveLoadout",result);
+                if (result.Count == 0)
+                {
+                    Debug.WriteLine($"{steamId} doesn`t have loadout yet.");
+                }
+                else
+                {
+                    source.TriggerEvent("vorpInventory:giveLoadout",result);
+                }
             }));
         }
     }
