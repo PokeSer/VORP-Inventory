@@ -6,6 +6,11 @@ namespace vorpinventory_sv
 {
     public class InventoryAPI:BaseScript
     {
+        //TODO API PARA COGER LAS BALAS QUE TIENE UN ARMA SEGUN EL TIPO
+        //TODO DEVOLVER TODAS LAS BALAS QUE TIENE UN ARMA
+        //TODO DEVOLVER TODOS LOS COMPONENTES QUE TIENE UN ARMA
+        //TODO PONERLE MAS BALAS A UN ARMA 
+        //TODO QUITARLE LAS BALAS AL ARMA
         public InventoryAPI()
         {
             EventHandlers["vorpCore:subWeapon"] += new Action<int, int>(subWeapon);
@@ -16,6 +21,61 @@ namespace vorpinventory_sv
             EventHandlers["vorpCore:getItemCount"] += new Action<int,CallbackDelegate,string>(getItems);
         }
 
+        private void getUserWeapons(int player, int weaponId, CallbackDelegate function)
+        {
+            
+        }
+        
+        private void getWeaponBullets(int player, int weaponId, CallbackDelegate function)
+        {
+            
+        }
+        
+        private void getWeaponComponents(int player, int weaponId, CallbackDelegate function)
+        {
+            
+        }
+        
+        private void addBullets(int player, int weaponId, string bulletType, int cuantity)
+        {
+            PlayerList pl = new PlayerList();
+            Player p = pl[player];
+            string identifier = "steam:" + p.Identifiers["steam"];
+
+            if (ItemDatabase.userWeapons.ContainsKey(weaponId))
+            {
+                if (ItemDatabase.userWeapons[weaponId].getPropietary() == identifier)
+                {
+                    ItemDatabase.userWeapons[weaponId].subAmmo(cuantity,bulletType);
+                    p.TriggerEvent("vorpCoreClient:addBullets",weaponId,bulletType,cuantity);
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Error al meter balas en un arma identificador no valido o arma no encontrada");
+            }
+        }
+
+        private void subBullets(int player, int weaponId, string bulletType, int cuantity)
+        {
+            PlayerList pl = new PlayerList();
+            Player p = pl[player];
+            string identifier = "steam:" + p.Identifiers["steam"];
+
+            if (ItemDatabase.userWeapons.ContainsKey(weaponId))
+            {
+                if (ItemDatabase.userWeapons[weaponId].getPropietary() == identifier)
+                {
+                    ItemDatabase.userWeapons[weaponId].subAmmo(cuantity,bulletType);
+                    p.TriggerEvent("vorpCoreClient:subBullets",weaponId,bulletType,cuantity);
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Error al meter balas en un arma identificador no valido o arma no encontrada");
+            }
+        }
+        
         private void getItems(int source, CallbackDelegate funcion,string item)
         {
             PlayerList pl = new PlayerList();
@@ -149,7 +209,6 @@ namespace vorpinventory_sv
                 p.TriggerEvent("vorpinventory:receiveWeapon",weaponId,ItemDatabase.userWeapons[weaponId].getPropietary(),
                     ItemDatabase.userWeapons[weaponId].getName(),ItemDatabase.userWeapons[weaponId].getAllAmmo(),ItemDatabase.userWeapons[weaponId].getAllComponents());
             }
-
         }
         private void giveWeapon(int player, int weapId, int target)
         {
@@ -186,7 +245,7 @@ namespace vorpinventory_sv
                 }
             }
         }
-
+        
         private void subWeapon(int player, int weapId)
         {
             PlayerList pl = new PlayerList();

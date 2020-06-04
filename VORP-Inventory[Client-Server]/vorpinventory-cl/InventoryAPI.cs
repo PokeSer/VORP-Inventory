@@ -6,13 +6,36 @@ namespace vorpinventory_cl
 {
     public class InventoryAPI:BaseScript
     {
+        //TODO HACER QUE CUANDO LA TENGAS COGIDA SI TE DAN O TE QUITAN MUNICION TE LA QUITE Y TE LA AÑADA TAMBIEN AL PJ
         public InventoryAPI()
         {
             EventHandlers["vorpCoreClient:addItem"] += new Action<int,int,string,string,string,bool,bool>(addItem);
             EventHandlers["vorpCoreClient:subItem"] += new Action<string,int>(subItem);
             EventHandlers["vorpCoreClient:subWeapon"] += new Action<int>(subWeapon);
+            EventHandlers["vorpCoreClient:addBullets"] += new Action<int,string,int>(addWeaponBullets);
+            EventHandlers["vorpCoreClient:subBullets"]+= new Action<int,string,int>(subWeaponBullets);
         }
-
+        
+        
+        
+        private void subWeaponBullets(int weaponId, string bulletType, int cuantity)
+        {
+            if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
+            {
+                vorp_inventoryClient.userWeapons[weaponId].subAmmo(cuantity,bulletType);
+            }
+            NUIEvents.LoadInv();
+        }
+        
+        private void addWeaponBullets(int weaponId, string bulletType, int cuantity)
+        {
+            if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
+            {
+                vorp_inventoryClient.userWeapons[weaponId].addAmmo(cuantity,bulletType);
+            }
+            NUIEvents.LoadInv();
+        }
+        
         private void subWeapon(int weaponId)
         {
             if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
