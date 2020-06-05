@@ -211,6 +211,11 @@ namespace vorpinventory_cl
                         API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey(ammos.Key),ammos.Value);
                         Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
                     }
+                    foreach (string componente in vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getAllComponents())
+                    {
+                        Function.Call((Hash)0x74C9090FDD1BB48E,API.PlayerPedId(),(uint)API.GetHashKey(componente),
+                            (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName()),true);//Hay que mirar que hace el true
+                    }
 
                     vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].setUsed(true);
                     TriggerServerEvent("vorpinventory:setUsedWeapon",int.Parse(data["id"].ToString()),vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed());
