@@ -28,6 +28,31 @@ namespace vorpinventory_sv
             
         }
 
+        private void subComponent(int player, int weaponId, string component, CallbackDelegate function)
+        {
+            PlayerList pl = new PlayerList();
+            Player p = pl[player];
+            string identifier = "steam:" + p.Identifiers["steam"];
+
+            if (ItemDatabase.userWeapons.ContainsKey(weaponId))
+            {
+                if (ItemDatabase.userWeapons[weaponId].getPropietary() == identifier)
+                {
+                    ItemDatabase.userWeapons[weaponId].quitComponent(component);
+                    Exports["ghmattimysql"]
+                        .execute(
+                            $"UPDATE loadout SET components = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.userWeapons[weaponId].getAllComponents())}' WHERE id=?",
+                            new[] {weaponId});
+                    function.Invoke(true);
+                    p.TriggerEvent("vorpCoreClient:subComponent",weaponId,component);
+                }
+                else
+                {
+                    function.Invoke(false);
+                }
+            }
+        }
+        
         private void addComponent(int player, int weaponId, string component,CallbackDelegate function)
         {
             PlayerList pl = new PlayerList();
@@ -39,6 +64,10 @@ namespace vorpinventory_sv
                 if (ItemDatabase.userWeapons[weaponId].getPropietary() == identifier)
                 {
                     ItemDatabase.userWeapons[weaponId].setComponent(component);
+                    Exports["ghmattimysql"]
+                        .execute(
+                            $"UPDATE loadout SET components = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.userWeapons[weaponId].getAllComponents())}' WHERE id=?",
+                            new[] {weaponId});
                     function.Invoke(true);
                     p.TriggerEvent("vorpCoreClient:addComponent",weaponId,component);
                 }
@@ -55,13 +84,13 @@ namespace vorpinventory_sv
             Player p = pl[player];
             string identifier = "steam:" + p.Identifiers["steam"];
             
-            List<WeaponClass> userWeapons = new List<WeaponClass>();
-
+            List<string> userWeapons = new List<string>();
+            
             foreach (KeyValuePair<int,WeaponClass> weapon in ItemDatabase.userWeapons)
             {
                 if (weapon.Value.getPropietary() == identifier)
                 {
-                    userWeapons.Add(weapon.Value);
+                    userWeapons.Add(Newtonsoft.Json.JsonConvert.SerializeObject(weapon.Value));
                 }
             }
 
@@ -109,6 +138,10 @@ namespace vorpinventory_sv
                 if (ItemDatabase.userWeapons[weaponId].getPropietary() == identifier)
                 {
                     ItemDatabase.userWeapons[weaponId].subAmmo(cuantity,bulletType);
+                    Exports["ghmattimysql"]
+                        .execute(
+                            $"UPDATE loadout SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.userWeapons[weaponId].getAllAmmo())}' WHERE id=?",
+                            new[] {weaponId});
                     p.TriggerEvent("vorpCoreClient:addBullets",weaponId,bulletType,cuantity);
                 }
             }
@@ -129,6 +162,10 @@ namespace vorpinventory_sv
                 if (ItemDatabase.userWeapons[weaponId].getPropietary() == identifier)
                 {
                     ItemDatabase.userWeapons[weaponId].subAmmo(cuantity,bulletType);
+                    Exports["ghmattimysql"]
+                        .execute(
+                            $"UPDATE loadout SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.userWeapons[weaponId].getAllAmmo())}' WHERE id=?",
+                            new[] {weaponId});
                     p.TriggerEvent("vorpCoreClient:subBullets",weaponId,bulletType,cuantity);
                 }
             }
