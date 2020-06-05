@@ -19,21 +19,83 @@ namespace vorpinventory_sv
             EventHandlers["vorpCore:addItem"] += new Action<int,string,int>(addItem);
             EventHandlers["vorpCore:subItem"] += new Action<int,string,int>(subItem);
             EventHandlers["vorpCore:getItemCount"] += new Action<int,CallbackDelegate,string>(getItems);
+            EventHandlers["vorpCore:subBullets"] += new Action<int,int,string,int>(subBullets);
+            EventHandlers["vorpCore:addBullets"] += new Action<int,int,string,int>(addBullets);
+            EventHandlers["vorpCore:getWeaponComponents"] += new Action<int,int,CallbackDelegate>(getWeaponComponents);
+            EventHandlers["vorpCore:getWeaponBullets"] += new Action<int,int,CallbackDelegate>(getWeaponBullets);
+            EventHandlers["vorpCore:getUserWeapons"] += new Action<int,CallbackDelegate>(getUserWeapons);
+            EventHandlers["vorpCore:addComponent"] += new Action<int,int,string,CallbackDelegate>(addComponent);
+            
         }
 
-        private void getUserWeapons(int player, int weaponId, CallbackDelegate function)
+        private void addComponent(int player, int weaponId, string component,CallbackDelegate function)
         {
+            PlayerList pl = new PlayerList();
+            Player p = pl[player];
+            string identifier = "steam:" + p.Identifiers["steam"];
+
+            if (ItemDatabase.userWeapons.ContainsKey(weaponId))
+            {
+                if (ItemDatabase.userWeapons[weaponId].getPropietary() == identifier)
+                {
+                    ItemDatabase.userWeapons[weaponId].setComponent(component);
+                    function.Invoke(true);
+                    p.TriggerEvent("vorpCoreClient:addComponent",weaponId,component);
+                }
+                else
+                {
+                    function.Invoke(false);
+                }
+            }
+        }
+        
+        private void getUserWeapons(int player, CallbackDelegate function)
+        {
+            PlayerList pl = new PlayerList();
+            Player p = pl[player];
+            string identifier = "steam:" + p.Identifiers["steam"];
             
+            List<WeaponClass> userWeapons = new List<WeaponClass>();
+
+            foreach (KeyValuePair<int,WeaponClass> weapon in ItemDatabase.userWeapons)
+            {
+                if (weapon.Value.getPropietary() == identifier)
+                {
+                    userWeapons.Add(weapon.Value);
+                }
+            }
+
+            function.Invoke(userWeapons);
         }
         
         private void getWeaponBullets(int player, int weaponId, CallbackDelegate function)
         {
-            
+            PlayerList pl = new PlayerList();
+            Player p = pl[player];
+            string identifier = "steam:" + p.Identifiers["steam"];
+
+            if (ItemDatabase.userWeapons.ContainsKey(weaponId))
+            {
+                if (ItemDatabase.userWeapons[weaponId].getPropietary() == identifier)
+                {
+                    function.Invoke(ItemDatabase.userWeapons[weaponId].getAllAmmo());
+                }
+            }
         }
         
         private void getWeaponComponents(int player, int weaponId, CallbackDelegate function)
         {
-            
+            PlayerList pl = new PlayerList();
+            Player p = pl[player];
+            string identifier = "steam:" + p.Identifiers["steam"];
+
+            if (ItemDatabase.userWeapons.ContainsKey(weaponId))
+            {
+                if (ItemDatabase.userWeapons[weaponId].getPropietary() == identifier)
+                {
+                    function.Invoke(ItemDatabase.userWeapons[weaponId].getAllComponents());
+                }
+            }
         }
         
         private void addBullets(int player, int weaponId, string bulletType, int cuantity)

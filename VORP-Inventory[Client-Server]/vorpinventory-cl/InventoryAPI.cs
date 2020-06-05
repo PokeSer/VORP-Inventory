@@ -14,9 +14,19 @@ namespace vorpinventory_cl
             EventHandlers["vorpCoreClient:subWeapon"] += new Action<int>(subWeapon);
             EventHandlers["vorpCoreClient:addBullets"] += new Action<int,string,int>(addWeaponBullets);
             EventHandlers["vorpCoreClient:subBullets"]+= new Action<int,string,int>(subWeaponBullets);
+            EventHandlers["vorpCoreClient:addComponent"] += new Action<int,string>(addComponent);
         }
-        
-        
+
+        private void addComponent(int weaponId, string component)
+        {
+            if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
+            {
+                if (!vorp_inventoryClient.userWeapons[weaponId].getAllComponents().Contains(component))
+                {
+                    vorp_inventoryClient.userWeapons[weaponId].setComponent(component);
+                }
+            }
+        }
         
         private void subWeaponBullets(int weaponId, string bulletType, int cuantity)
         {
