@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
 
 namespace vorpinventory_sv
 {
-    public class WeaponClass
+    public class WeaponClass:BaseScript
     {
         private string name;
         private int id;
@@ -18,6 +20,22 @@ namespace vorpinventory_sv
             this.components = components;
             this.propietary = propietary;
             this.used = used;
+        }
+
+        public void loadAmmo()
+        {
+            API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(this.name),0, true, 2);
+            API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(this.name),0);
+            foreach (KeyValuePair<string,int> ammos in this.ammo)
+            {
+                API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey(ammos.Key),ammos.Value);
+                Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
+            }
+        }
+        
+        public void loadComponents()
+        {
+            
         }
 
         public bool getUsed()

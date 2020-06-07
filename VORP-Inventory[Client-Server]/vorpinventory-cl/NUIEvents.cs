@@ -204,13 +204,7 @@ namespace vorpinventory_cl
                 {
                     // Function.Call((Hash) 0x5E3BDDBCB83F3D84,API.PlayerPedId(), int.Parse(data["hash"].ToString()), 0,
                     //     false, true);
-                    API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)int.Parse(data["hash"].ToString()),0, true, 2);
-                    API.SetPedAmmo(API.PlayerPedId(), (uint)int.Parse(data["hash"].ToString()),0);
-                    foreach (KeyValuePair<string,int> ammos in vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getAllAmmo())
-                    {
-                        API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey(ammos.Key),ammos.Value);
-                        Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
-                    }
+                    vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].loadAmmo();
                     foreach (string componente in vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getAllComponents())
                     {
                         Function.Call((Hash)0x74C9090FDD1BB48E,API.PlayerPedId(),(uint)API.GetHashKey(componente),
