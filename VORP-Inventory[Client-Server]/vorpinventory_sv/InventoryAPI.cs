@@ -21,10 +21,11 @@ namespace vorpinventory_sv
             EventHandlers["vorpCore:getItemCount"] += new Action<int,CallbackDelegate,string>(getItems);
             EventHandlers["vorpCore:subBullets"] += new Action<int,int,string,int>(subBullets);
             EventHandlers["vorpCore:addBullets"] += new Action<int,int,string,int>(addBullets);
-            EventHandlers["vorpCore:getWeaponComponents"] += new Action<int,int,CallbackDelegate>(getWeaponComponents);
-            EventHandlers["vorpCore:getWeaponBullets"] += new Action<int,int,CallbackDelegate>(getWeaponBullets);
+            EventHandlers["vorpCore:getWeaponComponents"] += new Action<int,CallbackDelegate,int>(getWeaponComponents);
+            EventHandlers["vorpCore:getWeaponBullets"] += new Action<int,CallbackDelegate,int>(getWeaponBullets);
             EventHandlers["vorpCore:getUserWeapons"] += new Action<int,CallbackDelegate>(getUserWeapons);
             EventHandlers["vorpCore:addComponent"] += new Action<int,int,string,CallbackDelegate>(addComponent);
+            EventHandlers["vorpCore:getUserWeapon"]+= new Action<int,CallbackDelegate,int>(getUserWeapon);
             
         }
 
@@ -77,27 +78,61 @@ namespace vorpinventory_sv
                 }
             }
         }
+
+        private void getUserWeapon(int player, CallbackDelegate function, int weapId)
+        {
+            PlayerList pl = new PlayerList();
+            Player p = pl[player];
+            string identifier = "steam:" + p.Identifiers["steam"];
+
+            Dictionary<string, dynamic> weapons = new Dictionary<string, dynamic>();
+            bool found = false;
+            foreach (KeyValuePair<int,WeaponClass> weapon in ItemDatabase.userWeapons)
+            {
+                if (weapon.Value.getId() == weapId && !found)
+                {
+                    Debug.WriteLine("Entro a ver");
+                    weapons.Add("name",weapon.Value.getName());
+                    weapons.Add("id",weapon.Value.getId());
+                    weapons.Add("propietary",weapon.Value.getPropietary());
+                    weapons.Add("used",weapon.Value.getUsed());
+                    weapons.Add("ammo",weapon.Value.getAllAmmo());
+                    weapons.Add("components",weapon.Value.getAllComponents());
+                    found = true;
+                }
+            }
+            function.Invoke(weapons);
+        }
         
         private void getUserWeapons(int player, CallbackDelegate function)
         {
             PlayerList pl = new PlayerList();
             Player p = pl[player];
             string identifier = "steam:" + p.Identifiers["steam"];
-            
-            List<string> userWeapons = new List<string>();
+
+            Dictionary<string, dynamic> weapons;
+            List<Dictionary<string,dynamic>> userWeapons = new List<Dictionary<string,dynamic>>();
             
             foreach (KeyValuePair<int,WeaponClass> weapon in ItemDatabase.userWeapons)
             {
                 if (weapon.Value.getPropietary() == identifier)
                 {
-                    userWeapons.Add(Newtonsoft.Json.JsonConvert.SerializeObject(weapon.Value));
+                    weapons = new Dictionary<string, dynamic>
+                    {
+                        ["name"] = weapon.Value.getName(),
+                        ["id"] = weapon.Value.getId(),
+                        ["propietary"] = weapon.Value.getPropietary(),
+                        ["used"] = weapon.Value.getUsed(),
+                        ["ammo"] = weapon.Value.getAllAmmo(),
+                        ["components"] = weapon.Value.getAllComponents()
+                    };
+                    userWeapons.Add(weapons);
                 }
             }
-
             function.Invoke(userWeapons);
         }
         
-        private void getWeaponBullets(int player, int weaponId, CallbackDelegate function)
+        private void getWeaponBullets(int player, CallbackDelegate function,int weaponId)
         {
             PlayerList pl = new PlayerList();
             Player p = pl[player];
@@ -112,7 +147,7 @@ namespace vorpinventory_sv
             }
         }
         
-        private void getWeaponComponents(int player, int weaponId, CallbackDelegate function)
+        private void getWeaponComponents(int player,CallbackDelegate function,int weaponId)
         {
             PlayerList pl = new PlayerList();
             Player p = pl[player];
@@ -280,17 +315,7 @@ namespace vorpinventory_sv
                 identifier = target.ToString();
             }
             Dictionary<string,int> ammoaux = new Dictionary<string, int>();
-            // foreach (KeyValuePair<string,object> amo in ammo)
-            // {
-            //     ammoaux.Add(amo.Key,int.Parse(amo.Value.ToString()));
-            // }
             List<string> auxcomponents = new List<string>();
-            // foreach (var comp in components)
-            // {
-            //     auxcomponents.Add(comp.ToString());
-            // }
-            // string componentsJ = Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents);
-            // string ammosJ = Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux);
             int weaponId = -1;
             Exports["ghmattimysql"].execute("SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'vorp' AND TABLE_NAME   = 'loadout';",
                 new Action<dynamic>((id) =>
