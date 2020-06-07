@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
+using vorpinventory_cl;
 
 namespace vorpinventory_sv
 {
@@ -22,6 +23,21 @@ namespace vorpinventory_sv
             this.used = used;
         }
 
+
+        public void UnequipWeapon()
+        {
+            setUsed(false);
+            TriggerServerEvent("vorpinventory:setUsedWeapon",id,getUsed());
+            int hash = API.GetHashKey(name);
+            RemoveWeaponFromPed();
+            Utils.cleanAmmo(id);
+        }
+        
+        public void RemoveWeaponFromPed()
+        {
+            API.RemoveWeaponFromPed(API.PlayerPedId(),(uint)API.GetHashKey(this.name), true,0); //Falta revisar que pasa con esto
+        }
+
         public void loadAmmo()
         {
             API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(this.name),0, true, 2);
@@ -35,7 +51,11 @@ namespace vorpinventory_sv
         
         public void loadComponents()
         {
-            
+            foreach (string componente in getAllComponents())
+            {
+                Function.Call((Hash)0x74C9090FDD1BB48E,API.PlayerPedId(),(uint)API.GetHashKey(componente),
+                    (uint)API.GetHashKey(this.name),true);//Hay que mirar que hace el true
+            }
         }
 
         public bool getUsed()
@@ -46,6 +66,7 @@ namespace vorpinventory_sv
         public void setUsed(bool used)
         {
             this.used = used;
+            TriggerServerEvent("vorpinventory:setUsedWeapon",id,used);
         }
         public string getPropietary()
         {

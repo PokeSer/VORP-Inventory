@@ -64,14 +64,8 @@ namespace vorpinventory_cl
             Dictionary<string, object> data = Utils.expandoProcessing(obj);
             if (vorp_inventoryClient.userWeapons.ContainsKey(int.Parse(data["id"].ToString())))
             {
-                vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].setUsed(false);
-                TriggerServerEvent("vorpinventory:setUsedWeapon",int.Parse(data["id"].ToString()),
-                    vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed());
-                int hash = API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName());
-                API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)hash,true,0);
-                Utils.cleanAmmo(int.Parse(data["id"].ToString()));
+                vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].UnequipWeapon();
             }
-
             LoadInv();
         }
 
@@ -168,10 +162,7 @@ namespace vorpinventory_cl
                                 if (vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].getUsed())
                                 {
                                     vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].setUsed(false);
-                                    TriggerServerEvent("vorpinventory:setUsedWeapon",vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].getId(),false);
-                                    API.RemoveWeaponFromPed(API.PlayerPedId(),
-                                        (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].getName()),
-                                        true,0); //Falta revisar que pasa con esto
+                                    vorp_inventoryClient.userWeapons[int.Parse(data2["id"].ToString())].RemoveWeaponFromPed();
                                 }
                                 vorp_inventoryClient.userWeapons.Remove(int.Parse(data2["id"].ToString()));
                             }
@@ -202,17 +193,9 @@ namespace vorpinventory_cl
                 if (!vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed() && 
                     !Function.Call<bool>((Hash)0x8DECB02F88F428BC,API.PlayerPedId(),API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName()),0,true))
                 {
-                    // Function.Call((Hash) 0x5E3BDDBCB83F3D84,API.PlayerPedId(), int.Parse(data["hash"].ToString()), 0,
-                    //     false, true);
                     vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].loadAmmo();
-                    foreach (string componente in vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getAllComponents())
-                    {
-                        Function.Call((Hash)0x74C9090FDD1BB48E,API.PlayerPedId(),(uint)API.GetHashKey(componente),
-                            (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName()),true);//Hay que mirar que hace el true
-                    }
-
+                    vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].loadComponents();
                     vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].setUsed(true);
-                    TriggerServerEvent("vorpinventory:setUsedWeapon",int.Parse(data["id"].ToString()),vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed());
                 }
                 else
                 {
@@ -256,7 +239,6 @@ namespace vorpinventory_cl
                     if (wp.getUsed())
                     { 
                         wp.setUsed(false);
-                        TriggerServerEvent("vorpinventory:setUsedWeapon",wp.getId(),false);
                         API.RemoveWeaponFromPed(API.PlayerPedId(),(uint)API.GetHashKey(wp.getName()),
                             true,0);
                     }

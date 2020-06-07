@@ -58,19 +58,8 @@ namespace vorpinventory_cl
                     {
                         Function.Call((Hash)0x4899CB088EDF59B8,API.PlayerPedId(),
                             (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[weaponId].getName()),true,0);
-                        API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[weaponId].getName()),0, true, 2);
-                        API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[weaponId].getName()),0);
-                        foreach (KeyValuePair<string,int> ammos in vorp_inventoryClient.userWeapons[weaponId].getAllAmmo())
-                        {
-                            API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey(ammos.Key),ammos.Value);
-                            Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
-                        }
-
-                        foreach (string componente in vorp_inventoryClient.userWeapons[weaponId].getAllComponents())
-                        {
-                            Function.Call((Hash)0x74C9090FDD1BB48E,API.PlayerPedId(),(uint)API.GetHashKey(componente),
-                                (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[weaponId].getName()),true);//Hay que mirar que hace el true
-                        }
+                        vorp_inventoryClient.userWeapons[weaponId].loadAmmo();
+                        vorp_inventoryClient.userWeapons[weaponId].loadComponents();
                     }
                 }
             }
