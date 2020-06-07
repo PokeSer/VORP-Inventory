@@ -79,7 +79,7 @@ namespace vorpinventory_cl
             if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
             {
                 vorp_inventoryClient.userWeapons[weaponId].addAmmo(cuantity,bulletType);
-            }
+            } 
             NUIEvents.LoadInv();
         }
         

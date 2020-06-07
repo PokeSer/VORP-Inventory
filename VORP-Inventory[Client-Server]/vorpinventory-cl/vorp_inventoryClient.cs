@@ -8,7 +8,6 @@ using CitizenFX.Core;
 using CitizenFX.Core.Native;
 using Newtonsoft.Json.Linq;
 using vorpinventory_sv;
-
 namespace vorpinventory_cl
 {
     public class vorp_inventoryClient : BaseScript
@@ -22,29 +21,7 @@ namespace vorpinventory_cl
 
         public vorp_inventoryClient()
         {
-            API.RegisterCommand("saveWeapon",new Action(() =>
-            {
-                uint weaponHash = 0;
-                API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, true, 0, true);
-                Debug.WriteLine(Function.Call<string>((Hash)0x89CF5FF3D363311E,weaponHash));
-                foreach (KeyValuePair<int,WeaponClass> weapon in userWeapons)
-                {
-                    if (weapon.Value.getName() == Function.Call<string>((Hash) 0x89CF5FF3D363311E, weaponHash) &&
-                        weapon.Value.getUsed())
-                    {
-                        weapon.Value.setUsed(false);
-                        Debug.WriteLine($"id de arma quitada {weapon.Key} nombre {weapon.Value.getName()}");
-                        API.RemoveWeaponFromPed(API.PlayerPedId(),weaponHash,true,0);
-                    }
-                }
-                Debug.WriteLine(Function.Call<bool>((Hash)0x8DECB02F88F428BC,API.PlayerPedId(),API.GetHashKey("WEAPON_RIFLE_VARMINT"),0,true).ToString());
-            }),false);
-            
-            API.RegisterCommand("hasweapon",new Action(() =>
-            {
-                Debug.WriteLine(Function.Call<bool>((Hash)0x8DECB02F88F428BC,API.PlayerPedId(),API.GetHashKey("WEAPON_RIFLE_VARMINT"),0,true).ToString());
-            }),false );
-            
+
             EventHandlers["vorpInventory:giveItemsTable"] += new Action<dynamic>(processItems);
             EventHandlers["vorpInventory:giveInventory"] += new Action<string>(getInventory);
             EventHandlers["vorpInventory:giveLoadout"] += new Action<dynamic>(getLoadout);

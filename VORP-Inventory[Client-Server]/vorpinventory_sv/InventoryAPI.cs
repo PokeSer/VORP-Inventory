@@ -296,18 +296,19 @@ namespace vorpinventory_sv
                 new Action<dynamic>((id) =>
             {
                 weaponId = int.Parse(id[0].AUTO_INCREMENT.ToString());
+                Debug.WriteLine(weaponId.ToString());
+                Exports["ghmattimysql"]
+                    .execute(
+                        "INSERT INTO loadout (`identifier`,`name`) VALUES (?,?)",new object[] {identifier,name});
+                
+                WeaponClass auxWeapon = new WeaponClass(weaponId,identifier,name,ammoaux,auxcomponents,false);
+                ItemDatabase.userWeapons.Add(weaponId,auxWeapon);
+                if (targetIsPlayer)
+                {
+                    p.TriggerEvent("vorpinventory:receiveWeapon",weaponId,ItemDatabase.userWeapons[weaponId].getPropietary(),
+                        ItemDatabase.userWeapons[weaponId].getName(),ItemDatabase.userWeapons[weaponId].getAllAmmo(),ItemDatabase.userWeapons[weaponId].getAllComponents());
+                }
             }));
-            Exports["ghmattimysql"]
-                .execute(
-                    "INSERT INTO loadout (`identifier`,`name`) VALUES (?,?)",new object[] {identifier,name});
-            
-            WeaponClass auxWeapon = new WeaponClass(weaponId,identifier,name,ammoaux,auxcomponents,false);
-            ItemDatabase.userWeapons.Add(weaponId,auxWeapon);
-            if (targetIsPlayer)
-            {
-                p.TriggerEvent("vorpinventory:receiveWeapon",weaponId,ItemDatabase.userWeapons[weaponId].getPropietary(),
-                    ItemDatabase.userWeapons[weaponId].getName(),ItemDatabase.userWeapons[weaponId].getAllAmmo(),ItemDatabase.userWeapons[weaponId].getAllComponents());
-            }
         }
         private void giveWeapon(int player, int weapId, int target)
         {
