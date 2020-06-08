@@ -37,9 +37,10 @@ namespace vorpinventory_cl
             uint weaponHash = 0;
             if (API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false))
             {
-                if (weaponHash == 0) { return; }
-
                 string weaponName = Function.Call<string>((Hash)0x89CF5FF3D363311E, weaponHash);
+                
+                if (weaponName.Contains("UNARMED")) { return; }
+                
                 Dictionary<string, int> ammoDict = userWeapons.FirstOrDefault(x => x.Value.getName().Equals(weaponName)).Value.getAllAmmo();
 
                 foreach (var ammo in ammoDict)
