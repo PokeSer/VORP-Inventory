@@ -93,6 +93,17 @@ namespace vorpinventory_sv
             }
         }
 
+        public void setAmmo(int ammo, string type)
+        {
+            if (this.ammo.ContainsKey(type))
+            {
+                this.ammo[type] = ammo;
+            }
+            else
+            {
+                this.ammo.Add(type,ammo);
+            }
+        }
         public void subAmmo(int ammo,string type)
         {
             if (this.ammo.ContainsKey(type))

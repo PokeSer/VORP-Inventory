@@ -128,7 +128,22 @@ namespace vorpinventory_sv
             
             
         }
-
+        
+        //Update ammo on server by client
+        public void setAmmo(int ammo, string type)
+        {
+            if (this.ammo.ContainsKey(type))
+            {
+                this.ammo[type] = ammo;
+                TriggerServerEvent("vorpinventory:setWeaponBullets",id,type,ammo);
+            }
+            else
+            {
+                this.ammo.Add(type,ammo);
+                TriggerServerEvent("vorpinventory:setWeaponBullets",id,type,ammo);
+            }
+        }
+        
         public void addAmmo(int ammo,string type)
         {
             if (this.ammo.ContainsKey(type))

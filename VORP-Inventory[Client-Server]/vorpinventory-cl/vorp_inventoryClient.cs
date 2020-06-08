@@ -34,28 +34,41 @@ namespace vorpinventory_cl
 
         private async Task updateAmmoInWeapon()
         {
+            await Delay(500); 
             uint weaponHash = 0;
             if (API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false))
             {
                 string weaponName = Function.Call<string>((Hash)0x89CF5FF3D363311E, weaponHash);
-                
+                //Debug.WriteLine(weaponName);
                 if (weaponName.Contains("UNARMED")) { return; }
-                
-                Dictionary<string, int> ammoDict = userWeapons.FirstOrDefault(x => x.Value.getName().Equals(weaponName)).Value.getAllAmmo();
 
-                foreach (var ammo in ammoDict)
+                Dictionary<string, int> ammoDict = new Dictionary<string, int>();
+                WeaponClass usedWeapon = null;
+                foreach (KeyValuePair<int,WeaponClass> weap in userWeapons.ToList())
+                {
+                    if (weaponName.Contains(weap.Value.getName()) && weap.Value.getUsed())
+                    {
+                        ammoDict = weap.Value.getAllAmmo();
+                        usedWeapon = weap.Value;
+                    }
+                }
+                
+                //Dictionary<string, int> ammoDict = userWeapons.FirstOrDefault(x => x.Value.getName().Equals(weaponName)).Value.getAllAmmo();
+                if (usedWeapon == null) return;
+                foreach (var ammo in ammoDict.ToList())
                 {
                     int ammoQuantity = Function.Call<int>((Hash)0x39D22031557946C1, API.PlayerPedId(), API.GetHashKey(ammo.Key));
                     if (ammoQuantity < ammo.Value)
                     {
+                        Debug.WriteLine($"{ammo.Key} : {ammoQuantity}");
                         //Estaria guay que en el constructor de WeaponClass Pusieran un SetAmmo asi me ahorro el calculo de mierda este.
-                        int result = ammo.Value - ammoQuantity;
+                        //int result = ammo.Value - ammoQuantity;
+                        usedWeapon.setAmmo(ammoQuantity, ammo.Key);
                         //rageada end
-                        userWeapons.FirstOrDefault(x => x.Value.getName().Equals(weaponName)).Value.subAmmo(result, ammo.Key);
+                        //userWeapons.FirstOrDefault(x => x.Value.getName().Equals(weaponName)).Value.subAmmo(result, ammo.Key);
                     }
                 }
             }
-            await Delay(500);
         }//Update weapon ammo
 
         private void receiveItem(string name, int count)

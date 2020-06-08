@@ -22,10 +22,18 @@ namespace vorpinventory_sv
             EventHandlers["vorpinventory:sharePickupServer"] += new Action<string,int,int,Vector3,int>(sharePickupServer);
             EventHandlers["vorpinventory:onPickup"] += new Action<Player,int>(onPickup);
             EventHandlers["vorpinventory:setUsedWeapon"] += new Action<Player,int,bool>(usedWeapon);
+            EventHandlers["vorpinventory:setWeaponBullets"] += new Action<Player,int,string,int>(setWeaponBullets);
             EventHandlers["playerDropped"] += new Action<Player, string>(SaveInventoryItems);
         }
         public static Dictionary<int,Dictionary<string,dynamic>> Pickups = new Dictionary<int, Dictionary<string, dynamic>>();
 
+        private void setWeaponBullets([FromSource] Player player, int weaponId, string type, int bullet)
+        {
+            if (ItemDatabase.userWeapons.ContainsKey(weaponId))
+            {
+                ItemDatabase.userWeapons[weaponId].setAmmo(bullet,type);
+            }
+        }
         private void SaveInventoryItems([FromSource] Player p, string something)
         {
             string identifier = "steam:" + p.Identifiers["steam"];
