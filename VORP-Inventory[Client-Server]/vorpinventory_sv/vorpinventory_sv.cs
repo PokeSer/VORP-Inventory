@@ -24,6 +24,7 @@ namespace vorpinventory_sv
             EventHandlers["vorpinventory:setUsedWeapon"] += new Action<Player,int,bool>(usedWeapon);
             EventHandlers["vorpinventory:setWeaponBullets"] += new Action<Player,int,string,int>(setWeaponBullets);
             EventHandlers["playerDropped"] += new Action<Player, string>(SaveInventoryItems);
+            EventHandlers["onResourceStop"] += new Action<string>(OnResourceStop);
         }
         public static Dictionary<int,Dictionary<string,dynamic>> Pickups = new Dictionary<int, Dictionary<string, dynamic>>();
 
@@ -32,6 +33,38 @@ namespace vorpinventory_sv
             if (ItemDatabase.userWeapons.ContainsKey(weaponId))
             {
                 ItemDatabase.userWeapons[weaponId].setAmmo(bullet,type);
+            }
+        }
+
+        private void OnResourceStop(string resource)
+        {
+            PlayerList pl = new PlayerList();
+            foreach (Player p in pl)
+            {
+                string identifier = "steam:" + p.Identifiers["steam"];
+                Dictionary<string,int> items = new Dictionary<string, int>();
+                if (ItemDatabase.usersInventory.ContainsKey(identifier))
+                {
+                    foreach (var item in ItemDatabase.usersInventory[identifier])
+                    {
+                        items.Add(item.Key,item.Value.getCount());
+                    }
+                    if (items.Count > 0) 
+                    {
+                        string json = Newtonsoft.Json.JsonConvert.SerializeObject(items);
+                        Exports["ghmattimysql"].execute($"UPDATE characters SET inventory = '{json}' WHERE identifier=?", new[] {identifier});
+                    }   
+                }
+            }
+
+            foreach (KeyValuePair<int,WeaponClass> weap in ItemDatabase.userWeapons)
+            {//SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.userWeapons[weaponId].getAllAmmo())}'
+                Exports["ghmattimysql"]
+                    .execute(
+                        $"UPDATE loadout SET identifier = '{weap.Value.getPropietary()}',SET ammo = " +
+                        $"'{Newtonsoft.Json.JsonConvert.SerializeObject(weap.Value.getAllAmmo())}'," +
+                        $"SET components = '{Newtonsoft.Json.JsonConvert.SerializeObject(weap.Value.getAllComponents())}' WHERE id=?",
+                        new[] {weap.Value.getId()});
             }
         }
         private void SaveInventoryItems([FromSource] Player p, string something)
@@ -259,6 +292,8 @@ namespace vorpinventory_sv
                 if (result.Count == 0)
                 {
                     Debug.WriteLine($"{steamId} doesn`t have inventory yet.");
+                    Dictionary<string,ItemClass> items = new Dictionary<string, ItemClass>();
+                    ItemDatabase.usersInventory.Add(steamId,items); // Si no existe le metemos en la caché para tenerlo preparado para recibir cosas
                 }
                 else
                 {
