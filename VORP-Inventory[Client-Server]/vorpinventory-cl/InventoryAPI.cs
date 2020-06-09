@@ -60,6 +60,10 @@ namespace vorpinventory_cl
             if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
             {
                 vorp_inventoryClient.userWeapons[weaponId].subAmmo(cuantity,bulletType);
+                if (vorp_inventoryClient.userWeapons[weaponId].getUsed())
+                {
+                    API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey(bulletType),vorp_inventoryClient.userWeapons[weaponId].getAmmo(bulletType));
+                }
             }
             NUIEvents.LoadInv();
         }
@@ -68,11 +72,16 @@ namespace vorpinventory_cl
         {
             if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
             {
-                vorp_inventoryClient.userWeapons[weaponId].addAmmo(cuantity,bulletType);
-            } 
+                vorp_inventoryClient.userWeapons[weaponId].addAmmo(cuantity, bulletType);
+                if (vorp_inventoryClient.userWeapons[weaponId].getUsed())
+                {
+                    API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey(bulletType),vorp_inventoryClient.userWeapons[weaponId].getAmmo(bulletType));
+                }
+            }
             NUIEvents.LoadInv();
         }
-        
+
+
         private void subWeapon(int weaponId)
         {
             if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))

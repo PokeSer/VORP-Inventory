@@ -37,7 +37,7 @@ namespace vorpinventory_sv
         {
             API.RemoveWeaponFromPed(API.PlayerPedId(),(uint)API.GetHashKey(this.name), true,0); //Falta revisar que pasa con esto
         }
-
+        
         public void loadAmmo()
         {
             API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(this.name),0, true, 2);

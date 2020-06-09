@@ -5,4 +5,5 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
   &lt;Assembly Path="D:\VORP\VORP-Inventory\VORP-Inventory[Client-Server]\Build\vorp_inventory\Newtonsoft.Json.dll" /&gt;&#xD;
   &lt;Assembly Path="D:\VORP\VORP-Inventory\VORP-Inventory[Client-Server]\Newtonsoft.Json.dll" /&gt;&#xD;
+  &lt;Assembly Path="D:\VORP\VORP-Inventory\VORP-Inventory[Client-Server]\vorpinventory_sv\vorpinventory_cl.net.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>

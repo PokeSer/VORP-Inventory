@@ -172,7 +172,7 @@ namespace vorpinventory_sv
             {
                 if (ItemDatabase.userWeapons[weaponId].getPropietary() == identifier)
                 {
-                    ItemDatabase.userWeapons[weaponId].subAmmo(cuantity,bulletType);
+                    ItemDatabase.userWeapons[weaponId].addAmmo(cuantity,bulletType);
                     Exports["ghmattimysql"]
                         .execute(
                             $"UPDATE loadout SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.userWeapons[weaponId].getAllAmmo())}' WHERE id=?",

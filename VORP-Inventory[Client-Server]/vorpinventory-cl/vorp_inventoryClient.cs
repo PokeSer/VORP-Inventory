@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
@@ -18,7 +19,6 @@ namespace vorpinventory_cl
         public static Dictionary<string, ItemClass> useritems = new Dictionary<string, ItemClass>();
         public static Dictionary<int, WeaponClass> userWeapons = new Dictionary<int, WeaponClass>();
         public static Dictionary<int, string> bulletsHash = new Dictionary<int, string>();
-
         public vorp_inventoryClient()
         {
 
@@ -58,7 +58,8 @@ namespace vorpinventory_cl
                 foreach (var ammo in ammoDict.ToList())
                 {
                     int ammoQuantity = Function.Call<int>((Hash)0x39D22031557946C1, API.PlayerPedId(), API.GetHashKey(ammo.Key));
-                    if (ammoQuantity < ammo.Value)
+                    Debug.WriteLine();
+                    if (ammoQuantity != ammo.Value)
                     {
                         Debug.WriteLine($"{ammo.Key} : {ammoQuantity}");
                         //Estaria guay que en el constructor de WeaponClass Pusieran un SetAmmo asi me ahorro el calculo de mierda este.
