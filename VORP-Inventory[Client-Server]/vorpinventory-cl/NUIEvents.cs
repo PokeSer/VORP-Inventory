@@ -185,7 +185,7 @@ namespace vorpinventory_cl
             // }
             if (data["type"].ToString() == "item_standard")
             {
-                TriggerServerEvent("vorp:use"+data["item"],int.Parse(data["count"].ToString()));
+                TriggerServerEvent("vorp:use"+data["item"].ToString(),int.Parse(data["count"].ToString()));
                 Debug.WriteLine(data["item"].ToString());
             }
             else
