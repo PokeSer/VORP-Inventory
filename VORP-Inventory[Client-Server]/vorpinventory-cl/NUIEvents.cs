@@ -183,15 +183,17 @@ namespace vorpinventory_cl
             // {
             //     Debug.WriteLine($"{VARIABLE.Key}: {VARIABLE.Value}");
             // }
-            if (data["type"].ToString() == "item_standard")
+            if (data["type"].ToString().Contains("item_standard"))
             {
-                TriggerServerEvent("vorp:use"+data["item"].ToString(),int.Parse(data["count"].ToString()));
-                Debug.WriteLine(data["item"].ToString());
+                string eventString = "vorp:use" + data["item"].ToString();
+                //el count no existe ¯\_(ツ)_/¯
+                TriggerServerEvent(eventString);
+                Debug.WriteLine(data["item"].ToString() + "Usado");
             }
             else
             {
-                if (!vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed() && 
-                    !Function.Call<bool>((Hash)0x8DECB02F88F428BC,API.PlayerPedId(),API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName()),0,true))
+                if (!vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed() &&
+                    !Function.Call<bool>((Hash)0x8DECB02F88F428BC, API.PlayerPedId(), API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName()), 0, true))
                 {
                     vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].loadAmmo();
                     vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].loadComponents();
@@ -200,7 +202,7 @@ namespace vorpinventory_cl
                 else
                 {
                     Debug.WriteLine($"No uso el arma {data["id"]}");
-                    TriggerEvent("vorp:Tip", "Ya tienes equipada esa arma",3000);
+                    TriggerEvent("vorp:Tip", "Ya tienes equipada esa arma", 3000);
                 }
 
                 LoadInv();
@@ -244,10 +246,6 @@ namespace vorpinventory_cl
                     }
                     vorp_inventoryClient.userWeapons.Remove(int.Parse(aux["id"].ToString()));
                 }
-                //Debug.WriteLine(aux["hash"].ToString());
-                //Debug.WriteLine(aux["id"].ToString());
-                //Debug.WriteLine(type);
-                //Debug.WriteLine(itemname);
             }
             LoadInv();
         }
