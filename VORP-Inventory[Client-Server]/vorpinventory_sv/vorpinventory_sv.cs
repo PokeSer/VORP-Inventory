@@ -263,15 +263,35 @@ namespace vorpinventory_sv
         }
         private void serverGiveItem([FromSource] Player source, string itemname, int amount, int target)
         {
+            bool give = true;
             PlayerList pl = new PlayerList();
             Player p = pl[target];
             string identifier = "steam:" + source.Identifiers["steam"];
+            string targetIdentifier = "steam:" + p.Identifiers["steam"];
 
             if (ItemDatabase.usersInventory[identifier][itemname].getCount() >= amount)
             {
-                addItem(int.Parse(p.Handle),itemname,amount);
-                subItem(int.Parse(source.Handle),itemname,amount);
-                p.TriggerEvent("vorpinventory:receiveItem",itemname,amount);
+                if (ItemDatabase.usersInventory[targetIdentifier].ContainsKey(itemname))
+                {
+                    if (ItemDatabase.usersInventory[targetIdentifier][itemname].getCount() + amount
+                        >= ItemDatabase.usersInventory[targetIdentifier][itemname].getLimit())
+                    {
+                        give = false;
+                    }
+                }
+
+                if (give)
+                {
+                    addItem(int.Parse(p.Handle),itemname,amount);
+                    subItem(int.Parse(source.Handle),itemname,amount);
+                    p.TriggerEvent("vorpinventory:receiveItem",itemname,amount);
+                }
+                else
+                {
+                    TriggerClientEvent(source, "vorp:Tip",Config.lang["fullInventoryGive"],2000);
+                    TriggerClientEvent(p, "vorp:Tip", Config.lang["fullInventory"], 2000);
+                }
+                
             }
         }
 

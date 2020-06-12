@@ -53,7 +53,6 @@ namespace vorpinventory_cl
                     }
                 }
                 
-                //Dictionary<string, int> ammoDict = userWeapons.FirstOrDefault(x => x.Value.getName().Equals(weaponName)).Value.getAllAmmo();
                 if (usedWeapon == null) return;
                 foreach (var ammo in ammoDict.ToList())
                 {
@@ -62,11 +61,7 @@ namespace vorpinventory_cl
                     if (ammoQuantity != ammo.Value)
                     {
                         Debug.WriteLine($"{ammo.Key} : {ammoQuantity}");
-                        //Estaria guay que en el constructor de WeaponClass Pusieran un SetAmmo asi me ahorro el calculo de mierda este.
-                        //int result = ammo.Value - ammoQuantity;
                         usedWeapon.setAmmo(ammoQuantity, ammo.Key);
-                        //rageada end
-                        //userWeapons.FirstOrDefault(x => x.Value.getName().Equals(weaponName)).Value.subAmmo(result, ammo.Key);
                     }
                 }
             }

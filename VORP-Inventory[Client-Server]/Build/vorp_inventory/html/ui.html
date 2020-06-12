@@ -20,6 +20,7 @@
 
         <div id="inventoryElement">
         </div>
+        <p id="information"></p>
 
     </div>
 
@@ -28,6 +29,10 @@
         var imported = document.createElement("script");
         imported.src = "locales/" + Config.locale + ".js";
         document.head.appendChild(imported);
+
+        function OverSetTitle(title) {
+            document.getElementById("information").innerHTML = title;
+        }
 
         $("document").ready(function() {
             $("#inventoryHud").hide();
@@ -174,14 +179,14 @@
                     count = count + " / " + item.limit;
                 }
 
-                $("#inventoryElement").append("<div data-label='" + item.label + "' style='background-image: url(\"img/items/" + item.name.toLowerCase() + ".png\"); background-size: 60px 60px; background-repeat: no-repeat; background-position: center;' id='item-" + index + "' class='item'><div class='count'>" + count + "</div><div class='text'></div></div>")
+                $("#inventoryElement").append("<div onmouseout='OverSetTitle(' ')' onmouseover='OverSetTitle('" + item.label + "')' data-label='" + item.label + "' style='background-image: url(\"img/items/" + item.name.toLowerCase() + ".png\"), url(img/bgitem.png); background-size: 60px 60px, 80px 80px; background-repeat: no-repeat; background-position: center;' id='item-" + index + "' class='item'><div class='count'>" + count + "</div><div class='text'></div></div>")
 
                 var data = [];
-                if(item.used){
+                if (item.used) {
                     data.push({
-                        text:"Unequip",
-                        action:function(){
-                            $.post("http://vorp_inventory/UnequipWeapon",JSON.stringify({
+                        text: "Unequip",
+                        action: function() {
+                            $.post("http://vorp_inventory/UnequipWeapon", JSON.stringify({
                                 item: item.name,
                                 id: item.id
                             }));

@@ -231,6 +231,7 @@ namespace vorpinventory_sv
         {
             PlayerList pl = new PlayerList();
             Player p = pl[player];
+            bool added = false;
             string identifier = "steam:" + p.Identifiers["steam"];
             if (!ItemDatabase.usersInventory.ContainsKey(identifier))
             {
@@ -240,23 +241,30 @@ namespace vorpinventory_sv
 
             if (ItemDatabase.usersInventory.ContainsKey(identifier))
             {
+                
                 if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
                 {
-                    if (int.Parse(cuantity.ToString()) > 0)
+                    if (ItemDatabase.usersInventory[identifier][name].getCount() + cuantity <=
+                        ItemDatabase.usersInventory[identifier][name].getLimit())
                     {
-                        ItemDatabase.usersInventory[identifier][name].addCount(int.Parse(cuantity.ToString()));
-                        Debug.WriteLine(ItemDatabase.usersInventory[identifier][name].getCount().ToString());
+                        if (cuantity > 0)
+                        {
+                            added = true;
+                            ItemDatabase.usersInventory[identifier][name].addCount(cuantity);
+                        }
                     }
                 }
                 else
                 {
-                    if (ItemDatabase.svItems.ContainsKey(name))
+                    if (cuantity <= ItemDatabase.svItems[name].getLimit())
                     {
-                        ItemDatabase.usersInventory[identifier].Add(name,new ItemClass(int.Parse(cuantity.ToString()),ItemDatabase.svItems[name].getLimit(), 
+                        added = true;
+                        ItemDatabase.usersInventory[identifier].Add(name,new ItemClass(cuantity,ItemDatabase.svItems[name].getLimit(), 
                             ItemDatabase.svItems[name].getLabel(),name,"item_inventory",true,ItemDatabase.svItems[name].getCanRemove()));
                     }
+                    
                 }
-                if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
+                if (ItemDatabase.usersInventory[identifier].ContainsKey(name) && added)
                 {
                     int limit = ItemDatabase.usersInventory[identifier][name].getLimit();
                     string label = ItemDatabase.usersInventory[identifier][name].getLabel();
@@ -264,6 +272,10 @@ namespace vorpinventory_sv
                     bool usable = ItemDatabase.usersInventory[identifier][name].getUsable();
                     bool canRemove = ItemDatabase.usersInventory[identifier][name].getCanRemove();
                     p.TriggerEvent("vorpCoreClient:addItem",cuantity,limit,label,name,type,usable,canRemove);//Pass item to client
+                }
+                else
+                {
+                    TriggerClientEvent(p, "vorp:Tip", Config.lang["fullInventory"], 2000);
                 }
             }
         }

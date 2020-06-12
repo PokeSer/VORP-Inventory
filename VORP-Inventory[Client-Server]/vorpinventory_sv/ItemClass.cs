@@ -33,7 +33,10 @@
 
         public void addCount(int count)
         {
-            this.count += count;
+            if (this.count + count <= limit)
+            {
+                this.count += count;
+            }
         }
 
         public void quitCount(int count)
