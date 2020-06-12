@@ -5,11 +5,6 @@ namespace vorpinventory_sv
 {
     public class InventoryAPI : BaseScript
     {
-        //TODO API PARA COGER LAS BALAS QUE TIENE UN ARMA SEGUN EL TIPO
-        //TODO DEVOLVER TODAS LAS BALAS QUE TIENE UN ARMA
-        //TODO DEVOLVER TODOS LOS COMPONENTES QUE TIENE UN ARMA
-        //TODO PONERLE MAS BALAS A UN ARMA 
-        //TODO QUITARLE LAS BALAS AL ARMA
         public InventoryAPI()
         {
             EventHandlers["vorpCore:subWeapon"] += new Action<int, int>(subWeapon);

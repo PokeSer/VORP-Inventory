@@ -48,7 +48,6 @@ namespace vorpinventory_cl
                         {
                             name = vorp_inventoryClient.citems[name]["label"];
                         }
-                        //Debug.WriteLine(name);
                         Utils.DrawText3D(pick.Value["coords"], name);
                     }
                     else

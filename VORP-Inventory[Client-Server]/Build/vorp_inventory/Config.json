@@ -1,3 +1,14 @@
 {
-    "defaultlang":"es_lang"
+    "defaultlang":"es_lang",
+    "startItems":[
+    //Items
+    {
+        "water":3,
+        "bread":2  
+    },
+    //Weapons
+    {
+        "WEAPON_REVOLVER_LEMAT":100
+    }]
 }
+

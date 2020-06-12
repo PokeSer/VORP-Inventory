@@ -21,11 +21,11 @@ namespace vorpinventory_cl
             Tick += OnKey;
             API.RegisterCommand("giveAmmo", new Action<int, List<object>, string>(((source, args, raw) =>
                {
-                // int ammoType = API.GetHashKey("AMMO_ARROW_FIRE");
-                // Debug.WriteLine($"Me ejecuto {ammoType}");
-                // API.SetPedAmmoByType(API.PlayerPedId(), ammoType, 200);
-                //API.SetPedAmmo(API.PlayerPedId(),(uint)API.GetHashKey("WEAPON_RIFLE_VARMINT"),200);
-                int playerPed = API.PlayerPedId();
+                   // int ammoType = API.GetHashKey("AMMO_ARROW_FIRE");
+                   // Debug.WriteLine($"Me ejecuto {ammoType}");
+                   // API.SetPedAmmoByType(API.PlayerPedId(), ammoType, 200);
+                   //API.SetPedAmmo(API.PlayerPedId(),(uint)API.GetHashKey("WEAPON_RIFLE_VARMINT"),200);
+                   int playerPed = API.PlayerPedId();
                    int ammoQuantity = 200;
                    int ammoType = API.GetHashKey("AMMO_ARROW_DYNAMITE");
                    API.SetPedAmmoByType(playerPed, ammoType, ammoQuantity);

@@ -309,11 +309,11 @@ namespace vorpinventory_sv
                       Debug.WriteLine($"{steamId} doesn`t have inventory yet.");
                       Dictionary<string, ItemClass> items = new Dictionary<string, ItemClass>();
                       ItemDatabase.usersInventory.Add(steamId, items); // Si no existe le metemos en la caché para tenerlo preparado para recibir cosas
-                }
+                  }
                   else
                   {
-                    //Debug.WriteLine(result[0].inventory);
-                    source.TriggerEvent("vorpInventory:giveInventory", result[0].inventory);
+                      //Debug.WriteLine(result[0].inventory);
+                      source.TriggerEvent("vorpInventory:giveInventory", result[0].inventory);
                   }
               }));
             Exports["ghmattimysql"].execute("SELECT * FROM loadout WHERE identifier = ?;", new[] { steamId }, new Action<dynamic>((result) =>

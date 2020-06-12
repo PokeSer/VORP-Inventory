@@ -32,8 +32,8 @@ namespace vorpinventory_sv
                      {
                          foreach (var userInventory in uinvento)
                          {
-                            //Carga del inventario
-                            string user = userInventory.identifier.ToString();
+                             //Carga del inventario
+                             string user = userInventory.identifier.ToString();
                              Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
                              List<WeaponClass> userwep = new List<WeaponClass>();
                              if (userInventory.inventory != null)
@@ -68,8 +68,8 @@ namespace vorpinventory_sv
                              List<string> components = new List<string>();
                              foreach (JProperty ammos in ammo.Properties())
                              {
-                                //Debug.WriteLine(ammos.Name);
-                                amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
+                                 //Debug.WriteLine(ammos.Name);
+                                 amunition.Add(ammos.Name, int.Parse(ammos.Value.ToString()));
                              }
                              foreach (JToken x in comp)
                              {
