@@ -1,10 +1,9 @@
-﻿using System;
+﻿using CitizenFX.Core;
+using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using CitizenFX.Core;
 namespace vorpinventory_sv
 {
-    public class InventoryAPI:BaseScript
+    public class InventoryAPI : BaseScript
     {
         //TODO API PARA COGER LAS BALAS QUE TIENE UN ARMA SEGUN EL TIPO
         //TODO DEVOLVER TODAS LAS BALAS QUE TIENE UN ARMA
@@ -14,19 +13,19 @@ namespace vorpinventory_sv
         public InventoryAPI()
         {
             EventHandlers["vorpCore:subWeapon"] += new Action<int, int>(subWeapon);
-            EventHandlers["vorpCore:giveWeapon"] += new Action<int,int,int>(giveWeapon);
-            EventHandlers["vorpCore:registerWeapon"] += new Action<int,string>(registerWeapon);
-            EventHandlers["vorpCore:addItem"] += new Action<int,string,int>(addItem);
-            EventHandlers["vorpCore:subItem"] += new Action<int,string,int>(subItem);
-            EventHandlers["vorpCore:getItemCount"] += new Action<int,CallbackDelegate,string>(getItems);
-            EventHandlers["vorpCore:subBullets"] += new Action<int,int,string,int>(subBullets);
-            EventHandlers["vorpCore:addBullets"] += new Action<int,int,string,int>(addBullets);
-            EventHandlers["vorpCore:getWeaponComponents"] += new Action<int,CallbackDelegate,int>(getWeaponComponents);
-            EventHandlers["vorpCore:getWeaponBullets"] += new Action<int,CallbackDelegate,int>(getWeaponBullets);
-            EventHandlers["vorpCore:getUserWeapons"] += new Action<int,CallbackDelegate>(getUserWeapons);
-            EventHandlers["vorpCore:addComponent"] += new Action<int,int,string,CallbackDelegate>(addComponent);
-            EventHandlers["vorpCore:getUserWeapon"]+= new Action<int,CallbackDelegate,int>(getUserWeapon);
-            
+            EventHandlers["vorpCore:giveWeapon"] += new Action<int, int, int>(giveWeapon);
+            EventHandlers["vorpCore:registerWeapon"] += new Action<int, string>(registerWeapon);
+            EventHandlers["vorpCore:addItem"] += new Action<int, string, int>(addItem);
+            EventHandlers["vorpCore:subItem"] += new Action<int, string, int>(subItem);
+            EventHandlers["vorpCore:getItemCount"] += new Action<int, CallbackDelegate, string>(getItems);
+            EventHandlers["vorpCore:subBullets"] += new Action<int, int, string, int>(subBullets);
+            EventHandlers["vorpCore:addBullets"] += new Action<int, int, string, int>(addBullets);
+            EventHandlers["vorpCore:getWeaponComponents"] += new Action<int, CallbackDelegate, int>(getWeaponComponents);
+            EventHandlers["vorpCore:getWeaponBullets"] += new Action<int, CallbackDelegate, int>(getWeaponBullets);
+            EventHandlers["vorpCore:getUserWeapons"] += new Action<int, CallbackDelegate>(getUserWeapons);
+            EventHandlers["vorpCore:addComponent"] += new Action<int, int, string, CallbackDelegate>(addComponent);
+            EventHandlers["vorpCore:getUserWeapon"] += new Action<int, CallbackDelegate, int>(getUserWeapon);
+
         }
 
         private void subComponent(int player, int weaponId, string component, CallbackDelegate function)
@@ -43,9 +42,9 @@ namespace vorpinventory_sv
                     Exports["ghmattimysql"]
                         .execute(
                             $"UPDATE loadout SET components = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.userWeapons[weaponId].getAllComponents())}' WHERE id=?",
-                            new[] {weaponId});
+                            new[] { weaponId });
                     function.Invoke(true);
-                    p.TriggerEvent("vorpCoreClient:subComponent",weaponId,component);
+                    p.TriggerEvent("vorpCoreClient:subComponent", weaponId, component);
                 }
                 else
                 {
@@ -53,8 +52,8 @@ namespace vorpinventory_sv
                 }
             }
         }
-        
-        private void addComponent(int player, int weaponId, string component,CallbackDelegate function)
+
+        private void addComponent(int player, int weaponId, string component, CallbackDelegate function)
         {
             PlayerList pl = new PlayerList();
             Player p = pl[player];
@@ -68,9 +67,9 @@ namespace vorpinventory_sv
                     Exports["ghmattimysql"]
                         .execute(
                             $"UPDATE loadout SET components = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.userWeapons[weaponId].getAllComponents())}' WHERE id=?",
-                            new[] {weaponId});
+                            new[] { weaponId });
                     function.Invoke(true);
-                    p.TriggerEvent("vorpCoreClient:addComponent",weaponId,component);
+                    p.TriggerEvent("vorpCoreClient:addComponent", weaponId, component);
                 }
                 else
                 {
@@ -87,23 +86,23 @@ namespace vorpinventory_sv
 
             Dictionary<string, dynamic> weapons = new Dictionary<string, dynamic>();
             bool found = false;
-            foreach (KeyValuePair<int,WeaponClass> weapon in ItemDatabase.userWeapons)
+            foreach (KeyValuePair<int, WeaponClass> weapon in ItemDatabase.userWeapons)
             {
                 if (weapon.Value.getId() == weapId && !found)
                 {
                     Debug.WriteLine("Entro a ver");
-                    weapons.Add("name",weapon.Value.getName());
-                    weapons.Add("id",weapon.Value.getId());
-                    weapons.Add("propietary",weapon.Value.getPropietary());
-                    weapons.Add("used",weapon.Value.getUsed());
-                    weapons.Add("ammo",weapon.Value.getAllAmmo());
-                    weapons.Add("components",weapon.Value.getAllComponents());
+                    weapons.Add("name", weapon.Value.getName());
+                    weapons.Add("id", weapon.Value.getId());
+                    weapons.Add("propietary", weapon.Value.getPropietary());
+                    weapons.Add("used", weapon.Value.getUsed());
+                    weapons.Add("ammo", weapon.Value.getAllAmmo());
+                    weapons.Add("components", weapon.Value.getAllComponents());
                     found = true;
                 }
             }
             function.Invoke(weapons);
         }
-        
+
         private void getUserWeapons(int player, CallbackDelegate function)
         {
             PlayerList pl = new PlayerList();
@@ -111,9 +110,9 @@ namespace vorpinventory_sv
             string identifier = "steam:" + p.Identifiers["steam"];
 
             Dictionary<string, dynamic> weapons;
-            List<Dictionary<string,dynamic>> userWeapons = new List<Dictionary<string,dynamic>>();
-            
-            foreach (KeyValuePair<int,WeaponClass> weapon in ItemDatabase.userWeapons)
+            List<Dictionary<string, dynamic>> userWeapons = new List<Dictionary<string, dynamic>>();
+
+            foreach (KeyValuePair<int, WeaponClass> weapon in ItemDatabase.userWeapons)
             {
                 if (weapon.Value.getPropietary() == identifier)
                 {
@@ -131,8 +130,8 @@ namespace vorpinventory_sv
             }
             function.Invoke(userWeapons);
         }
-        
-        private void getWeaponBullets(int player, CallbackDelegate function,int weaponId)
+
+        private void getWeaponBullets(int player, CallbackDelegate function, int weaponId)
         {
             PlayerList pl = new PlayerList();
             Player p = pl[player];
@@ -146,8 +145,8 @@ namespace vorpinventory_sv
                 }
             }
         }
-        
-        private void getWeaponComponents(int player,CallbackDelegate function,int weaponId)
+
+        private void getWeaponComponents(int player, CallbackDelegate function, int weaponId)
         {
             PlayerList pl = new PlayerList();
             Player p = pl[player];
@@ -161,7 +160,7 @@ namespace vorpinventory_sv
                 }
             }
         }
-        
+
         private void addBullets(int player, int weaponId, string bulletType, int cuantity)
         {
             PlayerList pl = new PlayerList();
@@ -172,12 +171,12 @@ namespace vorpinventory_sv
             {
                 if (ItemDatabase.userWeapons[weaponId].getPropietary() == identifier)
                 {
-                    ItemDatabase.userWeapons[weaponId].addAmmo(cuantity,bulletType);
+                    ItemDatabase.userWeapons[weaponId].addAmmo(cuantity, bulletType);
                     Exports["ghmattimysql"]
                         .execute(
                             $"UPDATE loadout SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.userWeapons[weaponId].getAllAmmo())}' WHERE id=?",
-                            new[] {weaponId});
-                    p.TriggerEvent("vorpCoreClient:addBullets",weaponId,bulletType,cuantity);
+                            new[] { weaponId });
+                    p.TriggerEvent("vorpCoreClient:addBullets", weaponId, bulletType, cuantity);
                 }
             }
             else
@@ -196,12 +195,12 @@ namespace vorpinventory_sv
             {
                 if (ItemDatabase.userWeapons[weaponId].getPropietary() == identifier)
                 {
-                    ItemDatabase.userWeapons[weaponId].subAmmo(cuantity,bulletType);
+                    ItemDatabase.userWeapons[weaponId].subAmmo(cuantity, bulletType);
                     Exports["ghmattimysql"]
                         .execute(
                             $"UPDATE loadout SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.userWeapons[weaponId].getAllAmmo())}' WHERE id=?",
-                            new[] {weaponId});
-                    p.TriggerEvent("vorpCoreClient:subBullets",weaponId,bulletType,cuantity);
+                            new[] { weaponId });
+                    p.TriggerEvent("vorpCoreClient:subBullets", weaponId, bulletType, cuantity);
                 }
             }
             else
@@ -209,8 +208,8 @@ namespace vorpinventory_sv
                 Debug.WriteLine("Error al meter balas en un arma identificador no valido o arma no encontrada");
             }
         }
-        
-        private void getItems(int source, CallbackDelegate funcion,string item)
+
+        private void getItems(int source, CallbackDelegate funcion, string item)
         {
             PlayerList pl = new PlayerList();
             Player p = pl[source];
@@ -235,13 +234,13 @@ namespace vorpinventory_sv
             string identifier = "steam:" + p.Identifiers["steam"];
             if (!ItemDatabase.usersInventory.ContainsKey(identifier))
             {
-                Dictionary<string,ItemClass> userinv = new Dictionary<string, ItemClass>();
-                ItemDatabase.usersInventory.Add(identifier,userinv);
+                Dictionary<string, ItemClass> userinv = new Dictionary<string, ItemClass>();
+                ItemDatabase.usersInventory.Add(identifier, userinv);
             }
 
             if (ItemDatabase.usersInventory.ContainsKey(identifier))
             {
-                
+
                 if (ItemDatabase.usersInventory[identifier].ContainsKey(name))
                 {
                     if (ItemDatabase.usersInventory[identifier][name].getCount() + cuantity <=
@@ -259,10 +258,10 @@ namespace vorpinventory_sv
                     if (cuantity <= ItemDatabase.svItems[name].getLimit())
                     {
                         added = true;
-                        ItemDatabase.usersInventory[identifier].Add(name,new ItemClass(cuantity,ItemDatabase.svItems[name].getLimit(), 
-                            ItemDatabase.svItems[name].getLabel(),name,"item_inventory",true,ItemDatabase.svItems[name].getCanRemove()));
+                        ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
+                            ItemDatabase.svItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.svItems[name].getCanRemove()));
                     }
-                    
+
                 }
                 if (ItemDatabase.usersInventory[identifier].ContainsKey(name) && added)
                 {
@@ -271,7 +270,7 @@ namespace vorpinventory_sv
                     string type = ItemDatabase.usersInventory[identifier][name].getType();
                     bool usable = ItemDatabase.usersInventory[identifier][name].getUsable();
                     bool canRemove = ItemDatabase.usersInventory[identifier][name].getCanRemove();
-                    p.TriggerEvent("vorpCoreClient:addItem",cuantity,limit,label,name,type,usable,canRemove);//Pass item to client
+                    p.TriggerEvent("vorpCoreClient:addItem", cuantity, limit, label, name, type, usable, canRemove);//Pass item to client
                 }
                 else
                 {
@@ -279,8 +278,8 @@ namespace vorpinventory_sv
                 }
             }
         }
-        
-        private void subItem(int player , string name, int cuantity)
+
+        private void subItem(int player, string name, int cuantity)
         {
             PlayerList pl = new PlayerList();
             Player p = pl[player];
@@ -293,17 +292,17 @@ namespace vorpinventory_sv
                     {
                         ItemDatabase.usersInventory[identifier][name].quitCount(cuantity);
                     }
-                    p.TriggerEvent("vorpCoreClient:subItem",name,ItemDatabase.usersInventory[identifier][name].getCount());
+                    p.TriggerEvent("vorpCoreClient:subItem", name, ItemDatabase.usersInventory[identifier][name].getCount());
                     if (ItemDatabase.usersInventory[identifier][name].getCount() == 0)
                     {
                         ItemDatabase.usersInventory[identifier].Remove(name);
                     }
-                
+
                 }
             }
         }
 
-        private void registerWeapon(int target,string name)//Needs dirt level
+        private void registerWeapon(int target, string name)//Needs dirt level
         {
             PlayerList pl = new PlayerList();
             Player p = null;
@@ -319,14 +318,14 @@ namespace vorpinventory_sv
 
             string identifier;
             if (targetIsPlayer)
-            { 
+            {
                 identifier = "steam:" + p.Identifiers["steam"];
             }
             else
             {
                 identifier = target.ToString();
             }
-            Dictionary<string,int> ammoaux = new Dictionary<string, int>();
+            Dictionary<string, int> ammoaux = new Dictionary<string, int>();
             List<string> auxcomponents = new List<string>();
             int weaponId = -1;
             Exports["ghmattimysql"].execute("SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'vorp' AND TABLE_NAME   = 'loadout';",
@@ -336,14 +335,14 @@ namespace vorpinventory_sv
                 Debug.WriteLine(weaponId.ToString());
                 Exports["ghmattimysql"]
                     .execute(
-                        "INSERT INTO loadout (`identifier`,`name`) VALUES (?,?)",new object[] {identifier,name});
-                
-                WeaponClass auxWeapon = new WeaponClass(weaponId,identifier,name,ammoaux,auxcomponents,false);
-                ItemDatabase.userWeapons.Add(weaponId,auxWeapon);
+                        "INSERT INTO loadout (`identifier`,`name`) VALUES (?,?)", new object[] { identifier, name });
+
+                WeaponClass auxWeapon = new WeaponClass(weaponId, identifier, name, ammoaux, auxcomponents, false);
+                ItemDatabase.userWeapons.Add(weaponId, auxWeapon);
                 if (targetIsPlayer)
                 {
-                    p.TriggerEvent("vorpinventory:receiveWeapon",weaponId,ItemDatabase.userWeapons[weaponId].getPropietary(),
-                        ItemDatabase.userWeapons[weaponId].getName(),ItemDatabase.userWeapons[weaponId].getAllAmmo(),ItemDatabase.userWeapons[weaponId].getAllComponents());
+                    p.TriggerEvent("vorpinventory:receiveWeapon", weaponId, ItemDatabase.userWeapons[weaponId].getPropietary(),
+                        ItemDatabase.userWeapons[weaponId].getName(), ItemDatabase.userWeapons[weaponId].getAllAmmo(), ItemDatabase.userWeapons[weaponId].getAllComponents());
                 }
             }));
         }
@@ -366,23 +365,23 @@ namespace vorpinventory_sv
                 ptarget = pl[target];
             }
             string identifier = "steam:" + p.Identifiers["steam"];
-            
+
             if (ItemDatabase.userWeapons.ContainsKey(weapId))
             {
                 ItemDatabase.userWeapons[weapId].setPropietary(identifier);
                 Exports["ghmattimysql"]
                     .execute(
                         $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}' WHERE id=?",
-                        new[] {weapId});
-                p.TriggerEvent("vorpinventory:receiveWeapon",weapId,ItemDatabase.userWeapons[weapId].getPropietary(),
-                    ItemDatabase.userWeapons[weapId].getName(),ItemDatabase.userWeapons[weapId].getAllAmmo(),ItemDatabase.userWeapons[weapId].getAllComponents());
+                        new[] { weapId });
+                p.TriggerEvent("vorpinventory:receiveWeapon", weapId, ItemDatabase.userWeapons[weapId].getPropietary(),
+                    ItemDatabase.userWeapons[weapId].getName(), ItemDatabase.userWeapons[weapId].getAllAmmo(), ItemDatabase.userWeapons[weapId].getAllComponents());
                 if (targetIsPlayer && ptarget != null)
                 {
-                    ptarget.TriggerEvent("vorpCoreClient:subWeapon",weapId);
+                    ptarget.TriggerEvent("vorpCoreClient:subWeapon", weapId);
                 }
             }
         }
-        
+
         private void subWeapon(int player, int weapId)
         {
             PlayerList pl = new PlayerList();
@@ -395,9 +394,9 @@ namespace vorpinventory_sv
                 Exports["ghmattimysql"]
                     .execute(
                         $"UPDATE loadout SET identifier = '{ItemDatabase.userWeapons[weapId].getPropietary()}' WHERE id=?",
-                        new[] {weapId});
+                        new[] { weapId });
             }
-            p.TriggerEvent("vorpCoreClient:subWeapon",weapId);
+            p.TriggerEvent("vorpCoreClient:subWeapon", weapId);
         }
     }
 }

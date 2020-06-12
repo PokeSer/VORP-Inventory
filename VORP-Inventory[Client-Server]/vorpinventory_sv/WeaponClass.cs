@@ -10,7 +10,7 @@ namespace vorpinventory_sv
         private bool used;
         private Dictionary<string, int> ammo;
         private List<string> components;
-        public WeaponClass(int id,string propietary,string name, Dictionary<string,int>ammo,List<string>components,bool used)
+        public WeaponClass(int id, string propietary, string name, Dictionary<string, int> ammo, List<string> components, bool used)
         {
             this.id = id;
             this.name = name;
@@ -81,7 +81,7 @@ namespace vorpinventory_sv
             return this.ammo[type];
         }
 
-        public void addAmmo(int ammo,string type)
+        public void addAmmo(int ammo, string type)
         {
             if (this.ammo.ContainsKey(type))
             {
@@ -89,7 +89,7 @@ namespace vorpinventory_sv
             }
             else
             {
-                this.ammo.Add(type,ammo);
+                this.ammo.Add(type, ammo);
             }
         }
 
@@ -101,10 +101,10 @@ namespace vorpinventory_sv
             }
             else
             {
-                this.ammo.Add(type,ammo);
+                this.ammo.Add(type, ammo);
             }
         }
-        public void subAmmo(int ammo,string type)
+        public void subAmmo(int ammo, string type)
         {
             if (this.ammo.ContainsKey(type))
             {
@@ -115,6 +115,6 @@ namespace vorpinventory_sv
                 }
             }
         }
-        
+
     }
 }

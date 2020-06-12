@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Text;
-using CitizenFX.Core;
+﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace vorpinventory_sv
 {
-    public class Config:BaseScript
+    public class Config : BaseScript
     {
         public static JObject config = new JObject();
         public static string ConfigString;
-        public static Dictionary<string,string> lang = new Dictionary<string, string>();
+        public static Dictionary<string, string> lang = new Dictionary<string, string>();
         public static string resourcePath = $"{API.GetResourcePath(API.GetCurrentResourceName())}";
 
         public Config()

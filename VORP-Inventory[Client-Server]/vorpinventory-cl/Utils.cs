@@ -1,46 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Threading.Tasks;
-using CitizenFX.Core;
+﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
-using vorpinventory_sv;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace vorpinventory_cl
 {
-    public class Utils:BaseScript
+    public class Utils : BaseScript
     {
         public Utils()
         {
-            
+
         }
 
         public static void cleanAmmo(int id)
         {
             if (vorp_inventoryClient.userWeapons.ContainsKey(id))
             {
-                API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()),0);
-                foreach (KeyValuePair<string,int> ammo in vorp_inventoryClient.userWeapons[id].getAllAmmo())
+                API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0);
+                foreach (KeyValuePair<string, int> ammo in vorp_inventoryClient.userWeapons[id].getAllAmmo())
                 {
-                    API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey(ammo.Key),0);
+                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammo.Key), 0);
                 }
             }
         }
 
         public static void useWeapon(int id)
         {
-            API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()),0, true, 2);
-            API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()),0);
-            foreach (KeyValuePair<string,int> ammos in vorp_inventoryClient.userWeapons[id].getAllAmmo())
+            API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0, true, 2);
+            API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[id].getName()), 0);
+            foreach (KeyValuePair<string, int> ammos in vorp_inventoryClient.userWeapons[id].getAllAmmo())
             {
-                API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey(ammos.Key),ammos.Value);
+                API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammos.Key), ammos.Value);
                 Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
             }
 
             vorp_inventoryClient.userWeapons[id].setUsed(true);
-            TriggerServerEvent("vorpinventory:setUsedWeapon",id,vorp_inventoryClient.userWeapons[id].getUsed());
+            TriggerServerEvent("vorpinventory:setUsedWeapon", id, vorp_inventoryClient.userWeapons[id].getUsed());
         }
-        
+
         public static void addItems(string name, int cuantity)
         {
             if (vorp_inventoryClient.useritems.ContainsKey(name))
@@ -49,35 +46,35 @@ namespace vorpinventory_cl
             }
             else
             {
-                vorp_inventoryClient.useritems.Add(name,new ItemClass(cuantity,vorp_inventoryClient.citems[name]["limit"],
-                    vorp_inventoryClient.citems[name]["label"],name,
-                    "item_standard",true,vorp_inventoryClient.citems[name]["can_remove"]));
+                vorp_inventoryClient.useritems.Add(name, new ItemClass(cuantity, vorp_inventoryClient.citems[name]["limit"],
+                    vorp_inventoryClient.citems[name]["label"], name,
+                    "item_standard", true, vorp_inventoryClient.citems[name]["can_remove"]));
             }
         }
 
-        public static async Task DrawText3D(Vector3 position,string text)
+        public static async Task DrawText3D(Vector3 position, string text)
         {
             float _x = 0.0F;
             float _y = 0.0F;
             //Debug.WriteLine(position.X.ToString());
             API.GetScreenCoordFromWorldCoord(position.X, position.Y, position.Z, ref _x, ref _y);
-            API.SetTextScale(0.35F,0.35F);
+            API.SetTextScale(0.35F, 0.35F);
             API.SetTextFontForCurrentCommand(1);
-            API.SetTextColor(255,255,255,215);
+            API.SetTextColor(255, 255, 255, 215);
             long str = Function.Call<long>(Hash._CREATE_VAR_STRING, 10, "LITERAL_STRING", text);
-            Function.Call((Hash)0xBE5261939FBECB8C,1);
-            Function.Call((Hash)0xD79334A4BB99BAD1,str,_x,_y);
+            Function.Call((Hash)0xBE5261939FBECB8C, 1);
+            Function.Call((Hash)0xD79334A4BB99BAD1, str, _x, _y);
             float factor = text.Length / 150.0F;
-            Function.Call((Hash) 0xC9884ECADE94CB34, "generic_textures", "hud_menu_4a", _x, _y + 0.0125F, 0.015F + factor,
+            Function.Call((Hash)0xC9884ECADE94CB34, "generic_textures", "hud_menu_4a", _x, _y + 0.0125F, 0.015F + factor,
                 0.03F, 0.1F, 100, 1, 1, 190, 0);
         }
-        
-        public static Dictionary<string,dynamic> expandoProcessing(dynamic objet)
+
+        public static Dictionary<string, dynamic> expandoProcessing(dynamic objet)
         {
-            Dictionary<string,dynamic> aux = new Dictionary<string, dynamic>();
+            Dictionary<string, dynamic> aux = new Dictionary<string, dynamic>();
             foreach (var o in objet)
             {
-                aux.Add(o.Key,o.Value);
+                aux.Add(o.Key, o.Value);
             }
             return aux;
         }
@@ -112,8 +109,8 @@ namespace vorpinventory_cl
 
             return closestPlayers;
         }
-        
-        public static Dictionary<uint,string> Publicweapons = new Dictionary<uint, string>
+
+        public static Dictionary<uint, string> Publicweapons = new Dictionary<uint, string>
         {
             {0xC3662B7D,"WEAPON_KIT_CAMERA"},
             {0xAED4C64C,"WEAPON_MOONSHINEJUG"},
@@ -179,8 +176,8 @@ namespace vorpinventory_cl
             {0xA64DAA5E,"WEAPON_THROWN_DYNAMITE"},
             {0x9102371A,"WEAPON_THROWN_MOLOTOV"}
         };
-        
-        public static Dictionary<uint,string> Publicammo = new Dictionary<uint, string>
+
+        public static Dictionary<uint, string> Publicammo = new Dictionary<uint, string>
         {
             {0x38854A3B,"AMMO_ARROW"},
             {0x5B6ABDF8,"AMMO_ARROW_DYNAMITE"},

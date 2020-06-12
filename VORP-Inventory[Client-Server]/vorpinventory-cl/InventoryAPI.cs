@@ -1,24 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using CitizenFX.Core;
+﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
+using System;
 
 namespace vorpinventory_cl
 {
-    public class InventoryAPI:BaseScript
+    public class InventoryAPI : BaseScript
     {
         //TODO HACER QUE CUANDO LA TENGAS COGIDA SI TE DAN O TE QUITAN MUNICION TE LA QUITE Y TE LA AÑADA TAMBIEN AL PJ
         public InventoryAPI()
         {
-            EventHandlers["vorpCoreClient:addItem"] += new Action<int,int,string,string,string,bool,bool>(addItem);
-            EventHandlers["vorpCoreClient:subItem"] += new Action<string,int>(subItem);
+            EventHandlers["vorpCoreClient:addItem"] += new Action<int, int, string, string, string, bool, bool>(addItem);
+            EventHandlers["vorpCoreClient:subItem"] += new Action<string, int>(subItem);
             EventHandlers["vorpCoreClient:subWeapon"] += new Action<int>(subWeapon);
-            EventHandlers["vorpCoreClient:addBullets"] += new Action<int,string,int>(addWeaponBullets);
-            EventHandlers["vorpCoreClient:subBullets"]+= new Action<int,string,int>(subWeaponBullets);
-            EventHandlers["vorpCoreClient:addComponent"] += new Action<int,string>(addComponent);
-            EventHandlers["vorpCoreClient:subComponent"] += new Action<int,string>(subComponent);
+            EventHandlers["vorpCoreClient:addBullets"] += new Action<int, string, int>(addWeaponBullets);
+            EventHandlers["vorpCoreClient:subBullets"] += new Action<int, string, int>(subWeaponBullets);
+            EventHandlers["vorpCoreClient:addComponent"] += new Action<int, string>(addComponent);
+            EventHandlers["vorpCoreClient:subComponent"] += new Action<int, string>(subComponent);
         }
-        
+
         private void subComponent(int weaponId, string component)
         {
             if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
@@ -28,15 +27,15 @@ namespace vorpinventory_cl
                     vorp_inventoryClient.userWeapons[weaponId].quitComponent(component);
                     if (vorp_inventoryClient.userWeapons[weaponId].getUsed())
                     {
-                        Function.Call((Hash)0x4899CB088EDF59B8,API.PlayerPedId(),
-                            (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[weaponId].getName()),true,0);
+                        Function.Call((Hash)0x4899CB088EDF59B8, API.PlayerPedId(),
+                            (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[weaponId].getName()), true, 0);
                         vorp_inventoryClient.userWeapons[weaponId].loadAmmo();
                         vorp_inventoryClient.userWeapons[weaponId].loadComponents();
                     }
                 }
             }
         }
-        
+
         private void addComponent(int weaponId, string component)
         {
             if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
@@ -46,28 +45,28 @@ namespace vorpinventory_cl
                     vorp_inventoryClient.userWeapons[weaponId].setComponent(component);
                     if (vorp_inventoryClient.userWeapons[weaponId].getUsed())
                     {
-                        Function.Call((Hash)0x4899CB088EDF59B8,API.PlayerPedId(),
-                            (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[weaponId].getName()),true,0);
+                        Function.Call((Hash)0x4899CB088EDF59B8, API.PlayerPedId(),
+                            (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[weaponId].getName()), true, 0);
                         vorp_inventoryClient.userWeapons[weaponId].loadAmmo();
                         vorp_inventoryClient.userWeapons[weaponId].loadComponents();
                     }
                 }
             }
         }
-        
+
         private void subWeaponBullets(int weaponId, string bulletType, int cuantity)
         {
             if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
             {
-                vorp_inventoryClient.userWeapons[weaponId].subAmmo(cuantity,bulletType);
+                vorp_inventoryClient.userWeapons[weaponId].subAmmo(cuantity, bulletType);
                 if (vorp_inventoryClient.userWeapons[weaponId].getUsed())
                 {
-                    API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey(bulletType),vorp_inventoryClient.userWeapons[weaponId].getAmmo(bulletType));
+                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(bulletType), vorp_inventoryClient.userWeapons[weaponId].getAmmo(bulletType));
                 }
             }
             NUIEvents.LoadInv();
         }
-        
+
         private void addWeaponBullets(int weaponId, string bulletType, int cuantity)
         {
             if (vorp_inventoryClient.userWeapons.ContainsKey(weaponId))
@@ -75,7 +74,7 @@ namespace vorpinventory_cl
                 vorp_inventoryClient.userWeapons[weaponId].addAmmo(cuantity, bulletType);
                 if (vorp_inventoryClient.userWeapons[weaponId].getUsed())
                 {
-                    API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey(bulletType),vorp_inventoryClient.userWeapons[weaponId].getAmmo(bulletType));
+                    API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(bulletType), vorp_inventoryClient.userWeapons[weaponId].getAmmo(bulletType));
                 }
             }
             NUIEvents.LoadInv();
@@ -90,13 +89,13 @@ namespace vorpinventory_cl
                 {
                     API.RemoveWeaponFromPed(API.PlayerPedId(),
                         (uint)API.GetHashKey(vorp_inventoryClient.userWeapons[weaponId].getName()),
-                        true,0); //Falta revisar que pasa con esto
+                        true, 0); //Falta revisar que pasa con esto
                 }
                 vorp_inventoryClient.userWeapons.Remove(weaponId);
             }
             NUIEvents.LoadInv();
         }
-        
+
         private void subItem(string name, int cuantity)
         {
             Debug.WriteLine($"Me llaman con cantidad a poner = {cuantity}");
@@ -119,8 +118,8 @@ namespace vorpinventory_cl
             }
             else
             {
-                ItemClass auxitem = new ItemClass(count,limit,label,name,type,usable,canRemove);
-                vorp_inventoryClient.useritems.Add(name,auxitem);
+                ItemClass auxitem = new ItemClass(count, limit, label, name, type, usable, canRemove);
+                vorp_inventoryClient.useritems.Add(name, auxitem);
             }
             NUIEvents.LoadInv();
         }

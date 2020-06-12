@@ -43,7 +43,7 @@
         {
             this.count -= count;
         }
-        
+
         public void setLimit(int limit)
         {
             this.limit = limit;

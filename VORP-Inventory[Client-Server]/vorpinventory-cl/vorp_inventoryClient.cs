@@ -1,13 +1,12 @@
 ﻿
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using CitizenFX.Core;
-using CitizenFX.Core.Native;
-using Newtonsoft.Json.Linq;
 using vorpinventory_sv;
 namespace vorpinventory_cl
 {
@@ -34,7 +33,7 @@ namespace vorpinventory_cl
 
         private async Task updateAmmoInWeapon()
         {
-            await Delay(500); 
+            await Delay(500);
             uint weaponHash = 0;
             if (API.GetCurrentPedWeapon(API.PlayerPedId(), ref weaponHash, false, 0, false))
             {
@@ -44,7 +43,7 @@ namespace vorpinventory_cl
 
                 Dictionary<string, int> ammoDict = new Dictionary<string, int>();
                 WeaponClass usedWeapon = null;
-                foreach (KeyValuePair<int,WeaponClass> weap in userWeapons.ToList())
+                foreach (KeyValuePair<int, WeaponClass> weap in userWeapons.ToList())
                 {
                     if (weaponName.Contains(weap.Value.getName()) && weap.Value.getUsed())
                     {
@@ -52,15 +51,13 @@ namespace vorpinventory_cl
                         usedWeapon = weap.Value;
                     }
                 }
-                
+
                 if (usedWeapon == null) return;
                 foreach (var ammo in ammoDict.ToList())
                 {
                     int ammoQuantity = Function.Call<int>((Hash)0x39D22031557946C1, API.PlayerPedId(), API.GetHashKey(ammo.Key));
-                    Debug.WriteLine();
                     if (ammoQuantity != ammo.Value)
                     {
-                        Debug.WriteLine($"{ammo.Key} : {ammoQuantity}");
                         usedWeapon.setAmmo(ammoQuantity, ammo.Key);
                     }
                 }
@@ -75,29 +72,29 @@ namespace vorpinventory_cl
             }
             else
             {
-                useritems.Add(name,new ItemClass(count,citems[name]["limit"],citems[name]["label"],name,
-                    "item_standard",true,citems[name]["can_remove"]));
+                useritems.Add(name, new ItemClass(count, citems[name]["limit"], citems[name]["label"], name,
+                    "item_standard", true, citems[name]["can_remove"]));
             }
-            
+
             NUIEvents.LoadInv();
         }
 
-        private void receiveWeapon(int id,string propietary,string name ,ExpandoObject ammo ,List<dynamic> components)
+        private void receiveWeapon(int id, string propietary, string name, ExpandoObject ammo, List<dynamic> components)
         {
-            Dictionary<string,int> ammoaux = new Dictionary<string, int>();
-            foreach (KeyValuePair<string,object> amo in ammo)
+            Dictionary<string, int> ammoaux = new Dictionary<string, int>();
+            foreach (KeyValuePair<string, object> amo in ammo)
             {
-                ammoaux.Add(amo.Key,int.Parse(amo.Value.ToString()));
+                ammoaux.Add(amo.Key, int.Parse(amo.Value.ToString()));
             }
             List<string> auxcomponents = new List<string>();
             foreach (var comp in components)
             {
                 auxcomponents.Add(comp.ToString());
             }
-            WeaponClass weapon = new WeaponClass(id,propietary,name,ammoaux,auxcomponents,false);
+            WeaponClass weapon = new WeaponClass(id, propietary, name, ammoaux, auxcomponents, false);
             if (!userWeapons.ContainsKey(weapon.getId()))
             {
-                userWeapons.Add(weapon.getId(),weapon);
+                userWeapons.Add(weapon.getId(), weapon);
             }
             NUIEvents.LoadInv();
         }
@@ -117,7 +114,7 @@ namespace vorpinventory_cl
             citems.Clear();
             foreach (dynamic item in items)
             {
-                citems.Add(item.item,new Dictionary<string, dynamic>
+                citems.Add(item.item, new Dictionary<string, dynamic>
                 {
                     ["item"] = item.item,
                     ["label"] = item.label,
@@ -137,7 +134,7 @@ namespace vorpinventory_cl
                 JArray componentes = Newtonsoft.Json.JsonConvert.DeserializeObject(row.components.ToString());
                 JObject amunitions = Newtonsoft.Json.JsonConvert.DeserializeObject(row.ammo.ToString());
                 List<string> components = new List<string>();
-                Dictionary<string,int> ammos = new Dictionary<string, int>();
+                Dictionary<string, int> ammos = new Dictionary<string, int>();
                 foreach (JToken componente in componentes)
                 {
                     components.Add(componente.ToString());
@@ -145,7 +142,7 @@ namespace vorpinventory_cl
 
                 foreach (JProperty amunition in amunitions.Properties())
                 {
-                    ammos.Add(amunition.Name,int.Parse(amunition.Value.ToString()));
+                    ammos.Add(amunition.Name, int.Parse(amunition.Value.ToString()));
                 }
                 Debug.WriteLine(row.used.ToString());
                 bool auused = false;
@@ -153,8 +150,8 @@ namespace vorpinventory_cl
                 {
                     auused = true;
                 }
-                WeaponClass auxweapon = new WeaponClass(int.Parse(row.id.ToString()),row.identifier.ToString(),row.name.ToString(),ammos,components,auused);
-                userWeapons.Add(auxweapon.getId(),auxweapon);
+                WeaponClass auxweapon = new WeaponClass(int.Parse(row.id.ToString()), row.identifier.ToString(), row.name.ToString(), ammos, components, auused);
+                userWeapons.Add(auxweapon.getId(), auxweapon);
                 if (auxweapon.getUsed())
                 {
                     Utils.useWeapon(auxweapon.getId());
@@ -183,7 +180,7 @@ namespace vorpinventory_cl
                         ItemClass item = new ItemClass(cuantity, limit, label, fitems.Key, type, usable, can_remove);
                         useritems.Add(fitems.Key, item);
                     }
-                } 
+                }
             }
         }
     }

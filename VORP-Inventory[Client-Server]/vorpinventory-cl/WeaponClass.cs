@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using CitizenFX.Core;
+﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
+using System.Collections.Generic;
 using vorpinventory_cl;
 
 namespace vorpinventory_sv
 {
-    public class WeaponClass:BaseScript
+    public class WeaponClass : BaseScript
     {
         private string name;
         private int id;
@@ -13,7 +13,7 @@ namespace vorpinventory_sv
         private Dictionary<string, int> ammo;
         private List<string> components;
         private bool used;
-        public WeaponClass(int id,string propietary,string name, Dictionary<string,int>ammo,List<string>components,bool used)
+        public WeaponClass(int id, string propietary, string name, Dictionary<string, int> ammo, List<string> components, bool used)
         {
             this.id = id;
             this.name = name;
@@ -27,34 +27,34 @@ namespace vorpinventory_sv
         public void UnequipWeapon()
         {
             setUsed(false);
-            TriggerServerEvent("vorpinventory:setUsedWeapon",id,getUsed());
+            TriggerServerEvent("vorpinventory:setUsedWeapon", id, getUsed());
             int hash = API.GetHashKey(name);
             RemoveWeaponFromPed();
             Utils.cleanAmmo(id);
         }
-        
+
         public void RemoveWeaponFromPed()
         {
-            API.RemoveWeaponFromPed(API.PlayerPedId(),(uint)API.GetHashKey(this.name), true,0); //Falta revisar que pasa con esto
+            API.RemoveWeaponFromPed(API.PlayerPedId(), (uint)API.GetHashKey(this.name), true, 0); //Falta revisar que pasa con esto
         }
-        
+
         public void loadAmmo()
         {
-            API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(this.name),0, true, 2);
-            API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(this.name),0);
-            foreach (KeyValuePair<string,int> ammos in this.ammo)
+            API.GiveDelayedWeaponToPed(API.PlayerPedId(), (uint)API.GetHashKey(this.name), 0, true, 2);
+            API.SetPedAmmo(API.PlayerPedId(), (uint)API.GetHashKey(this.name), 0);
+            foreach (KeyValuePair<string, int> ammos in this.ammo)
             {
-                API.SetPedAmmoByType(API.PlayerPedId(),API.GetHashKey(ammos.Key),ammos.Value);
+                API.SetPedAmmoByType(API.PlayerPedId(), API.GetHashKey(ammos.Key), ammos.Value);
                 Debug.WriteLine($"{API.GetHashKey(ammos.Key)}: {ammos.Key} {ammos.Value}");
             }
         }
-        
+
         public void loadComponents()
         {
             foreach (string componente in getAllComponents())
             {
-                Function.Call((Hash)0x74C9090FDD1BB48E,API.PlayerPedId(),(uint)API.GetHashKey(componente),
-                    (uint)API.GetHashKey(this.name),true);//Hay que mirar que hace el true
+                Function.Call((Hash)0x74C9090FDD1BB48E, API.PlayerPedId(), (uint)API.GetHashKey(componente),
+                    (uint)API.GetHashKey(this.name), true);//Hay que mirar que hace el true
             }
         }
 
@@ -66,7 +66,7 @@ namespace vorpinventory_sv
         public void setUsed(bool used)
         {
             this.used = used;
-            TriggerServerEvent("vorpinventory:setUsedWeapon",id,used);
+            TriggerServerEvent("vorpinventory:setUsedWeapon", id, used);
         }
         public string getPropietary()
         {
@@ -125,26 +125,26 @@ namespace vorpinventory_sv
             {
                 return 0;
             }
-            
-            
+
+
         }
-        
+
         //Update ammo on server by client
         public void setAmmo(int ammo, string type)
         {
             if (this.ammo.ContainsKey(type))
             {
                 this.ammo[type] = ammo;
-                TriggerServerEvent("vorpinventory:setWeaponBullets",id,type,ammo);
+                TriggerServerEvent("vorpinventory:setWeaponBullets", id, type, ammo);
             }
             else
             {
-                this.ammo.Add(type,ammo);
-                TriggerServerEvent("vorpinventory:setWeaponBullets",id,type,ammo);
+                this.ammo.Add(type, ammo);
+                TriggerServerEvent("vorpinventory:setWeaponBullets", id, type, ammo);
             }
         }
-        
-        public void addAmmo(int ammo,string type)
+
+        public void addAmmo(int ammo, string type)
         {
             if (this.ammo.ContainsKey(type))
             {
@@ -152,11 +152,11 @@ namespace vorpinventory_sv
             }
             else
             {
-                this.ammo.Add(type,ammo);
+                this.ammo.Add(type, ammo);
             }
         }
 
-        public void subAmmo(int ammo,string type)
+        public void subAmmo(int ammo, string type)
         {
             if (this.ammo.ContainsKey(type))
             {
@@ -167,6 +167,6 @@ namespace vorpinventory_sv
                 }
             }
         }
-        
+
     }
 }
