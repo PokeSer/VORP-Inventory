@@ -254,7 +254,7 @@ namespace vorpinventory_sv
                     {
                         added = true;
                         ItemDatabase.usersInventory[identifier].Add(name, new ItemClass(cuantity, ItemDatabase.svItems[name].getLimit(),
-                            ItemDatabase.svItems[name].getLabel(), name, "item_inventory", true, ItemDatabase.svItems[name].getCanRemove()));
+                            ItemDatabase.svItems[name].getLabel(), name, "item_standard", true, ItemDatabase.svItems[name].getCanRemove()));
                     }
 
                 }

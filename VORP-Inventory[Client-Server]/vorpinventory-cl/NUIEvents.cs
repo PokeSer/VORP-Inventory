@@ -176,7 +176,6 @@ namespace vorpinventory_cl
         {
             Debug.WriteLine("Llego");
             Dictionary<string, object> data = Utils.expandoProcessing(obj);
-            Debug.WriteLine(obj.ToString());
             // foreach (var VARIABLE in data)
             // {
             //     Debug.WriteLine($"{VARIABLE.Key}: {VARIABLE.Value}");
@@ -188,7 +187,7 @@ namespace vorpinventory_cl
                 TriggerServerEvent(eventString);
                 Debug.WriteLine(data["item"].ToString() + "Usado");
             }
-            else
+            else if(data["type"].ToString().Contains("item_weapon"))
             {
                 if (!vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getUsed() &&
                     !Function.Call<bool>((Hash)0x8DECB02F88F428BC, API.PlayerPedId(), API.GetHashKey(vorp_inventoryClient.userWeapons[int.Parse(data["id"].ToString())].getName()), 0, true))
@@ -202,7 +201,7 @@ namespace vorpinventory_cl
                     Debug.WriteLine($"No uso el arma {data["id"]}");
                     TriggerEvent("vorp:Tip", "Ya tienes equipada esa arma", 3000);
                 }
-
+            
                 LoadInv();
             }
         }
