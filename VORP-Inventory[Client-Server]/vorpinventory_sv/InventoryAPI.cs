@@ -1,6 +1,8 @@
 ﻿using CitizenFX.Core;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
+
 namespace vorpinventory_sv
 {
     public class InventoryAPI : BaseScript
@@ -9,7 +11,7 @@ namespace vorpinventory_sv
         {
             EventHandlers["vorpCore:subWeapon"] += new Action<int, int>(subWeapon);
             EventHandlers["vorpCore:giveWeapon"] += new Action<int, int, int>(giveWeapon);
-            EventHandlers["vorpCore:registerWeapon"] += new Action<int, string>(registerWeapon);
+            EventHandlers["vorpCore:registerWeapon"] += new Action<int, string,ExpandoObject,ExpandoObject>(registerWeapon);
             EventHandlers["vorpCore:addItem"] += new Action<int, string, int>(addItem);
             EventHandlers["vorpCore:subItem"] += new Action<int, string, int>(subItem);
             EventHandlers["vorpCore:getItemCount"] += new Action<int, CallbackDelegate, string>(getItems);
@@ -167,10 +169,6 @@ namespace vorpinventory_sv
                 if (ItemDatabase.userWeapons[weaponId].getPropietary() == identifier)
                 {
                     ItemDatabase.userWeapons[weaponId].addAmmo(cuantity, bulletType);
-                    Exports["ghmattimysql"]
-                        .execute(
-                            $"UPDATE loadout SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.userWeapons[weaponId].getAllAmmo())}' WHERE id=?",
-                            new[] { weaponId });
                     p.TriggerEvent("vorpCoreClient:addBullets", weaponId, bulletType, cuantity);
                 }
             }
@@ -191,10 +189,6 @@ namespace vorpinventory_sv
                 if (ItemDatabase.userWeapons[weaponId].getPropietary() == identifier)
                 {
                     ItemDatabase.userWeapons[weaponId].subAmmo(cuantity, bulletType);
-                    Exports["ghmattimysql"]
-                        .execute(
-                            $"UPDATE loadout SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(ItemDatabase.userWeapons[weaponId].getAllAmmo())}' WHERE id=?",
-                            new[] { weaponId });
                     p.TriggerEvent("vorpCoreClient:subBullets", weaponId, bulletType, cuantity);
                 }
             }
@@ -297,7 +291,7 @@ namespace vorpinventory_sv
             }
         }
 
-        private void registerWeapon(int target, string name)//Needs dirt level
+        private void registerWeapon(int target, string name,ExpandoObject ammos,ExpandoObject components)//Needs dirt level
         {
             PlayerList pl = new PlayerList();
             Player p = null;
@@ -320,8 +314,24 @@ namespace vorpinventory_sv
             {
                 identifier = target.ToString();
             }
+
             Dictionary<string, int> ammoaux = new Dictionary<string, int>();
+            if (ammos != null)
+            {
+                foreach (KeyValuePair<string,object> ammo in ammos)
+                {
+                    ammoaux.Add(ammo.Key,int.Parse(ammo.Value.ToString()));
+                }
+            }
+            
             List<string> auxcomponents = new List<string>();
+            if (components != null)
+            {
+                foreach (KeyValuePair<string,object> component in components)
+                {
+                    auxcomponents.Add(component.Key);
+                }
+            }
             int weaponId = -1;
             Exports["ghmattimysql"].execute("SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'vorp' AND TABLE_NAME   = 'loadout';",
                 new Action<dynamic>((id) =>
@@ -330,7 +340,8 @@ namespace vorpinventory_sv
                 Debug.WriteLine(weaponId.ToString());
                 Exports["ghmattimysql"]
                     .execute(
-                        "INSERT INTO loadout (`identifier`,`name`) VALUES (?,?)", new object[] { identifier, name });
+                        "INSERT INTO loadout (`identifier`,`name`,`ammo`,`components`) VALUES (?,?,?,?)", new object[] { identifier, name
+                            ,Newtonsoft.Json.JsonConvert.SerializeObject(ammoaux), Newtonsoft.Json.JsonConvert.SerializeObject(auxcomponents) });
 
                 WeaponClass auxWeapon = new WeaponClass(weaponId, identifier, name, ammoaux, auxcomponents, false);
                 ItemDatabase.userWeapons.Add(weaponId, auxWeapon);

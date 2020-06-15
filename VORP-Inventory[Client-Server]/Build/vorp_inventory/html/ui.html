@@ -17,7 +17,6 @@
 
     <div id="inventoryHud">
         <div id="title">Inventario</div>
-
         <div id="inventoryElement">
         </div>
         <p id="information"></p>
@@ -26,9 +25,6 @@
 
     <script type="text/javascript">
         var show22 = false;
-        var imported = document.createElement("script");
-        imported.src = "locales/" + Config.locale + ".js";
-        document.head.appendChild(imported);
 
         function OverSetTitle(title) {
             document.getElementById("information").innerHTML = title;
@@ -37,18 +33,18 @@
         $("document").ready(function() {
             $("#inventoryHud").hide();
 
-            $("body").on("keyup", function(key) {
-                if (Config.closeKeys.includes(key.which)) {
-                    closeInventory();
-                }
-            });
+            // $("body").on("keyup", function(key) {
+            //     if (Config.closeKeys.includes(key.which)) {
+            //         closeInventory();
+            //     }
+            // });
 
             window.addEventListener("message", function(event) {
                 if (event.data.action == "display") {
                     $("#inventoryHud").fadeIn();
                     $(".controls").remove();
 
-                    $("#inventoryHud").append("<div class='controls'><div class='controls-center'><input type='text' id='search' placeholder='Buscar'><button id='close'>Cerrar</button></div></div>");
+                    $("#inventoryHud").append("<div class='controls'><div class='controls-center'><input type='text' id='search' placeholder='Buscar'/><button id='close'>Cerrar</button></div></div>");
 
                     $("#search").bind('input', function() {
                         searchFor = $("#search").val().toLowerCase();
@@ -179,7 +175,7 @@
                     count = count + " / " + item.limit;
                 }
 
-                $("#inventoryElement").append("<div onmouseout='OverSetTitle(' ')' onmouseover='OverSetTitle('" + item.label + "')' data-label='" + item.label + "' style='background-image: url(\"img/items/" + item.name.toLowerCase() + ".png\"), url(img/bgitem.png); background-size: 60px 60px, 80px 80px; background-repeat: no-repeat; background-position: center;' id='item-" + index + "' class='item'><div class='count'>" + count + "</div><div class='text'></div></div>")
+                $("#inventoryElement").append("<div data-label='" + item.label + "' style='background-image: url(\"img/items/" + item.name.toLowerCase() + ".png\"), url(img/bgitem.png); background-size: 60px 60px, 80px 80px; background-repeat: no-repeat; background-position: center;' id='item-" + index + "' class='item'><div class='count'>" + count + "</div><div class='text'></div></div>")
 
                 var data = [];
                 if (item.used) {
@@ -230,6 +226,17 @@
                         offsetY: 1,
                     });
                 }
+
+                $("#item-" + index).hover(
+                    function() {
+                        OverSetTitle(item.label);
+                    },
+                    function() {
+                        OverSetTitle(" ");
+                    }
+                );
+
+
             });
             show22 = true;
             initDivMouseOver()

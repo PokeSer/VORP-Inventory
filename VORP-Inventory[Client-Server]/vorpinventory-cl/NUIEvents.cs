@@ -201,7 +201,6 @@ namespace vorpinventory_cl
                     Debug.WriteLine($"No uso el arma {data["id"]}");
                     TriggerEvent("vorp:Tip", "Ya tienes equipada esa arma", 3000);
                 }
-            
                 LoadInv();
             }
         }

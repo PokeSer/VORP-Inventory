@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using CitizenFX.Core;
 
 namespace vorpinventory_sv
 {
-    public class WeaponClass
+    public class WeaponClass:BaseScript
     {
         private string name;
         private int id;
@@ -91,6 +92,10 @@ namespace vorpinventory_sv
             {
                 this.ammo.Add(type, ammo);
             }
+            Exports["ghmattimysql"]
+                .execute(
+                    $"UPDATE loadout SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(getAllAmmo())}' WHERE id=?",
+                    new[] { id });
         }
 
         public void setAmmo(int ammo, string type)
@@ -103,6 +108,10 @@ namespace vorpinventory_sv
             {
                 this.ammo.Add(type, ammo);
             }
+            Exports["ghmattimysql"]
+                .execute(
+                    $"UPDATE loadout SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(getAllAmmo())}' WHERE id=?",
+                    new[] { id });
         }
         public void subAmmo(int ammo, string type)
         {
@@ -114,6 +123,10 @@ namespace vorpinventory_sv
                     this.ammo.Remove(type);
                 }
             }
+            Exports["ghmattimysql"]
+                .execute(
+                    $"UPDATE loadout SET ammo = '{Newtonsoft.Json.JsonConvert.SerializeObject(getAllAmmo())}' WHERE id=?",
+                    new[] { id });
         }
 
     }
