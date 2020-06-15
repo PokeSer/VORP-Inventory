@@ -7,16 +7,28 @@
         private int limit;
         private bool can_remove;
         private string type;
+        private bool usable;
 
-        public Items(string item, string label, int limit, bool can_remove,string type)
+        public Items(string item, string label, int limit, bool can_remove,string type,bool usable)
         {
             this.item = item;
             this.limit = limit;
             this.can_remove = can_remove;
             this.label = label;
             this.type = type;
+            this.usable = usable;
         }
 
+        public bool getUsable()
+        {
+            return this.usable;
+        }
+
+        public void setUsable(bool usable)
+        {
+            this.usable = usable;
+        }
+        
         public string getType()
         {
             return this.type;

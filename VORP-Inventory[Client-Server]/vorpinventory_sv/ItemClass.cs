@@ -2,11 +2,11 @@
 {
     public class ItemClass
     {
-        int count;//ammo in case of weapon, cuantity in case of item
+        int count;
         int limit;
         string label;
         string name;
-        string type;//weapon or item
+        string type;
         bool usable;
         bool canRemove;
 

@@ -26,7 +26,7 @@ namespace vorpinventory_sv
                      items = result;
                      foreach (dynamic item in items)
                      {
-                         svItems.Add(item.item.ToString(), new Items(item.item, item.label, int.Parse(item.limit.ToString()), item.can_remove,item.type));
+                         svItems.Add(item.item.ToString(), new Items(item.item, item.label, int.Parse(item.limit.ToString()), item.can_remove,item.type,item.usable));
                      }
                      Exports["ghmattimysql"].execute("SELECT identifier,inventory FROM characters", new Action<dynamic>((uinvento) =>
                      {

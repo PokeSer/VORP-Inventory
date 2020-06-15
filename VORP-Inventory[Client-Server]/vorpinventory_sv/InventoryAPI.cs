@@ -2,11 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using CitizenFX.Core.Native;
 
 namespace vorpinventory_sv
 {
     public class InventoryAPI : BaseScript
     {
+        public static Dictionary<string,CallbackDelegate> usableItemsFunctions = new Dictionary<string, CallbackDelegate>();
         public InventoryAPI()
         {
             EventHandlers["vorpCore:subWeapon"] += new Action<int, int>(subWeapon);
@@ -22,7 +24,39 @@ namespace vorpinventory_sv
             EventHandlers["vorpCore:getUserWeapons"] += new Action<int, CallbackDelegate>(getUserWeapons);
             EventHandlers["vorpCore:addComponent"] += new Action<int, int, string, CallbackDelegate>(addComponent);
             EventHandlers["vorpCore:getUserWeapon"] += new Action<int, CallbackDelegate, int>(getUserWeapon);
+            EventHandlers["vorpCore:registerUsableItem"] += new Action<string,CallbackDelegate>(registerUsableItem);
+            EventHandlers["vorp:use"] += new Action<Player,string>(useItem);
 
+        }
+
+        private void useItem([FromSource]Player source, string itemname)
+        {
+            string identifier = "steam:" + source.Identifiers["steam"];
+            Debug.WriteLine($"usando item {itemname}");
+            if (usableItemsFunctions.ContainsKey(itemname))
+            {
+                usableItemsFunctions[itemname](int.Parse(source.Handle));
+            }
+        }
+
+        private void registerUsableItem(string name, CallbackDelegate cb)
+        {
+            if (usableItemsFunctions.ContainsKey(name))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"{API.GetCurrentResourceName()}: Funcion callback para item {name} ya registrada!");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            else
+            {
+                if (ItemDatabase.svItems.ContainsKey(name) && ItemDatabase.svItems[name].getUsable())
+                {
+                    usableItemsFunctions.Add(name,cb);
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"{API.GetCurrentResourceName()}: Función callback para item {name} registrada!");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+            }
         }
 
         private void subComponent(int player, int weaponId, string component, CallbackDelegate function)

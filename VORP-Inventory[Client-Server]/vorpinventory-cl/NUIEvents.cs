@@ -182,10 +182,10 @@ namespace vorpinventory_cl
             // }
             if (data["type"].ToString().Contains("item_standard"))
             {
-                string eventString = "vorp:use" + data["item"].ToString();
-                //el count no existe ¯\_(ツ)_/¯
-                TriggerServerEvent(eventString);
-                Debug.WriteLine(data["item"].ToString() + "Usado");
+                // string eventString = "vorp:use" + data["item"];
+                // TriggerServerEvent(eventString); Version antigua
+                Debug.WriteLine(data["item"] + "Usado");
+                TriggerServerEvent("vorp:use",data["item"]);
             }
             else if(data["type"].ToString().Contains("item_weapon"))
             {
