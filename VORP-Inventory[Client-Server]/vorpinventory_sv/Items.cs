@@ -1,4 +1,6 @@
-﻿namespace vorpinventory_sv
+﻿using System.Collections.Generic;
+
+namespace vorpinventory_sv
 {
     public class Items
     {
@@ -57,6 +59,19 @@
         public bool getCanRemove()
         {
             return this.can_remove;
+        }
+        public Dictionary<string, object> getItemDictionary()
+        {
+            Dictionary<string, object> dictionary = new Dictionary<string, object>()
+            {
+                {"name", item},
+                {"label", label},
+                {"limit", limit},
+                {"can_remove", can_remove},
+                {"type", type},
+                {"usabel", usable}
+            };
+            return dictionary;
         }
     }
 }

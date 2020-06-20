@@ -25,17 +25,28 @@ namespace vorpinventory_sv
             EventHandlers["vorpCore:addComponent"] += new Action<int, int, string, CallbackDelegate>(addComponent);
             EventHandlers["vorpCore:getUserWeapon"] += new Action<int, CallbackDelegate, int>(getUserWeapon);
             EventHandlers["vorpCore:registerUsableItem"] += new Action<string,CallbackDelegate>(registerUsableItem);
-            EventHandlers["vorp:use"] += new Action<Player,string>(useItem);
-
+            EventHandlers["vorp:use"] += new Action<Player,string,object[]>(useItem);
         }
 
-        private void useItem([FromSource]Player source, string itemname)
+        private void useItem([FromSource]Player source,string itemname ,params object []args)
         {
             string identifier = "steam:" + source.Identifiers["steam"];
-            Debug.WriteLine($"usando item {itemname}");
             if (usableItemsFunctions.ContainsKey(itemname))
             {
-                usableItemsFunctions[itemname](int.Parse(source.Handle));
+                if (ItemDatabase.svItems.ContainsKey(itemname))
+                {
+                    Dictionary<string, object> argumentos = new Dictionary<string, object>()
+                    {
+                        {"source", int.Parse(source.Handle)},
+                        {"item", ItemDatabase.svItems[itemname].getItemDictionary()},
+                        {"args",args}
+                    };
+                    usableItemsFunctions[itemname](argumentos);
+                }
+                else
+                {
+                    Debug.WriteLine("Error");
+                }
             }
         }
 
