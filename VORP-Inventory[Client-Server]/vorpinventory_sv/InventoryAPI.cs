@@ -55,7 +55,7 @@ namespace vorpinventory_sv
             if (usableItemsFunctions.ContainsKey(name))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"{API.GetCurrentResourceName()}: Funcion callback para item {name} ya registrada!");
+                Console.WriteLine($"{API.GetCurrentResourceName()}: Function callback of item: {name} already registered!");
                 Console.ForegroundColor = ConsoleColor.White;
             }
             else
@@ -64,7 +64,7 @@ namespace vorpinventory_sv
                 {
                     usableItemsFunctions.Add(name,cb);
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"{API.GetCurrentResourceName()}: Función callback para item {name} registrada!");
+                    Console.WriteLine($"{API.GetCurrentResourceName()}: Function callback of item: {name} registered!");
                     Console.ForegroundColor = ConsoleColor.White;
                 }
             }
