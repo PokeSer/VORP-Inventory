@@ -1,4 +1,9 @@
 {
-    "fullInventory":"Llevas demasiado peso encima no te pueden dar más cosas",
-    "fullInventoryGive":"La persona lleva demasiado peso no le puedes dar más cosas"
+    "fullInventory": "Llevas demasiado peso encima no te pueden dar más cosas",
+    "fullInventoryGive": "La persona lleva demasiado peso no le puedes dar más cosas",
+    "TryExploits": "No intentes ser mas listo que el sistema",
+
+    "NotEnoughMoney": "No tienes tanto dinero",
+    "YouPaid": "Has pagado {0}$ a {1}",
+    "YouReceived": "Has recibido {0}$ de {1}"
 }
