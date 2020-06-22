@@ -17,6 +17,7 @@
 
     <div id="inventoryHud">
         <div id="title">Inventario</div>
+
         <div id="inventoryElement">
         </div>
         <p id="information"></p>
@@ -160,6 +161,29 @@
             }
         }
 
+        function giveGetHowManyMoney() {
+            dialog.prompt({
+                title: "Cantidad",
+                button: "Aceptar",
+                required: true,
+                item: "money",
+                type: "item_money",
+                input: {
+                    type: "number"
+                },
+                validate: function(value, item, type) {
+                    $.post("http://vorp_inventory/GetNearPlayers", JSON.stringify({
+                        type: type,
+                        what: "give",
+                        item: item,
+                        count: value
+                    }));
+                    return true;
+                }
+            });
+
+        }
+
         function closeInventory() {
             $.post("http://vorp_inventory/NUIFocusOff", JSON.stringify({}));
             show22 = false;
@@ -167,6 +191,8 @@
 
         function inventorySetup(items) {
             $("#inventoryElement").html("");
+
+
 
             $.each(items, function(index, item) {
                 count = item.count;
@@ -238,6 +264,48 @@
 
 
             });
+
+            //AddMoney
+            var m_item = "money";
+            var m_label = "Dollars";
+
+
+            $("#inventoryElement").append("<div data-label='" + m_label + "' style='background-image: url(\"img/items/" + m_item + ".png\"), url(img/bgitem.png); background-size: 60px 60px, 80px 80px; background-repeat: no-repeat; background-position: center;' id='item-" + m_item + "' class='item'><div class='text'></div></div>")
+
+            var data = [];
+
+            data.push({
+                text: "Dar dinero",
+                action: function() {
+                    giveGetHowManyMoney();
+                }
+            });
+
+            data.push({
+                text: "Soltar dinero",
+                action: function() {
+                    //dropGetHowMany(item.name, item.type, item.hash, item.id);
+                }
+            });
+
+
+
+            $("#item-" + m_item).contextMenu([data], {
+                offsetX: 1,
+                offsetY: 1,
+            });
+
+
+            $("#item-" + m_item).hover(
+                function() {
+                    OverSetTitle(m_label);
+                },
+                function() {
+                    OverSetTitle(" ");
+                }
+            );
+
+
             show22 = true;
             initDivMouseOver()
         }
