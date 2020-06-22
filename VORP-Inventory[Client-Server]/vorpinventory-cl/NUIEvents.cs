@@ -14,7 +14,7 @@ namespace vorpinventory_cl
 
         public static List<Dictionary<string, dynamic>> gg = new List<Dictionary<string, dynamic>>();
         public static Dictionary<string, object> items = new Dictionary<string, object>();
-
+        public static bool isProcessingPay = false;
 
         public NUIEvents()
         {
@@ -55,6 +55,13 @@ namespace vorpinventory_cl
 
             API.RegisterNuiCallbackType("UnequipWeapon");
             EventHandlers["__cfx_nui:UnequipWeapon"] += new Action<ExpandoObject>(NUIUnequipWeapon);
+
+            EventHandlers["vorp_inventory:ProcessingReady"] += new Action(setProcessingPayFalse);
+        }
+
+        private void setProcessingPayFalse()
+        {
+            isProcessingPay = false;
         }
 
         private void NUIUnequipWeapon(ExpandoObject obj)
@@ -138,10 +145,20 @@ namespace vorpinventory_cl
                     if (API.GetPlayerServerId(varia) == int.Parse(data["player"].ToString()))
                     {
                         string itemname = data2["item"].ToString();
-                        int amount = int.Parse(data2["count"].ToString());
+
                         int target = int.Parse(data["player"].ToString());
-                        if (int.Parse(data2["id"].ToString()) == 0)
+
+                        if (data2["type"].ToString().Equals("item_money"))
                         {
+                            if (isProcessingPay)
+                                return;
+                            
+                            isProcessingPay = true;
+                            TriggerServerEvent("vorp_inventory:giveMoneyToPlayer", target, double.Parse(data2["count"].ToString()));
+                        }
+                        else if (int.Parse(data2["id"].ToString()) == 0)
+                        {
+                            int amount = int.Parse(data2["count"].ToString());
                             if (amount > 0 && vorp_inventoryClient.useritems[itemname].getCount() >= amount)
                             {
                                 TriggerServerEvent("vorpinventory:serverGiveItem", itemname, amount, target, 1);

@@ -19,8 +19,46 @@ namespace vorpinventory_sv
             EventHandlers["vorpinventory:setUsedWeapon"] += new Action<Player, int, bool>(usedWeapon);
             EventHandlers["vorpinventory:setWeaponBullets"] += new Action<Player, int, string, int>(setWeaponBullets);
             EventHandlers["playerDropped"] += new Action<Player, string>(SaveInventoryItems);
-            //EventHandlers["onResourceStop"] += new Action<string>(OnResourceStop);
+            EventHandlers["vorp_inventory:giveMoneyToPlayer"] += new Action<Player, int, double>(giveMoneyToPlayer);
         }
+
+        private async void giveMoneyToPlayer([FromSource]Player source, int target, double amount)
+        {
+            int _source = int.Parse(source.Handle);
+            PlayerList pl = new PlayerList();
+            Player _target = pl[target];
+
+            TriggerEvent("vorp:getCharacter", _source, new Action<dynamic>(async (user) =>
+            {
+                double sourceMoney = user.money;
+                Debug.WriteLine(sourceMoney.ToString());
+                Debug.WriteLine(amount.ToString());
+                if (amount <= 0)
+                {
+                    source.TriggerEvent("vorp:Tip", "No intentes hacerte el listillo", 3000);
+                    await Delay(3000);
+                    source.TriggerEvent("vorp_inventory:ProcessingReady");
+                }
+                else if (sourceMoney < amount)
+                {
+                    source.TriggerEvent("vorp:Tip", "No tienes tanto dinero", 3000);
+                    await Delay(3000);
+                    source.TriggerEvent("vorp_inventory:ProcessingReady");
+
+                }
+                else
+                {
+                    TriggerEvent("vorp:removeMoney", _source, 0, amount);
+                    TriggerEvent("vorp:addMoney", target, 0, amount);
+                    source.TriggerEvent("vorp:Tip", string.Format("Has pagado {0}$ a {1}", amount.ToString(), _target.Name), 3000);
+                    await Delay(3000);
+                    source.TriggerEvent("vorp_inventory:ProcessingReady");
+                }
+
+
+            }));
+        }
+
         public static Dictionary<int, Dictionary<string, dynamic>> Pickups = new Dictionary<int, Dictionary<string, dynamic>>();
 
         private void setWeaponBullets([FromSource] Player player, int weaponId, string type, int bullet)
