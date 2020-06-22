@@ -216,7 +216,7 @@ namespace vorpinventory_cl
                 else
                 {
                     Debug.WriteLine($"No uso el arma {data["id"]}");
-                    TriggerEvent("vorp:Tip", "Ya tienes equipada esa arma", 3000);
+                    //TriggerEvent("vorp:Tip", "Ya tienes equipada esa arma", 3000);
                 }
                 LoadInv();
             }
@@ -229,7 +229,13 @@ namespace vorpinventory_cl
             string type = aux["type"].ToString();
             Debug.WriteLine(type);
             Debug.WriteLine(itemname);
-            if (type == "item_standard")
+            if (type == "item_money")
+            {
+                TriggerServerEvent("vorpinventory:serverDropMoney", double.Parse(aux["number"].ToString()));
+                Debug.WriteLine("Soltando dinero");
+                Debug.WriteLine("Soltando dinero");
+            }
+            else if (type == "item_standard")
             {
                 if (int.Parse(aux["number"].ToString()) > 0 && vorp_inventoryClient.useritems[itemname].getCount() >= int.Parse(aux["number"].ToString()))
                 {

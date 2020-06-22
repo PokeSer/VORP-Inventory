@@ -13,13 +13,43 @@ namespace vorpinventory_sv
             EventHandlers["vorpinventory:serverGiveItem"] += new Action<Player, string, int, int>(serverGiveItem);
             EventHandlers["vorpinventory:serverGiveWeapon"] += new Action<Player, int, int>(serverGiveWeapon);
             EventHandlers["vorpinventory:serverDropItem"] += new Action<Player, string, int>(serverDropItem);
+            EventHandlers["vorpinventory:serverDropMoney"] += new Action<Player, double>(serverDropMoney);
             EventHandlers["vorpinventory:serverDropWeapon"] += new Action<Player, int>(serverDropWeapon);
             EventHandlers["vorpinventory:sharePickupServer"] += new Action<string, int, int, Vector3, int>(sharePickupServer);
+            EventHandlers["vorpinventory:shareMoneyPickupServer"] += new Action<int, double, Vector3>(shareMoneyPickupServer);
             EventHandlers["vorpinventory:onPickup"] += new Action<Player, int>(onPickup);
+            EventHandlers["vorpinventory:onPickupMoney"] += new Action<Player, int>(onPickupMoney);
             EventHandlers["vorpinventory:setUsedWeapon"] += new Action<Player, int, bool>(usedWeapon);
             EventHandlers["vorpinventory:setWeaponBullets"] += new Action<Player, int, string, int>(setWeaponBullets);
             EventHandlers["playerDropped"] += new Action<Player, string>(SaveInventoryItems);
             EventHandlers["vorp_inventory:giveMoneyToPlayer"] += new Action<Player, int, double>(giveMoneyToPlayer);
+        }
+
+        private void serverDropMoney([FromSource]Player source, double amount)
+        {
+            int _source = int.Parse(source.Handle);
+
+            TriggerEvent("vorp:getCharacter", _source, new Action<dynamic>(async (user) =>
+            {
+                double sourceMoney = user.money;
+
+                if (amount <= 0)
+                {
+                    source.TriggerEvent("vorp:Tip", Config.lang["TryExploits"], 3000);
+                }
+                else if (sourceMoney < amount)
+                {
+                    source.TriggerEvent("vorp:Tip", Config.lang["NotEnoughMoney"], 3000);
+                }
+                else
+                {
+                    TriggerEvent("vorp:removeMoney", _source, 0, amount);
+                    source.TriggerEvent("vorpInventory:createMoneyPickup", amount);
+                }
+
+
+            }));
+
         }
 
         private async void giveMoneyToPlayer([FromSource]Player source, int target, double amount)
@@ -35,13 +65,13 @@ namespace vorpinventory_sv
                 Debug.WriteLine(amount.ToString());
                 if (amount <= 0)
                 {
-                    source.TriggerEvent("vorp:Tip", "No intentes hacerte el listillo", 3000);
+                    source.TriggerEvent("vorp:Tip", Config.lang["TryExploits"], 3000);
                     await Delay(3000);
                     source.TriggerEvent("vorp_inventory:ProcessingReady");
                 }
                 else if (sourceMoney < amount)
                 {
-                    source.TriggerEvent("vorp:Tip", "No tienes tanto dinero", 3000);
+                    source.TriggerEvent("vorp:Tip", Config.lang["NotEnoughMoney"], 3000);
                     await Delay(3000);
                     source.TriggerEvent("vorp_inventory:ProcessingReady");
 
@@ -50,7 +80,8 @@ namespace vorpinventory_sv
                 {
                     TriggerEvent("vorp:removeMoney", _source, 0, amount);
                     TriggerEvent("vorp:addMoney", target, 0, amount);
-                    source.TriggerEvent("vorp:Tip", string.Format("Has pagado {0}$ a {1}", amount.ToString(), _target.Name), 3000);
+                    source.TriggerEvent("vorp:Tip", string.Format(Config.lang["YouPaid"], amount.ToString(), _target.Name), 3000);
+                    _target.TriggerEvent("vorp:Tip", string.Format(Config.lang["YouReceived"], amount.ToString(), source.Name), 3000);
                     await Delay(3000);
                     source.TriggerEvent("vorp_inventory:ProcessingReady");
                 }
@@ -60,6 +91,8 @@ namespace vorpinventory_sv
         }
 
         public static Dictionary<int, Dictionary<string, dynamic>> Pickups = new Dictionary<int, Dictionary<string, dynamic>>();
+
+        public static Dictionary<int, Dictionary<string, dynamic>> PickupsMoney = new Dictionary<int, Dictionary<string, dynamic>>();
 
         private void setWeaponBullets([FromSource] Player player, int weaponId, string type, int bullet)
         {
@@ -251,6 +284,22 @@ namespace vorpinventory_sv
 
         }
 
+        private void onPickupMoney([FromSource]Player player, int obj)
+        {
+            string identifier = "steam:" + player.Identifiers["steam"];
+            int source = int.Parse(player.Handle);
+            if (PickupsMoney.ContainsKey(obj))
+            {
+                
+                TriggerClientEvent("vorpInventory:shareMoneyPickupClient", PickupsMoney[obj]["obj"],
+                PickupsMoney[obj]["amount"], PickupsMoney[obj]["coords"], 2);
+                TriggerClientEvent("vorpInventory:removePickupClient", PickupsMoney[obj]["obj"]);
+                player.TriggerEvent("vorpInventory:playerAnim", obj);
+                TriggerEvent("vorp:addMoney", source, 0, PickupsMoney[obj]["amount"]);
+                PickupsMoney.Remove(obj);
+            }
+        }
+
         private void sharePickupServer(string name, int obj, int amount, Vector3 position, int weaponId)
         {
             TriggerClientEvent("vorpInventory:sharePickupClient", name, obj, amount, position, 1, weaponId);
@@ -266,6 +315,20 @@ namespace vorpinventory_sv
             });
         }
 
+        private void shareMoneyPickupServer(int obj, double amount, Vector3 position)
+        {
+            TriggerClientEvent("vorpInventory:shareMoneyPickupClient", obj, amount, position, 1);
+            Debug.WriteLine(obj.ToString());
+            PickupsMoney.Add(obj, new Dictionary<string, dynamic>
+            {
+                ["name"] = "Dollars",
+                ["obj"] = obj,
+                ["amount"] = amount,
+                ["inRange"] = false,
+                ["coords"] = position
+            });
+        }
+
         //Weapon methods
         private void serverDropWeapon([FromSource] Player source, int weaponId)
         {
@@ -276,8 +339,10 @@ namespace vorpinventory_sv
         //Items methods
         private void serverDropItem([FromSource] Player source, string itemname, int cuantity)
         {
+
             subItem(int.Parse(source.Handle), itemname, cuantity);
             source.TriggerEvent("vorpInventory:createPickup", itemname, cuantity, 1);
+            
         }
 
         private void serverGiveWeapon([FromSource] Player source, int weaponId, int target)
