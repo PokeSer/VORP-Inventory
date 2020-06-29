@@ -25,7 +25,7 @@
     </div>
 
     <script type="text/javascript">
-        var show22 = false;
+        var isOpen = false;
 
         function OverSetTitle(title) {
             document.getElementById("information").innerHTML = title;
@@ -34,11 +34,11 @@
         $("document").ready(function() {
             $("#inventoryHud").hide();
 
-            // $("body").on("keyup", function(key) {
-            //     if (Config.closeKeys.includes(key.which)) {
-            //         closeInventory();
-            //     }
-            // });
+            $("body").on("keyup", function(key) {
+                if (Config.closeKeys.includes(key.which)) {
+                    closeInventory();
+                }
+            });
 
             window.addEventListener("message", function(event) {
                 if (event.data.action == "display") {
@@ -186,7 +186,7 @@
 
         function closeInventory() {
             $.post("http://vorp_inventory/NUIFocusOff", JSON.stringify({}));
-            show22 = false;
+            isOpen = false;
         }
 
         function inventorySetup(items) {
@@ -306,13 +306,13 @@
             );
 
 
-            show22 = true;
+            isOpen = true;
             initDivMouseOver()
         }
         window.onload = initDivMouseOver;
 
         function initDivMouseOver() {
-            if (show22 === true) {
+            if (isOpen === true) {
                 var div = document.getElementById("inventoryElement");
                 div.mouseIsOver = false;
                 div.onmouseover = function() {
