@@ -35,5 +35,5 @@ this will return a table for simply using the inventory
 * Returns the item quantity
 ``` vorpInventory.getItemCuantity(source,item)```
 
-##Wiki
+## Wiki
 [Wiki VORP Inventory] (http://docs.vorpcore.com:3000/vorp-inventory)
