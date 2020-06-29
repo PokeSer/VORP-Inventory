@@ -16,21 +16,24 @@ Inventory System
 * Unique weapons in order not to duplicate them.
 * Each weapon has its own ammo and can have diferent type of ammo.
 * Each weapon has its own modifications.
-* When dropping or giving weapon you give it with all modifications and ammo.
-* Also has use of items.
+* When dropping or giving a weapon you give it with all the modifications and ammo.
+* It also has usaable items.
 
 ## API For Lua
-For import the api on top of your server resource file
+For importing the API on top of your server resource file
 ```vorpInventory = exports.vorp_inventory:vorp_inventoryApi()```
-this will return a table to simply use inventory
+this will return a table for simply using the inventory
 * Uses:
 * Quit weapon
 ``` vorpInventory.subWeapon(source,weaponId)```
-* Create and give new Weapon with the name of weapon in capital leters
+* Create and give new Weapon with the name of the weapon in capital letters
 ``` vorpInventory.addWeapon(source,weaponName)```
-* Add an item with cuantity
+* Add an item with quantity
 ``` vorpInventory.addItem(source,item,cuantity)```
-* Sub item with cuantity
+* Sub item with quantity
 ``` vorpInventory.subItem(source,item,subCuantity)```
-* Returns item cuantity
+* Returns the item quantity
 ``` vorpInventory.getItemCuantity(source,item)```
+
+##Wiki
+[Wiki VORP Inventory] (http://docs.vorpcore.com:3000/vorp-inventory)
