@@ -1,5 +1,5 @@
 # VORP-Inventory
-Inventory System
+Inventory System for VORP Core
 
 ## Requirements
 - [VORP CORE](https://github.com/VORPCORE/VORP-Core/releases)
