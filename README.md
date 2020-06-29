@@ -10,7 +10,7 @@ Inventory System for VORP Core
 * [Download the lastest version of VORP Inventory](https://github.com/VORPCORE/VORP-Inventory/releases)
 * Copy and paste ```vorp_inventory``` folder to ```resources/vorp_inventory```
 * Add ```ensure vorp_inventory``` to your ```server.cfg``` file
-* To change the language go to ```resources/vorp_inventory/Config``` and change the default language
+* To change the language go to ```resources/vorp_inventory/Config``` and change the default language, also you will have to edit the html file to change the text on the inventory menu
 * Now you are ready!
 
 ## Features
