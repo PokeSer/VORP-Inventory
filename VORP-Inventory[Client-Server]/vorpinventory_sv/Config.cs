@@ -51,8 +51,9 @@ namespace vorpinventory_sv
             }
         }
 
-        private void itemsConfig(int player)
+        private async void itemsConfig(int player)
         {
+            await Delay(3000);
             PlayerList pl = new PlayerList();
             Player p = pl[player];
             string identifier = "steam:" + p.Identifiers["steam"];
