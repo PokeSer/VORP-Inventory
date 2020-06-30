@@ -1,12 +1,11 @@
-
 exports('vorp_inventoryApi',function()
     local self = {}
     self.subWeapon = function(source,weaponid)
         TriggerEvent("vorpCore:subWeapon",source,tonumber(weaponid))
     end
 
-    self.createWeapon = function(source,weaponName)
-        TriggerEvent("vorpCore:registerWeapon",source,tostring(weaponName))
+    self.createWeapon = function(source,weaponName,ammoaux,compaux)
+        TriggerEvent("vorpCore:registerWeapon",source,tostring(weaponName),ammoaux,compaux)
     end
 
     self.giveWeapon = function(source,weaponid,target)
@@ -63,10 +62,6 @@ exports('vorp_inventoryApi',function()
             weap = weapon
         end,weaponId)
         return weap
-    end
-
-    self.RegisterUsableItem = function(itemName,cb)
-        TriggerEvent("vorpCore:registerUsableItem",itemName,cb)
     end
     
     return self
